@@ -491,7 +491,7 @@ class WMSDao():
                            "inner join location lo on lo.LOCATION=li.LOCATION "+
                            "inner join item it on it.ITEM=li.ITEM "+
                            "where li.LOCATION like 'R-%' "+
-                           "OR li.LOCATION LIKE 'P-%'" + #
+                           "OR li.LOCATION LIKE 'P-%'" + #new
                            "order by li.LOCATION")
             registros=cursor.fetchall()
             for registro in registros:
