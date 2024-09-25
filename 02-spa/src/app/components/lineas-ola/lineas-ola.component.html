@@ -1,0 +1,38 @@
+<h1>Lineas X Ola</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Numero de Ola" (keyup.enter)="buscarLineasOla(ola.value)" #ola>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarLineasOla(ola.value)">Buscar</button>
+        </div>
+    </div>
+</div>
+<p></p>
+<div *ngIf="numOla">
+    <a href="http://192.168.84.108:8080/servicios/lineas_ola_file/{{numOla}}" class="btn btn-primary">Descargar Lineas X Ola</a>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Ola</th>
+            <th scope="col">Pedido</th>
+            <th scope="col">Item</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Estatus</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let lineaOla of lineasOla">
+            <td>{{lineaOla.ola}}</td>
+            <td>{{lineaOla.pedido}}</td>
+            <td>{{lineaOla.item}}</td>
+            <td>{{lineaOla.descripcion}}</td>
+            <td>{{lineaOla.cantidad}}</td>
+            <td>{{lineaOla.status}}</td>
+        </tr>
+    </tbody>
+</table>

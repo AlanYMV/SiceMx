@@ -1,0 +1,36 @@
+<h1>Storage Template</h1>
+<hr>
+<div>
+    <a href="http://192.168.84.108:8080/servicios/descarga_storage" class="btn btn-primary">Descargar Storage Template</a>
+    <!--a href="http://localhost:8000/servicios/descarga_storage" class="btn btn-primary">Descargar Storage Template</a-->
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Sku</th>
+            <th scope="col">Storage Template</th>
+            <th scope="col">Unidad</th>
+            <th scope="col">Familia</th>
+            <th scope="col">Subfamilia</th>
+            <th scope="col">Subsubfamilia</th>
+            <th scope="col">Height</th>
+            <th scope="col">Width</th>
+            <th scope="col">Length</th>
+            <th scope="col">Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let storage of storages">
+            <td>{{storage.itemCode}}</td>
+            <td>{{storage.storageTemplate}}</td>
+            <td>{{storage.salUnitMsr}}</td>
+            <td>{{storage.familia}}</td>
+            <td>{{storage.subFamilia}}</td>
+            <td>{{storage.subSubFamilia}}</td>
+            <td>{{storage.height | number: '0.5-5'}}</td>
+            <td>{{storage.width | number: '0.5-5'}}</td>
+            <td>{{storage.length | number: '0.5-5'}}</td>
+            <td>{{storage.weight | number: '0.5-5'}}</td>
+        </tr>
+    </tbody>
+</table>

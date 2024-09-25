@@ -1,0 +1,26 @@
+<h1>Recibos Pendientes</h1>
+<hr>
+<div>
+    <a href="http://192.168.84.108:8080/servicios/descarga_recibos_pendientes/" class="btn btn-primary">Descargar Recibos Pendientes</a>
+    <!--a href="http://localhost:8000/servicios/descarga_recibos_pendientes" class="btn btn-primary">Descargar Recibos Pendientes</a-->
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Identificador de Recibo</th>
+            <th scope="col">item</th>
+            <th scope="col">Descripción de Item</th>
+            <th scope="col">Cantidad Total</th>
+            <th scope="col">Cantidad Abierta</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let reciboPendiente of recibosPendientes">
+            <td>{{reciboPendiente.receiptId}}</td>
+            <td>{{reciboPendiente.item}}</td>
+            <td>{{reciboPendiente.itemDesc}}</td>
+            <td>{{reciboPendiente.totalQty | number: '0.0-0'}}</td>
+            <td>{{reciboPendiente.openQty | number: '0.0-0'}}</td>
+        </tr>
+    </tbody>
+</table>

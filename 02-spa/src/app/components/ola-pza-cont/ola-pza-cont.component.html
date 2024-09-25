@@ -1,0 +1,21 @@
+<h1>Piezas y Contenedores X Ola</h1>
+<hr>
+<div>
+    <a href="http://192.168.84.108:8080/servicios/ola_pza_cont_file/" class="btn btn-primary">Descargar Piezas y Contenedores X Ola</a>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">OLA</th>
+            <th scope="col">PIEZAS</th>
+            <th scope="col">CONTENEDORES</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let olaPzaCont of olasPzaCont">
+            <td>{{olaPzaCont.ola}}</td>
+            <td>{{olaPzaCont.numPiezas}}</td>
+            <td>{{olaPzaCont.numContenedores}}</td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,15 @@
+<h1>Porcentaje de SKUs Prioritarios</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Contenedor" (keyup.enter)="buscarPorcentaje(numContenedor.value)" #numContenedor>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarPorcentaje(numContenedor.value)">Buscar</button>
+        </div>
+    </div>
+</div>
+<hr>
+<h1> Cotenedor: {{container}}</h1>
+<h1> Porcentaje: {{porcentaje | number: '0.2-2'}} %</h1>

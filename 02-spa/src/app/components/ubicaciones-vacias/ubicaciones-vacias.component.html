@@ -1,0 +1,21 @@
+<h1>Ubicaciones Vacias</h1>
+<hr>
+<div>
+    <a href="http://192.168.84.108:8080/servicios/ubicaciones_vacias_file/" class="btn btn-primary">Descargar Ubicaciones Vacias</a>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Ubicación</th>
+            <th scope="col">Estatus</th>
+            <th scope="col">Activo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let ubicacionVacia of ubicacionesVacias">
+            <td>{{ubicacionVacia.ubicacion}}</td>
+            <td>{{ubicacionVacia.status}}</td>
+            <td>{{ubicacionVacia.active}}</td>
+        </tr>
+    </tbody>
+</table>

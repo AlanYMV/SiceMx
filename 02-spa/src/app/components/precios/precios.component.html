@@ -1,0 +1,36 @@
+<h1>Precios</h1>
+<hr>
+<div>
+    <a href="http://192.168.84.108:8080/servicios/descarga_precios" class="btn btn-primary">Descargar Precios</a>
+    <!--a href="http://localhost:8000/servicios/descarga_precios" class="btn btn-primary">Descargar Precios</a-->
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Sku</th>
+            <th scope="col">Codigos de Barras</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Licencia</th>
+            <th scope="col">Estandar</th>
+            <th scope="col">Aeropuertos CDMX</th>
+            <th scope="col">Aeropuertos Foraneos</th>
+            <th scope="col">Aeropuertos Fronterizos</th>
+            <th scope="col">Outlet</th>
+            <th scope="col">Frontera</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let precio of precios">
+            <td>{{precio.itemCode}}</td>
+            <td>{{precio.codigoBarras}}</td>
+            <td>{{precio.itemName}}</td>
+            <td>{{precio.licencia}}</td>
+            <td>{{precio.fvEstandar | number: '.2-2'}}</td>
+            <td>{{precio.fvAptosCdmx | number: '.2-2'}}</td>
+            <td>{{precio.fvAptosForaneos | number: '.2-2'}}</td>
+            <td>{{precio.fvAptosFronterizos | number: '.2-2'}}</td>
+            <td>{{precio.fvOutlet | number: '.2-2'}}</td>
+            <td>{{precio.fvFrontera | number: '.2-2'}}</td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,435 @@
+<h1 align="center">Reporte de Tiendas</h1>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tiendas-pendientes-tab" data-bs-toggle="tab" data-bs-target="#tiendas-pendientes" type="button" role="tab" aria-controls="tiendas-pendientes" aria-selected="true">Pendientes</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="estatus-pedidos-tab" data-bs-toggle="tab" data-bs-target="#estatus-pedidos" type="button" role="tab" aria-controls="estatus-pedidos" aria-selected="false">Estatus</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="detalle-pedidos-tab" data-bs-toggle="tab" data-bs-target="#detalle-pedidos" type="button" role="tab" aria-controls="detalle-pedidos" aria-selected="false">Detalle</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="transacciones-tr-tab" data-bs-toggle="tab" data-bs-target="#transacciones-tr" type="button" role="tab" aria-controls="transacciones-tr" aria-selected="false">Transacciones TR</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tabla-tiendas-tab" data-bs-toggle="tab" data-bs-target="#tabla-tiendas" type="button" role="tab" aria-controls="tabla-tiendas" aria-selected="false">Tabla Pendientes</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tiendas-fecha-tab" data-bs-toggle="tab" data-bs-target="#tiendas-fecha" type="button" role="tab" aria-controls="tiendas-fecha" aria-selected="false">Fechas Pendientes</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="diferencias-tab" data-bs-toggle="tab" data-bs-target="#diferencias-fecha" type="button" role="tab" aria-controls="diferencias-fecha" aria-selected="false">Diferencias</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="correos-tab" data-bs-toggle="tab" data-bs-target="#envio-correo" type="button" role="tab" aria-controls="envio-correo" aria-selected="false">Envio Correos</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="tiendas-pendientes" role="tabpanel" aria-labelledby="tiendas-pendientes-tab">
+        <h6 align="center">TIENDAS PENDIENTES</h6>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-primary" (click)="actualizarTiendasPendienes()">Actualizar Reporte</button>
+                </div>
+                <div class="col">
+                    <a href="http://192.168.84.108:8080/servicios/tienda_pendiente_all/" class="btn btn-primary">Descargar Pedidos</a>
+                </div>
+                <div class="col">
+                    <a href="http://192.168.84.108:8080/servicios/tienda_pendiente_correo/" class="btn btn-primary">Descargar Pedidos Correo</a>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">EST. SOLICITUD</th>
+                        <th scope="col">CARGA</th>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">ALMACEN</th>
+                        <th scope="col">FECHA EMBARQUE</th>
+                        <th scope="col">FECHA PLANEADA</th>
+                        <th scope="col">FECHA ENTREGA</th>
+                        <th scope="col">TRANSITO</th>
+                        <th scope="col">CROSS DOCK</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tiendaPendiente of tiendasPendientes">
+                        <td>{{tiendaPendiente.solicitudEstatus}}</td>
+                        <td>{{tiendaPendiente.carga}}</td>
+                        <td>{{tiendaPendiente.pedido}}</td>
+                        <td>{{tiendaPendiente.nombreAlmacen}}</td>
+                        <td>{{tiendaPendiente.fechaEmbarque}}</td>
+                        <td>{{tiendaPendiente.fechaPlaneada}}</td>
+                        <td>{{tiendaPendiente.fechaEntrega}}</td>
+                        <td>{{tiendaPendiente.transito}}</td>
+                        <td>{{tiendaPendiente.crossDock}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="estatus-pedidos" role="tabpanel" aria-labelledby="estatus-pedidos-tab">
+        <h6 align="center">ESTATUS PEDIDOS</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Tienda" #tiendaEstatus><br>
+                    <input class="form-control" type="text" placeholder="Pedido" #pedidoEstatus>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="text" placeholder="Carga" #cargaEstatus><br>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" (click)="buscarPedido(tiendaEstatus.value, cargaEstatus.value, pedidoEstatus.value)">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">AÑO</th>
+                        <th scope="col">ESTATUS</th>
+                        <th scope="col">MES</th>
+                        <th scope="col">FECHA CEDIS</th>
+                        <th scope="col">CARGA</th>
+                        <th scope="col">TIENDA</th>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">TIPO_PEDIDO</th>
+                        <th scope="col">SOLICITUD TR</th>
+                        <th scope="col">CONT PENDIENTES</th>
+                        <th scope="col">CONT RECIBIDOS</th>
+                        <th scope="col">ITEMS PENDIENTES</th>
+                        <th scope="col">PIEZAS PENDIENTES</th>
+                        <th scope="col">ITEMS RECIBIDOS</th>
+                        <th scope="col">PIEZAS RECIBIDAS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pedido of pedidos">
+                        <td>{{pedido.anio}}</td>
+                        <td>{{pedido.estatus}}</td>
+                        <td>{{pedido.mes}}</td>
+                        <td>{{pedido.fechaCedis}}</td>
+                        <td>{{pedido.carga}}</td>
+                        <td>{{pedido.tienda}}</td>
+                        <td>{{pedido.pedido}}</td>
+                        <td>{{pedido.tipoPedido}}</td>
+                        <td>{{pedido.solicitudTraslado}}</td>
+                        <td>{{pedido.contenedoresPendientes}}</td>
+                        <td>{{pedido.contenedoresRecibidos}}</td>
+                        <td>{{pedido.itemsPendientes}}</td>
+                        <td>{{pedido.piezasPendientes}}</td>
+                        <td>{{pedido.itemsRecibidos}}</td>
+                        <td>{{pedido.piezasRecibidas}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="detalle-pedidos" role="tabpanel" aria-labelledby="detalle-pedidos-tab">
+        <h6 align="center">DETALLE PEDIDOS</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Tienda" #tiendaDetalle><br>
+                    <input class="form-control" type="text" placeholder="Contenedor" #contenedorDetalle><br>
+                    <button class="btn btn-primary" (click)="buscarDetallePedido(tiendaDetalle.value, cargaDetalle.value, pedidoDetalle.value, contenedorDetalle.value, articuloDetalle.value, statusContenedorDetalle.value)">Buscar</button>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Carga" #cargaDetalle><br>
+                    <input class="form-control" type="text" placeholder="Articulo" #articuloDetalle><br>
+                    <a href="{{'http://192.168.84.108:8080/servicios/detalle_pedido_tienda_file/ '+tiendaDetalle.value+'/ '+cargaDetalle.value+'/ '+pedidoDetalle.value+'/ '+contenedorDetalle.value+'/ '+articuloDetalle.value+'/ '+statusContenedorDetalle.value+'/'}}" class="btn btn-primary">Descargar Pedidos</a>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Pedido" #pedidoDetalle><br>
+                    <select class="form-select" #statusContenedorDetalle>
+                      <option selected value="">ESTATUS CONTENEDOR</option>
+                      <option value="WMS">WMS</option>
+                      <option value="EN TRANSITO">EN TRANSITO</option>
+                      <option value="EN PROCESO">EN PROCESO</option>
+                      <option value="CERRADO">CERRADO</option>
+                      <option value="POR CERRAR C/FALT">POR CERRAR C/FALT</option>
+                      <option value="POR CERRAR">POR CERRAR</option>
+                  </select><br>
+                    <button class="btn btn-primary" (click)="tiendaDetalle.value=''; cargaDetalle.value=''; pedidoDetalle.value=''; contenedorDetalle.value=''; articuloDetalle.value=''; detallePedidos=[]; total=0; statusContenedorDetalle.value='';">Limpiar</button>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">NUM</th>
+                        <th scope="col">ESTATUS PEDIDO</th>
+                        <th scope="col">TIENDA</th>
+                        <th scope="col">CARGA</th>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">CONTENEDOR</th>
+                        <th scope="col">ITEM</th>
+                        <th scope="col">DESCRIPCION ITEM</th>
+                        <th scope="col">ESTATUS CONTENEDOR</th>
+                        <th scope="col">PIEZAS {{total}}</th>
+                        <th scope="col">USR SURT</th>
+                        <th scope="col">FECHA SURT</th>
+                        <th scope="col">QC</th>
+                        <th scope="col">USR QC</th>
+                        <th scope="col">FECHA QC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let detallepedido of detallePedidos; let indice=index;">
+                        <td>{{indice+1}}</td>
+                        <td>{{detallepedido.estatusPedido}}</td>
+                        <td>{{detallepedido.tienda}}</td>
+                        <td>{{detallepedido.carga}}</td>
+                        <td>{{detallepedido.pedido}}</td>
+                        <td>{{detallepedido.contenedor}}</td>
+                        <td>{{detallepedido.item}}</td>
+                        <td>{{detallepedido.itemDescripcion}}</td>
+                        <td>{{detallepedido.estatusContenedor}}</td>
+                        <td>{{detallepedido.piezas}}</td>
+                        <td>{{detallepedido.usuarioPicking}}</td>
+                        <td>{{detallepedido.fechaPicking | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                        <td>{{detallepedido.qc}}</td>
+                        <td>{{detallepedido.usuarioQc}}</td>
+                        <td>{{detallepedido.fechaQc | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="transacciones-tr" role="tabpanel" aria-labelledby="transacciones-tr-tab">
+        <h6 align="center">TRANSACCIONES DE TRASLADO</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Documento" #documento><br>
+                    <input class="form-control" type="text" placeholder="Origen de Traslado" #origenTraslado>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Origen de Solicitud" #origenSolicitud><br>
+                    <input class="form-control" type="text" placeholder="Destino de Traslado" #destinoTraslado>
+                </div>
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Destino de Solicitud" #destinoSolicitud><br>
+                    <button class="btn btn-primary" (click)="buscarTransaccionTR(documento.value, origenSolicitud.value, destinoSolicitud.value, origenTraslado.value, destinoTraslado.value)">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">NUMERO DOCUMENTO</th>
+                        <th scope="col">ESTATUS</th>
+                        <th scope="col">ORIGEN SOLICITUD</th>
+                        <th scope="col">DESTINO SOLICITUD</th>
+                        <th scope="col">ARTICULOS SOLICITUD</th>
+                        <th scope="col">CANTIDAD SOLICITUD</th>
+                        <th scope="col">COMENTARIOS</th>
+                        <th scope="col">FECHA SOLICITUD</th>
+                        <th scope="col">FECHA VENCIMIENTO</th>
+                        <th scope="col">ORIGEN TRASLADO</th>
+                        <th scope="col">DESTINO TRASLADO</th>
+                        <th scope="col">ARTICULOS TRASLADO</th>
+                        <th scope="col">CANTIDAD TRASLADO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let solicitudTraslado of solicitudesTraslado">
+                        <td>{{solicitudTraslado.documentoSolicitud}}</td>
+                        <td>{{solicitudTraslado.status}}</td>
+                        <td>{{solicitudTraslado.origenSolicitud}}</td>
+                        <td>{{solicitudTraslado.destinoSolicitud}}</td>
+                        <td>{{solicitudTraslado.articulosSolicitud}}</td>
+                        <td>{{solicitudTraslado.cantidadSolicitud}}</td>
+                        <td>{{solicitudTraslado.comentarios}}</td>
+                        <td>{{solicitudTraslado.fechaSolicitud}}</td>
+                        <td>{{solicitudTraslado.fechaVencimiento}}</td>
+                        <td>{{solicitudTraslado.origenTraslado}}</td>
+                        <td>{{solicitudTraslado.destinoTraslado}}</td>
+                        <td>{{solicitudTraslado.articulosTraslado}}</td>
+                        <td>{{solicitudTraslado.cantidadTraslado}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="tabla-tiendas" role="tabpanel" aria-labelledby="tabla-tiendas-tab">
+        <h6 align="center">TABLA TIENDAS PENDIENTES</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="date" required pattern="\d{4}-\d{2}-\d{2}" #fechaTabla><br>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" (click)="buscarTablaTiendasPendientes(fechaTabla.value)">Buscar</button>
+                </div>
+                <div class="col">
+                    <a href="{{'http://192.168.84.108:8080/servicios/tabla_tiendas_file/'+fechaTabla.value+'/'}}" class="btn btn-primary">Descargar</a>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">NUM</th>
+                        <th scope="col">ALMACEN</th>
+                        <th scope="col">FECHA ENTREGA</th>
+                        <th scope="col">NUMERO PEDIDOS</th>
+                        <th scope="col">PIEZAS</th>
+                        <th scope="col">CONTENEDORES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tablaTiendaPendiente of tablaTiendasPendientes; let indice=index;">
+                        <td>{{indice+1}}</td>
+                        <td>{{tablaTiendaPendiente.nombreAlmacen}}</td>
+                        <td>{{tablaTiendaPendiente.fechaEntrega}}</td>
+                        <td>{{tablaTiendaPendiente.numPedidos}}</td>
+                        <td>{{tablaTiendaPendiente.piezas}}</td>
+                        <td>{{tablaTiendaPendiente.contenedores}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="tiendas-fecha" role="tabpanel" aria-labelledby="tiendas-fecha-tab">
+        <h6 align="center">TIENDAS PENDIENTES FECHA</h6>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">CARGA</th>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">ALMANCEN</th>
+                        <th scope="col">FECHA EMBARQUE</th>
+                        <th scope="col">FECHA ENTREGA</th>
+                        <th scope="col">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tiendaPendienteFecha of tiendasPendientesFecha">
+                        <td>{{tiendaPendienteFecha.carga}}</td>
+                        <td>{{tiendaPendienteFecha.pedido}}</td>
+                        <td>{{tiendaPendienteFecha.nombreAlmacen}}</td>
+                        <td>{{tiendaPendienteFecha.fechaEmbarque}}</td>
+                        <td>{{tiendaPendienteFecha.fechaEntrega}}</td>
+                        <td><input class="form-control" type="date" required pattern="\d{4}-\d{2}-\d{2}" #fechaEntrega></td>
+                        <td><button class="btn btn-primary" (click)="guardarFechaTrafico(fechaEntrega.value, tiendaPendienteFecha.carga, tiendaPendienteFecha.pedido)">Guardar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="diferencias-fecha" role="tabpanel" aria-labelledby="diferencias-tab">
+        <h6 align="center">Diferencias</h6>
+        <div class="col">
+            <a href="http://192.168.84.108:8080/servicios/diferencias_file/" class="btn btn-primary">Descargar diferencias</a>
+        </div>
+        <hr>
+        <br>
+        <div>
+            <h6 align="center">Cerradas SAP, pendientes en APP</h6>
+            <div class="col">
+                <button class="btn btn-primary" (click)="cerrarPedidos()">Cerrar Pedidos</button>
+            </div>
+            <p></p>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">ESTATUS PEDIDO</th>
+                        <th scope="col">TIENDA</th>
+                        <th scope="col">CARGA</th>
+                        <th scope="col">DOCUMENTO</th>
+                        <th scope="col">ESTATUS DOCUMENTO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pedidoPorCerrar of pedidosPorCerrar">
+                        <td>{{pedidoPorCerrar.pedido}}</td>
+                        <td>{{pedidoPorCerrar.estatusPedido}}</td>
+                        <td>{{pedidoPorCerrar.tienda}}</td>
+                        <td>{{pedidoPorCerrar.carga}}</td>
+                        <td>{{pedidoPorCerrar.documento}}</td>
+                        <td>{{pedidoPorCerrar.estatusDocumento}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <h6 align="center">Sin Solicitud TR</h6>
+            <p></p>
+            <p></p>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">TIENDA</th>
+                        <th scope="col">ALMANCEN</th>
+                        <th scope="col">BNEXT</th>
+                        <th scope="col">DOCK ENTRY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let infoPedidoSinTr of infoPedidosSinTr">
+                        <td>{{infoPedidoSinTr.pedido}}</td>
+                        <td>{{infoPedidoSinTr.tienda}}</td>
+                        <td>{{infoPedidoSinTr.almacen}}</td>
+                        <td>{{infoPedidoSinTr.bnext}}</td>
+                        <td>{{infoPedidoSinTr.dockEntry}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="envio-correo" role="tabpanel" aria-labelledby="correos-tab">
+        <h6 align="center">Envio correo tiendas pendientes</h6>
+        <hr>
+        <br>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">TIENDA</th>
+                        <th scope="col">ACCION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let tiendaCorreo of tiendasCorreo">
+                        <td>{{tiendaCorreo.nombreTienda}}</td>
+                        <td>
+                            <input type="hidden" value={{tiendaCorreo.nombreTienda}} #tienda/>
+                            <button class="btn btn-primary" (click)="enviarCorreo(tienda.value)">Enviar Correo</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

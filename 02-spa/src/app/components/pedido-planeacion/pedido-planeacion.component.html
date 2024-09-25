@@ -1,0 +1,51 @@
+<h1>Pedidos SAP</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            Fecha Inicio:
+        </div>
+        <div class="col">
+            <input class="form-control" type="date" required pattern="\d{4}-\d{2}-\d{2}" #fechaInicio><br>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarPedidos(fechaInicio.value, fechaFin.value)">Buscar</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Fecha Fin:
+        </div>
+        <div class="col">
+            <input class="form-control" type="date" required pattern="\d{4}-\d{2}-\d{2}" #fechaFin><br>
+        </div>
+        <div class="col">
+            <div *ngIf="descargar">
+                <a href="{{'http://192.168.84.108:8080/servicios/pedidos_planeacion_file/'+fechaInicio.value+'/'+fechaFin.value+'/'}}" class="btn btn-primary">Descargar Pedidos</a>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">PEDIDO</th>
+                    <th scope="col">ITEM</th>
+                    <th scope="col">CANTIDAD</th>
+                    <th scope="col">FECHA CREACION</th>
+                    <th scope="col">FECHA ENTREGA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let pedido of pedidos;">
+                    <td>{{pedido.docNum}}</td>
+                    <td>{{pedido.itemCode}}</td>
+                    <td>{{pedido.quantity | number: '0.0-0'}}</td>
+                    <td>{{pedido.docDate | date:'dd/MM/yyyy'}}</td>
+                    <td>{{pedido.docDueDate | date:'dd/MM/yyyy'}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

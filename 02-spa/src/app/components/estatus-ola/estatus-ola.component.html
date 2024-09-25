@@ -1,0 +1,54 @@
+<h1>Estatus Contenedores por Ola</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <a href="http://192.168.84.108:8080/servicios/estatus_ola_file/" class="btn btn-primary">Descargar Estatus Contenedores por Ola</a>
+        </div>
+        <div class="col">
+            <a href="http://192.168.84.108:8080/servicios/detalle_ola/" class="btn btn-primary">Descargar Detalle de Contenedores</a>
+        </div>
+    </div>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">SEMANA</th>
+            <th scope="col">OLA</th>
+            <th scope="col">PEDIDOS</th>
+            <th scope="col">CONTENEDORES</th>
+            <th scope="col">CAJAS</th>
+            <th scope="col">BOLSAS</th>
+            <th scope="col">PICKING PENDING</th>
+            <th scope="col">IN PICKING</th>
+            <th scope="col">PACKING PENDING</th>
+            <th scope="col">IN PACKING</th>
+            <th scope="col">STAGING PENDING</th>
+            <th scope="col">LOADING PEDING</th>
+            <th scope="col">SHIP CONFIRM PENDING</th>
+            <th scope="col">LOAD CONFIRM PENDING</th>
+            <th scope="col">CLOSED</th>
+            <th scope="col">CUMPLIMIENTO</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let estatus of estatusOla">
+            <td>{{estatus.semana}}</td>
+            <td>{{estatus.ola}}</td>
+            <td>{{estatus.pedidos}}</td>
+            <td>{{estatus.contenedores}}</td>
+            <td>{{estatus.carton}}</td>
+            <td>{{estatus.bolsa}}</td>
+            <td>{{estatus.pickingPending}}</td>
+            <td>{{estatus.inPicking}}</td>
+            <td>{{estatus.packingPending}}</td>
+            <td>{{estatus.inPacking}}</td>
+            <td>{{estatus.stagingPending}}</td>
+            <td>{{estatus.loadingPending}}</td>
+            <td>{{estatus.shipConfirmPending}}</td>
+            <td>{{estatus.loadConfirmPending}}</td>
+            <td>{{estatus.closed}}</td>
+            <td>{{estatus.closed*100/estatus.contenedores | number: '0.0-2'}}%</td>
+        </tr>
+    </tbody>
+</table>

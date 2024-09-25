@@ -1,0 +1,36 @@
+<h1>Articulos</h1>
+<hr>
+<div>
+    <a href="http://192.168.84.108:8080/servicios/descarga_articulos/" class="btn btn-primary">Descargar Articulos</a>
+    <!--a href="http://localhost:8000/servicios/descarga_articulos/" class="btn btn-primary">Descargar Articulos</a-->
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Sku</th>
+            <th scope="col">Descripcion</th>
+            <th scope="col">Código Sat</th>
+            <th scope="col">Código Proveedor</th>
+            <th scope="col">Proveedor</th>
+            <th scope="col">Unidad de Medida</th>
+            <th scope="col">Clave de Unidad</th>
+            <th scope="col">Peso del Articulo</th>
+            <th scope="col">Pzas por Unidad de Compra</th>
+            <th scope="col">Cantidad por Paquete</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let articulo of articulos">
+            <td>{{articulo.sku}}</td>
+            <td>{{articulo.descripcionSku}}</td>
+            <td>{{articulo.codigoSat}}</td>
+            <td>{{articulo.codigoProveedor}}</td>
+            <td>{{articulo.proveedor}}</td>
+            <td>{{articulo.unidadMedidaCompra}}</td>
+            <td>{{articulo.claveUnidad}}</td>
+            <td>{{articulo.pesoArticulo | number: '0.0-0'}}</td>
+            <td>{{articulo.itemsUnidadCompra | number: '0.0-0'}}</td>
+            <td>{{articulo.cantidadPaquete | number: '0.0-0'}}</td>
+        </tr>
+    </tbody>
+</table>

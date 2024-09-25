@@ -1,0 +1,64 @@
+<h1>Wave Analysis</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Buscar Ola" (keyup.enter)="buscarOla(wave.value)" #wave>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarOla(wave.value)">Buscar</button>
+        </div>
+    </div>
+</div>
+<p></p>
+<div *ngIf="waveNum">
+    <a href="http://192.168.84.108:8080/servicios/wave_analysis_file/{{waveNum}}" class="btn btn-primary">Descargar Wave Analysis</a>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Item</th>
+            <th scope="col">DESCRIPCIÓN</th>
+            <th scope="col">STORAGE</th>
+            <th scope="col">SHIMPMENT</th>
+            <th scope="col">LAUNCH</th>
+            <th scope="col">STATUS</th>
+            <th scope="col">REQ QTY</th>
+            <th scope="col">ALL QTY</th>
+            <th scope="col">AV</th>
+            <th scope="col">OH</th>
+            <th scope="col">ALL</th>
+            <th scope="col">IT</th>
+            <th scope="col">SU</th>
+            <th scope="col">CUSTOMER</th>
+            <th scope="col">CATEGORY</th>
+            <th scope="col">CREA DATE</th>
+            <th scope="col">SCHE DATE</th>
+            <th scope="col">DIV</th>
+            <th scope="col">CONV</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let wave of waves">
+            <td>{{wave.item}}</td>
+            <td>{{wave.description}}</td>
+            <td>{{wave.storageTemplate}}</td>
+            <td>{{wave.shipmentId}}</td>
+            <td>{{wave.launchNum}}</td>
+            <td>{{wave.status}}</td>
+            <td>{{wave.requestedQty}}</td>
+            <td>{{wave.allocatedQty}}</td>
+            <td>{{wave.av}}</td>
+            <td>{{wave.oh}}</td>
+            <td>{{wave.al}}</td>
+            <td>{{wave.it}}</td>
+            <td>{{wave.su}}</td>
+            <td>{{wave.customer}}</td>
+            <td>{{wave.itemCategory}}</td>
+            <td>{{wave.creationDateTimeStamp}}</td>
+            <td>{{wave.scheduledShipDate}}</td>
+            <td>{{wave.division}}</td>
+            <td>{{wave.conv}}</td>
+        </tr>
+    </tbody>
+</table>

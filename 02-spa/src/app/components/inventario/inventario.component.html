@@ -1,0 +1,196 @@
+<h1 align="center">Reporte de Inventario ERP vs WMS</h1>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Inventory Header</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Top 100 Difference</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Inventory Detail</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <h6 align="center">GENERAL</h6>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-primary" (click)="actualizarInventario()">Actualizar Inventario SAP</button>
+            </div>
+            <div class="col">
+                <a href="{{'http://192.168.84.108:8080/servicios/inventario_file/'}}" class="btn btn-primary">Descargar Inventario</a>
+            </div>
+        </div>
+        <br>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">WAREHOUSE</th>
+                        <th scope="col">WMS ONHAND</th>
+                        <th scope="col">ERP ONHAND</th>
+                        <th scope="col">DIFERENCIA</th>
+                        <th scope="col">DIFERENCIA ABS</th>
+                        <th scope="col">WMS INTRANSIT</th>
+                        <th scope="col">#ITEMS WMS</th>
+                        <th scope="col">#ITEMS ERP</th>
+                        <th scope="col">#ITEMS DIF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let wmsErpInventory of wmsErpInventories">
+                        <td>{{wmsErpInventory.warehouse}}</td>
+                        <td>{{wmsErpInventory.wmsOnHand | number: '0.0-0'}}</td>
+                        <td>{{wmsErpInventory.erpOnHand | number: '0.0-0'}}</td>
+                        <td>{{wmsErpInventory.diferencia | number: '0.0-0'}}</td>
+                        <td>{{wmsErpInventory.diferenciaAbsoluta | number: '0.0-0'}}</td>
+                        <td>{{wmsErpInventory.wmsInTransit | number: '0.0-0'}}</td>
+                        <td>{{wmsErpInventory.numItemsWms | number: '0.0-0'}}</td>
+                        <td>{{wmsErpInventory.numItemsErp | number: '0.0-0'}}</td>
+                        <td>{{wmsErpInventory.numItemsDif | number: '0.0-0'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">WAREHOUSE</th>
+                        <th scope="col">WMS ONHAND</th>
+                        <th scope="col">ERP ONHAND</th>
+                        <th scope="col">#ITEMS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let inventarioItem of inventarioItems">
+                        <td>{{inventarioItem.warehouse}}</td>
+                        <td>{{inventarioItem.wmsOnHand | number: '0.0-0'}}</td>
+                        <td>{{inventarioItem.erpOnHand | number: '0.0-0'}}</td>
+                        <td>{{inventarioItem.numItems | number: '0.0-0'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">WAREHOUSE CODE</th>
+                        <th scope="col">Solicitado</th>
+                        <th scope="col">OnHand</th>
+                        <th scope="col">Comprometido</th>
+                        <th scope="col">Disponible</th>
+                        <th scope="col">SKU SOL</th>
+                        <th scope="col">SKU OHD</th>
+                        <th scope="col">SKU CMP</th>
+                        <th scope="col">Fecha Actualizacion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let wmsInventory of wmsInventories">
+                        <td>{{wmsInventory.warehouseCode}}</td>
+                        <td>{{wmsInventory.solicitado | number: '0.0-0'}}</td>
+                        <td>{{wmsInventory.onHand | number: '0.0-0'}}</td>
+                        <td>{{wmsInventory.comprometido | number: '0.0-0'}}</td>
+                        <td>{{wmsInventory.disponible | number: '0.0-0'}}</td>
+                        <td>{{wmsInventory.skuSolicitado | number: '0.0-0'}}</td>
+                        <td>{{wmsInventory.skuOnHand | number: '0.0-0'}}</td>
+                        <td>{{wmsInventory.skuComprometido | number: '0.0-0'}}</td>
+                        <td>{{wmsInventory.fechaActualizacion}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <h6 align="center">TOP 100 DE DIFERENCIAS EN CEN-PT</h6>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <a href="{{'http://192.168.84.108:8080/servicios/top_one_hundred_file/'}}" class="btn btn-primary">Descargar Diferencias</a>
+            </div>
+        </div>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">DATE TIME</th>
+                        <th scope="col">ITEM</th>
+                        <th scope="col">WAREHOUSE</th>
+                        <th scope="col">WMS SUSPENSE</th>
+                        <th scope="col">WMS INTRANSIT</th>
+                        <th scope="col">WMS ONHAND</th>
+                        <th scope="col">ERP ONHAND</th>
+                        <th scope="col">DIF ONHAND</th>
+                        <th scope="col">DIF OH ABS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let inventoryTop of inventoryTops">
+                        <td>{{inventoryTop.fecha}}</td>
+                        <td>{{inventoryTop.item}}</td>
+                        <td>{{inventoryTop.warehouse}}</td>
+                        <td>{{inventoryTop.wmsComprometido | number: '0.0-0'}}</td>
+                        <td>{{inventoryTop.wmsTransito | number: '0.0-0'}}</td>
+                        <td>{{inventoryTop.wmsOnHand | number: '0.0-0'}}</td>
+                        <td>{{inventoryTop.erpOnHand | number: '0.0-0'}}</td>
+                        <td>{{inventoryTop.difOnHand | number: '0.0-0'}}</td>
+                        <td>{{inventoryTop.difOnHandAbsolute | number: '0.0-0'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+        <h6 align="center">DETALLE</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Item" #item><br>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" (click)="buscarItem(item.value)">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">DATE TIME</th>
+                        <th scope="col">ITEM</th>
+                        <th scope="col">WAREHOUSE</th>
+                        <th scope="col">WMS SUSPENSE</th>
+                        <th scope="col">WMS INTRANSIT</th>
+                        <th scope="col">WMS ONHAND</th>
+                        <th scope="col">ERP ONHAND</th>
+                        <th scope="col">DIF ONHAND</th>
+                        <th scope="col">DIF OH ABS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let detalleErpWms of detallesErpWms">
+                        <td>{{detalleErpWms.fecha}}</td>
+                        <td>{{detalleErpWms.item}}</td>
+                        <td>{{detalleErpWms.warehouse}}</td>
+                        <td>{{detalleErpWms.wmsComprometido | number: '0.0-0'}}</td>
+                        <td>{{detalleErpWms.wmsTransito | number: '0.0-0'}}</td>
+                        <td>{{detalleErpWms.wmsOnHand | number: '0.0-0'}}</td>
+                        <td>{{detalleErpWms.erpOnHand | number: '0.0-0'}}</td>
+                        <td>{{detalleErpWms.diferenciaOnHand | number: '0.0-0'}}</td>
+                        <td>{{detalleErpWms.diferenciaOnHandAbsoluta | number: '0.0-0'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

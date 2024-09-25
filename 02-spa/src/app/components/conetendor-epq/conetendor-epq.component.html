@@ -1,0 +1,24 @@
+<h1>Contenedores EQP</h1>
+<hr>
+<div>
+    <a href="http://192.168.84.108:8080/servicios/contenedor_epq/" class="btn btn-primary">Descargar Contenedores</a>
+    <!--a href="http://localhost:8000/servicios/descarga_storage" class="btn btn-primary">Descargar Storage Template</a-->
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">CONTENEDOR</th>
+            <th scope="col">FECHA</th>
+            <th scope="col">PEDIDO</th>
+            <th scope="col">OLA</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let contenedorEpq of contenedoresEpq">
+            <td>{{contenedorEpq.contenedor}}</td>
+            <td>{{contenedorEpq.activityDateTime}}</td>
+            <td>{{contenedorEpq.pedido}}</td>
+            <td>{{contenedorEpq.ola}}</td>
+        </tr>
+    </tbody>
+</table>

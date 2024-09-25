@@ -1,0 +1,47 @@
+<h1>Splits</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="date" required pattern="\d{4}-\d{2}-\d{2}" #fecha>
+            <!--input class="form-control" type="text" placeholder="Buscar Pedido" (keyup.enter)="buscarPedido(pedido.value)" #pedido-->
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarSplits(fecha.value)">Buscar</button>
+        </div>
+    </div>
+</div>
+<p></p>
+<!--div *ngIf="numPedido">
+    <a href="http://192.168.84.108:8080/servicios/descarga_pedido/{{numPedido}}/" class="btn btn-primary">Descargar Pedido</a>
+    <!--a href="http://localhost:8000/servicios/descarga_pedido/{{numPedido}}/" class="btn btn-primary">Descargar Pedido</a-->
+<!--/div-->
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Pedido</th>
+            <th scope="col">Contenedor</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Numero de piezas</th>
+            <th scope="col">Status</th>
+            <th scope="col">Usuario</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let split of splits">
+            <td>{{split.pedido}}</td>
+            <td>{{split.contenedor}}</td>
+            <td>{{split.fechaCreacion}}</td>
+            <td>{{split.numeroPiezas}}</td>
+            <td>{{split.status}}</td>
+            <td>{{split.usuario}}</td>
+        </tr>
+    </tbody>
+</table>
+<div class="row" *ngIf="numSplits==0">
+    <div class="col-md-12">
+        <div class="alert alert-info" role="alert" align="Center">
+            No existen splits en la fecha indicada.
+        </div>
+    </div>
+</div>

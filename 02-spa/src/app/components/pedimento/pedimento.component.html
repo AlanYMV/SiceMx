@@ -1,0 +1,27 @@
+<h1>Contenedores de Salida</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Numero Contenedor" (keyup.enter)="buscarContenedorSalida(contenedorSalida.value)" #contenedorSalida>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarContenedorSalida(contenedorSalida.value)">Buscar</button>
+        </div>
+    </div>
+</div>
+<p></p>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Numero de Contenedor</th>
+            <th scope="col">ACCIÓN</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let contenedor of contenedores">
+            <td>{{contenedor.contenedorSalida}}</td>
+            <td><a href="http://192.168.84.108:8080/servicios/contenedor_detalle_file/{{contenedor.contenedorSalida}}">Descargar</a></td>
+        </tr>
+    </tbody>
+</table>

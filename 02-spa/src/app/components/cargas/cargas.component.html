@@ -1,0 +1,76 @@
+<h1>Cargas</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Buscar Carga" (keyup.enter)="buscarCarga(carga.value)" #carga>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarCarga(carga.value)">Buscar</button>
+        </div>
+    </div>
+</div>
+<p></p>
+<div *ngIf="numCarga">
+    <a href="http://192.168.84.108:8080/servicios/descarga_carga/{{numCarga}}/" class="btn btn-primary">Descargar Carga</a>
+    <!--a href="http://localhost:8000/servicios/descarga_carga/{{numCarga}}/" class="btn btn-primary">Descargar Carga</a-->
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">cantidad</th>
+            <!--th scope="col">Unidad Embalaje</th-->
+            <th scope="col">Descripción Material</th>
+            <th scope="col">Peso</th>
+            <!--th scope="col">Unidad de Peso</th-->
+            <th scope="col">Clave Producto</th>
+            <th scope="col">Clave Unidad de Medida</th>
+            <!--th scope="col">Clave de Unidad</th>
+            <th scope="col">Peligroso</th>
+            <th scope="col">Pedido</th-->
+            <th scope="col">Tienda</th>
+            <!--th scope="col">Nombre Tienda</th-->
+            <th scope="col">Código Postal</th>
+            <!--th scope="col">País</th-->
+            <th scope="col">Estado</th>
+            <th scope="col">Direccion</th>
+            <!--th scope="col">Unidad de Medida</th-->
+            <th scope="col">Origen</th>
+            <th scope="col">Destino</th>
+            <th scope="col">Volumen</th>
+            <!--th scope="col">Unidad de Volumen</th-->
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let carga of cargas">
+            <td>{{carga.cantidad | number: '0.0-0'}}</td>
+            <!--td>{{carga.idUnidadEmbalaje}}</td-->
+            <td>{{carga.descripcionMaterialCarga}}</td>
+            <td>{{carga.pesoArticulo | number: '.5-5'}}</td>
+            <!--td>{{carga.idUnidadPeso}}</td-->
+            <td>{{carga.claveProductoServicio}}</td>
+            <td>{{carga.claveUnidadMedidaEmbalaje}}</td>
+            <!--td>{{carga.claveUnidad}}</td>
+            <td>{{carga.materialPeligroso}}</td>
+            <td>{{carga.pedido}}</td-->
+            <td>{{carga.tienda}}</td>
+            <!--td>{{carga.nombreTienda}}</td-->
+            <td>{{carga.codigoPostal}}</td>
+            <!--td>{{carga.pais}}</td-->
+            <td>{{carga.estado}}</td>
+            <td>{{carga.direccion}}</td>
+            <!--td>{{carga.unidadMedida}}</td-->
+            <td>{{carga.idOrigen}}</td>
+            <td>{{carga.idDestino}}</td>
+            <td>{{carga.volumen | number: '0.0-0'}}</td>
+            <!--td>{{carga.unidadVolumen}}</td-->
+        </tr>
+    </tbody>
+</table>
+<div class="row" *ngIf="!numCarga">
+    <div class="col-md-12">
+        <div class="alert alert-info" role="alert">
+            No existe carga con el número indicado
+        </div>
+    </div>
+</div>

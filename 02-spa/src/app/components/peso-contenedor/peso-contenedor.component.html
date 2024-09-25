@@ -1,0 +1,24 @@
+<h1>Datos Contenedor</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Código de barras" (keyup.enter)="buscarContenedor(contenedor.value)" #contenedor>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarContenedor(contenedor.value)">Buscar</button>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="limpiar(); contenedor.value='';">Limpiar</button>
+        </div>
+    </div>
+</div>
+<hr>
+<h6> Peso: {{peso | number: '0.00' }}</h6>
+<h6> Tolerancia: {{tolerancia | number: '0.000'}} </h6>
+<h6> Tipo Contenedor: {{tipoContenedor}} </h6>

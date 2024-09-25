@@ -1,0 +1,48 @@
+<h1>Recibos Tienda</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="date" placeholder="Fecha inicio" required pattern="\d{4}-\d{2}-\d{2}" #fechaInicio>
+        </div>
+        <div class="col">
+            <input class="form-control" type="date" placeholder="Fecha fin" required pattern="\d{4}-\d{2}-\d{2}" #fechaFin>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarRecibos(fechaInicio.value, fechaFin.value)">Buscar</button>
+        </div>
+        <div class="col" *ngIf="recibosTienda.length>0">
+            <a href="{{'http://192.168.84.108:8080/servicios/recibo_tienda_file/'+fechaInicio.value+'/'+fechaFin.value+'/'}}" class="btn btn-primary">Descargar</a>
+        </div>
+    </div>
+</div>
+<p></p>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Carga</th>
+            <th scope="col">Pedido</th>
+            <th scope="col">Llegada del Transportista</th>
+            <th scope="col">Inicio Scaneo</th>
+            <th scope="col">Fin Scaneo</th>
+            <th scope="col">Cierre de Camión</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let reciboTienda of recibosTienda">
+            <td>{{reciboTienda.carga}}</td>
+            <td>{{reciboTienda.pedido}}</td>
+            <td>{{reciboTienda.llegadaTransportista}}</td>
+            <td>{{reciboTienda.inicioScaneo}}</td>
+            <td>{{reciboTienda.finScaneo}}</td>
+            <td>{{reciboTienda.cierreCamion}}</td>
+        </tr>
+    </tbody>
+</table>
+<div class="row" *ngIf="recibosTienda.length==0">
+    <div class="col-md-12">
+        <div class="alert alert-info" role="alert" align="Center">
+            No existen recibos en el periodo indicado.
+        </div>
+    </div>
+</div>
