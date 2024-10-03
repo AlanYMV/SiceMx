@@ -27,6 +27,7 @@ import { DownloadInventarioComponent } from "./components/download-inventario/do
 import { WaveAnalysisComponent } from "./components/wave-analysis/wave-analysis.component";
 import { PedimentoComponent } from "./components/pedimento/pedimento.component";
 import { PesoContenedorComponent } from "./components/peso-contenedor/peso-contenedor.component";
+import { DownloadsContainerQc } from "./components/container-qc/container-qc.component";
 
 const APP_ROUTES : Routes = [
     { path:'home', component: HomeComponent},
@@ -57,6 +58,7 @@ const APP_ROUTES : Routes = [
     { path:'waveAnalysis', component: WaveAnalysisComponent},
     { path:'pedimentos', component: PedimentoComponent},
     { path:'pesoContenedor', component: PesoContenedorComponent},
+    { path: 'containerQc',component: DownloadsContainerQc},
     { path:'**', pathMatch: 'full', redirectTo: 'home'}
 ];
 
