@@ -4240,12 +4240,13 @@ def getdownloadAuditoriaTiendaCl(request, tienda, fechaInicio, fechaFin): #new
         workbook = xlsxwriter.Workbook(output)
         worksheet = workbook.add_worksheet(tienda)
 
-        worksheet.write(0, 0, 'PEDIDO')
-        worksheet.write(0, 1, 'CARGA')
-        worksheet.write(0, 2, 'FECHA RECEPCION')
-        worksheet.write(0, 3, 'TOTAL CONTENEDORES')
-        worksheet.write(0, 4, 'CONTENEDORES AUDITADOS')
-        worksheet.write(0, 5, 'PORCENTAJE')
+        worksheet.write(0, 0, 'TIENDA')
+        worksheet.write(0, 1, 'PEDIDO')
+        worksheet.write(0, 2, 'CARGA')
+        worksheet.write(0, 3, 'FECHA RECEPCION')
+        worksheet.write(0, 4, 'TOTAL CONTENEDORES')
+        worksheet.write(0, 5, 'CONTENEDORES AUDITADOS')
+        worksheet.write(0, 6, 'PORCENTAJE')
 
         
         recepcionTiendaDaoCl=RecepcionTiendaDaoCl()
@@ -4253,12 +4254,13 @@ def getdownloadAuditoriaTiendaCl(request, tienda, fechaInicio, fechaFin): #new
     
         row=1
         for auditoria in auditoriaList:
-            worksheet.write(row, 0, auditoria.pedido)
-            worksheet.write(row, 1, auditoria.carga)
-            worksheet.write(row, 2, auditoria.fechaRecepcion)
-            worksheet.write(row, 3, auditoria.totalContenedores)
-            worksheet.write(row, 4, auditoria.contenedoresAuditados)
-            worksheet.write(row, 5, auditoria.porcentaje)
+            worksheet.write(row, 0, auditoria.tienda)
+            worksheet.write(row, 1, auditoria.pedido)
+            worksheet.write(row, 2, auditoria.carga)
+            worksheet.write(row, 3, auditoria.fechaRecepcion)
+            worksheet.write(row, 4, auditoria.totalContenedores)
+            worksheet.write(row, 5, auditoria.contenedoresAuditados)
+            worksheet.write(row, 6, auditoria.porcentaje)
             row=row+1
 
         workbook.close()

@@ -1,6 +1,7 @@
 class AuditoriaTienda():
     
-    def __init__(self, pedido, carga, fechaRecepcion, totalContenedores, contenedoresAuditados, porcentaje):
+    def __init__(self, tienda,pedido, carga, fechaRecepcion, totalContenedores, contenedoresAuditados, porcentaje):
+        self.tienda = tienda #new
         self.pedido=pedido
         self.carga=carga
         self.fechaRecepcion=fechaRecepcion

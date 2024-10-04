@@ -532,6 +532,7 @@ class ListadoTiendasSerializer(serializers.Serializer):
     nombreAlmacen=serializers.CharField()
 
 class AuditoriaTiendaSerializer(serializers.Serializer):
+        tienda=serializers.CharField() #new
         pedido=serializers.CharField()
         carga=serializers.CharField()
         fechaRecepcion=serializers.CharField()
