@@ -459,7 +459,7 @@ class RecepcionTiendaDaoCl():
             conexion=self.getConexion()
             cursor=conexion.cursor()
             tiendasList=[]
-            cursor.execute("select AlmacenCve, AlmacenNombre from Almacen where AlmacenCve like 'CL0%-DI'")
+            cursor.execute("select AlmacenCve, AlmacenNombre from Almacen where AlmacenCve like 'CL0%-DI' and AlmacenEstatus = 'N'")
             registros=cursor.fetchall()
             for registro in registros:
                 tienda=Tienda(registro[0], registro[1])
@@ -477,19 +477,18 @@ class RecepcionTiendaDaoCl():
             conexion=self.getConexion()
             cursor=conexion.cursor()
             auditoriaTiendaList=[]
-            cursor.execute("select soli.SolicitudID, soli.SolicitudNoTransporte, soli.fechaRecepcion, "+
-                           "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte) TotalContenedores, "+
-                           "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados "+
-                           "from "+
-                           "(select sol.SolicitudID, sol.SolicitudNoTransporte, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion "+
-                           "from Solicitud sol "+
-                           "where sol.SolicitudWarehouseTo=? and sol.SolicitudStatus=4) soli "+
-                           "where format(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? and format(soli.fechaRecepcion, 'yyyy-MM-dd') <=? order by soli.fechaRecepcion desc", (tienda, fechaInicio, fechaFin))
+            cursor.execute("select soli.SolicitudID, soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
+                            "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados " +
+                            "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion " +
+                            "from Solicitud sol where sol.SolicitudWarehouseTo=? and sol.SolicitudStatus=4) soli " +
+                            "where format(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? and format(soli.fechaRecepcion, 'yyyy-MM-dd') <=? " +
+                            "order by soli.SolicitudNoTransporte desc", (tienda, fechaInicio, fechaFin))
             registros=cursor.fetchall()
             for registro in registros:
                 if registro[3] !=0:
                     print(registro[3])
-                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], round(registro[4]/registro[3]*100,2))
+                    porcentaje = str(round(registro[4]/registro[3]*100,2)) + " %"
+                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], porcentaje)
                     auditoriaTiendaList.append(auditoriaTienda)
                 else:
                     auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], 'NA')

@@ -165,9 +165,9 @@ urlpatterns = [
     path('inventario_almacenaje_file_cl/', getInventarioAlmacenajeFileCl, name='getInventarioAlmacenajeFileCl'),
     path('recibo_tienda_cl/<str:fechaInicio>/<str:fechaFin>/', getRecibosTiendaCl, name='getRecibosTiendaCl'),
     path('recibo_tienda_file_cl/<str:fechaInicio>/<str:fechaFin>/', getRecibosTiendaFileCl, name='getRecibosTiendaFileCl'),
-    path('listado_tiendas_cl/', getTiendasCl, name='getTiendasCl'),
+    path('listado_tiendas_cl/', getTiendasCl, name='getTiendasCl'),  
     path('auditorias_tienda_cl/<str:tienda>/<str:fechaInicio>/<str:fechaFin>/', getAuditoriasTiendaCl, name='getAuditoriasTiendaCl'),
-
+    path('auditoria_tienda_descarga_cl/<str:tienda>/<str:fechaInicio>/<str:fechaFin>/', getdownloadAuditoriaTiendaCl, name='getdownloadAuditoriaTiendaCl'), #new
     path('contenedores_salida/<str:contenedorSalida>', getContenedoresSalida, name='getContenedoresSalida'),
     path('contenedor_detalle_file/<str:idContenedorSalida>', getContedorDetalleFile, name='getContedorDetalleFile'),
     path('prioritarios_cl/<str:container>', getPorcentajeSKUsPrioritariosCl, name='getPorcentajeSKUsPrioritariosCl'),

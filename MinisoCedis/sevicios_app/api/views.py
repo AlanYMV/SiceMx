@@ -4230,6 +4230,48 @@ def getAuditoriasTiendaCl(request, tienda, fechaInicio, fechaFin):
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def getdownloadAuditoriaTiendaCl(request, tienda, fechaInicio, fechaFin): #new
+    try:
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet(tienda)
+
+        worksheet.write(0, 0, 'PEDIDO')
+        worksheet.write(0, 1, 'CARGA')
+        worksheet.write(0, 2, 'FECHA RECEPCION')
+        worksheet.write(0, 3, 'TOTAL CONTENEDORES')
+        worksheet.write(0, 4, 'CONTENEDORES AUDITADOS')
+        worksheet.write(0, 5, 'PORCENTAJE')
+
+        
+        recepcionTiendaDaoCl=RecepcionTiendaDaoCl()
+        auditoriaList=recepcionTiendaDaoCl.getAuditoriaTienda(tienda, fechaInicio, fechaFin)
+    
+        row=1
+        for auditoria in auditoriaList:
+            worksheet.write(row, 0, auditoria.pedido)
+            worksheet.write(row, 1, auditoria.carga)
+            worksheet.write(row, 2, auditoria.fechaRecepcion)
+            worksheet.write(row, 3, auditoria.totalContenedores)
+            worksheet.write(row, 4, auditoria.contenedoresAuditados)
+            worksheet.write(row, 5, auditoria.porcentaje)
+            row=row+1
+
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'Auditoria_' + tienda + '.xlsx' 
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 ###############################################################################################################
 
