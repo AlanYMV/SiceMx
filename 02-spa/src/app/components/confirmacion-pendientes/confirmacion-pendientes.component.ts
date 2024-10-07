@@ -12,7 +12,7 @@ export class ConfirmPending implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<ConfirmPend[]>("http://127.0.0.1:8000/servicios/confirmacion_pendientes/")
+    this.http.get<ConfirmPend[]>("http://192.168.84.108:8080/servicios/confirmacion_pendientes/")
       .subscribe((data: ConfirmPend[]) => {
         console.log(data);
         this.confirmPends = data;
