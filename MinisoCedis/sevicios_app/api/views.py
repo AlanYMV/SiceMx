@@ -4276,7 +4276,7 @@ def getdownloadAuditoriaTiendaCl(request, tienda, fechaInicio, fechaFin): #new
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 @api_view(['GET']) #New
-def getConfirmacionesPendientes(request):
+def getConfirmacionesPendientesCl(request):
     try:
         recepcionTiendaDaoCl=RecepcionTiendaDaoCl()
         confirmList=recepcionTiendaDaoCl.getConfirmPending()
@@ -4836,6 +4836,17 @@ def getdownloadItemContainerQc(request):
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
 
         return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET']) #New
+def getConfirmacionesPendientes(request):
+    try:
+        recepcionTiendaDao=RecepcionTiendaDao()
+        confirmList=recepcionTiendaDao.getConfirmPending()
+        serializer=ConfirmacionesPendientes(confirmList, many=True)
+        return Response(serializer.data)
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

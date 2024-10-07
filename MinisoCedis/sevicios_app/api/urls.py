@@ -174,7 +174,7 @@ urlpatterns = [
     path('contenedores_salida/<str:contenedorSalida>', getContenedoresSalida, name='getContenedoresSalida'),
     path('contenedor_detalle_file/<str:idContenedorSalida>', getContedorDetalleFile, name='getContedorDetalleFile'),
     path('prioritarios_cl/<str:container>', getPorcentajeSKUsPrioritariosCl, name='getPorcentajeSKUsPrioritariosCl'),
-    path('confirmacion_pendientes/', getConfirmacionesPendientes, name='getConfirmacionesPendientes'), #new
+    path('confirmacion_pendientes_cl/', getConfirmacionesPendientesCl, name='getConfirmacionesPendientesCl'), #new
 
     #################################################Colombia####################################################
     #################################################Inventario#################################################
@@ -230,6 +230,7 @@ urlpatterns = [
     path('estatus_ola_file_cl/', getEstatusOlaFileCl, name='getEstatusOlaFileCl'),
     path('detalle_ola_cl/', getDetalleEstatusContenedoresCl, name='getDetalleEstatusContenedoresCl'),
     path('inventario_almacenaje_file_cl/', getInventarioAlmacenajeFileCl, name='getInventarioAlmacenajeFileCl'),
+    path('confirmacion_pendientes/', getConfirmacionesPendientes, name='getConfirmacionesPendientes'), #new
 
 
 ]

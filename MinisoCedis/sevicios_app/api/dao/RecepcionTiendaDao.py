@@ -9,6 +9,7 @@ from sevicios_app.vo.tiendaPendienteFecha import TiendaPendienteFecha
 from sevicios_app.vo.pedidoPorCerrar import PedidoPorCerrar
 from sevicios_app.vo.reciboTienda import ReciboTienda
 from sevicios_app.vo.tiendaCorreo import TiendaCorreo
+from sevicios_app.vo.confirmationPending import ConfirmationPending
 
 logger = logging.getLogger('')
 
@@ -429,3 +430,21 @@ class RecepcionTiendaDao():
         finally:
             if conexion!= None:
                 self.closeConexion(conexion)
+
+    def getConfirmPending(self):
+            try:
+                conexion=self.getConexion()
+                cursor=conexion.cursor()
+                confirmList=[]
+                cursor.execute("select Carga,Pedido,NumContenedores,convert(nvarchar(MAX),Fecha,20) fecha from Recepcion where Confirmado=0")
+                registros=cursor.fetchall()
+                for registro in registros:
+                    confirm=ConfirmationPending(registro[0], registro[1], registro[2], registro[3])
+                    confirmList.append(confirm)
+                return confirmList
+            except Exception as exception:
+                logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
+                raise exception
+            finally:
+                if conexion!= None:
+                    self.closeConexion(conexion)

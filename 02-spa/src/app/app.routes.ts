@@ -28,6 +28,7 @@ import { WaveAnalysisComponent } from "./components/wave-analysis/wave-analysis.
 import { PedimentoComponent } from "./components/pedimento/pedimento.component";
 import { PesoContenedorComponent } from "./components/peso-contenedor/peso-contenedor.component";
 import { DownloadsContainerQc } from "./components/container-qc/container-qc.component";
+import { ConfirmPending } from "./components/confirmacion-pendientes/confirmacion-pendientes.component";
 
 const APP_ROUTES : Routes = [
     { path:'home', component: HomeComponent},
@@ -59,6 +60,7 @@ const APP_ROUTES : Routes = [
     { path:'pedimentos', component: PedimentoComponent},
     { path:'pesoContenedor', component: PesoContenedorComponent},
     { path: 'containerQc',component: DownloadsContainerQc},
+    { path:'confirmacion-pendientes', component: ConfirmPending},
     { path:'**', pathMatch: 'full', redirectTo: 'home'}
 ];
 

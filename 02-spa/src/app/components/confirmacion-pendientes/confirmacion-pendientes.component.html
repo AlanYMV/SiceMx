@@ -1,0 +1,20 @@
+<h1>Confirmación de Pendientes</h1>
+<hr>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Carga</th>
+      <th scope="col">Pedido</th>
+      <th scope="col">Num Contenedores</th>
+      <th scope="col">Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let confirm of confirmPends">
+      <td>{{ confirm.carga }}</td>
+      <td>{{ confirm.pedido }}</td>
+      <td>{{ confirm.numContenedores }}</td>
+      <td>{{ confirm.fecha }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -40,6 +40,7 @@ import { DownloadInventarioComponent } from './components/download-inventario/do
 import { WaveAnalysisComponent } from './components/wave-analysis/wave-analysis.component';
 import { PedimentoComponent } from './components/pedimento/pedimento.component';
 import { PesoContenedorComponent } from './components/peso-contenedor/peso-contenedor.component';
+import { ConfirmPending } from './components/confirmacion-pendientes/confirmacion-pendientes.component';
 
 
 @NgModule({
@@ -74,6 +75,7 @@ import { PesoContenedorComponent } from './components/peso-contenedor/peso-conte
     WaveAnalysisComponent,
     PedimentoComponent,
     PesoContenedorComponent,
+    ConfirmPending
   ],
   imports: [
     BrowserModule,
