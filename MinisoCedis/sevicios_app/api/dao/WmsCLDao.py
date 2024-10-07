@@ -19,6 +19,8 @@ from sevicios_app.vo.wave import Wave
 from sevicios_app.vo.splitCl import SplitCl
 from sevicios_app.vo.unitMesure import UnitMesure
 from sevicios_app.vo.porcentaje import Porcentaje
+from sevicios_app.vo.contenedorQc import ContenedorQc
+from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
 
 logger = logging.getLogger('')
 
@@ -482,3 +484,44 @@ class WMSCLDao():
             if conexion!= None:
                 self.closeConexion(conexion)
 
+    def getContainerQc(self): #ContenedorQc
+            try:
+                conexion=self.getConexion()
+                cursor=conexion.cursor()
+                containerList=[]
+                cursor.execute("select CONTAINER_ID, WEIGHT, USER_DEF1, TOTAL_FREIGHT_CHARGE, BASE_FREIGHT_CHARGE, FREIGHT_DISCOUNT, ACCESSORIAL_CHARGE, QC_ASSIGNMENT_ID, QC_STATUS, (select convert(nvarchar(MAX), activity_date_time, 20) from TRANSACTION_HISTORY th where th.CONTAINER_ID =SC.CONTAINER_ID and TRANSACTION_TYPE=210) fecha "+
+                                "from SHIPPING_CONTAINER SC " +
+                                "where SC.FREIGHT_DISCOUNT>0 and SC.CONTAINER_ID is not null and SC.QC_ASSIGNMENT_ID is not null")
+                registros=cursor.fetchall()
+                for registro in registros:
+                    container=ContenedorQc(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8],registro[9])
+                    containerList.append(container)
+                return containerList
+            except Exception as exception:
+                logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+                raise exception
+            finally:
+                if conexion!= None:
+                    self.closeConexion(conexion)
+
+    def getItemContainerQc(self): #ItemContenedoresQc
+            try:
+                conexion=self.getConexion()
+                cursor=conexion.cursor()
+                itemContenedorQcList=[]
+                cursor.execute("select sc.ITEM, count(*) NumOcur, (select count(*) from shipping_container sct where sct.ITEM=sc.ITEM and sct.status>=650 ) TotalCont " +
+                                "from SHIPPING_CONTAINER sc " +
+                                "inner join SHIPPING_CONTAINER scq on scq.CONTAINER_ID=sc.PARENT_CONTAINER_ID and scq.QC_ASSIGNMENT_ID is not null " +
+                                "where sc.status>=650 "+
+                                "group by sc.ITEM order by NumOcur desc")
+                registros=cursor.fetchall()
+                for registro in registros:
+                    itemContenedorQc=ItemContenedorQc(registro[0], registro[1], registro[2])
+                    itemContenedorQcList.append(itemContenedorQc)
+                return itemContenedorQcList
+            except Exception as exception:
+                logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+                raise exception
+            finally:
+                if conexion!= None:
+                    self.closeConexion(conexion)

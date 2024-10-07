@@ -102,6 +102,9 @@ urlpatterns = [
     path('inventario_cl_file/', inventarioClFile, name='inventarioClFile'),
     path('top_one_hundred_cl_file/', topOneHundredClFile, name='topOneHundredClFile'),
     path('execute_inventario_cl/', executeInvetarioClCedis, name='executeInvetarioClCedis'),
+    #new >
+    path('container_qc_cl/', getdownloadContainerQcCl, name='getdownloadContainerQcCl'),
+    path('item_container_qc_cl/', getdownloadItemContainerQcCl, name='getdownloadItemContainerQcCl'),
     #################################################Cuadraje#################################################
     path('cuadraje_cl/', getCuadrajeCl, name='getCuadrajeCl'),
     path('pendiente_semana_cl/', getPendienteSemanaCl, name='getPendienteSemanaCl'),

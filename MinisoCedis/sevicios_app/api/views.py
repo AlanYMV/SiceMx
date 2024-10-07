@@ -4355,6 +4355,87 @@ def getContedorDetalleFile(request, idContenedorSalida):
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    #new >
+
+@api_view(['GET'])
+def getdownloadContainerQcCl(request):
+    try:
+        wmsClDao=WMSCLDao()
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet("ContainerQc")
+        worksheet.write(0, 0, 'CONTAINER_ID')
+        worksheet.write(0, 1, 'WEIGHT')
+        worksheet.write(0, 2, 'USER_DEF1')
+        worksheet.write(0, 3, 'TOTAL_FREIGHT_CHARGE')
+        worksheet.write(0, 4, 'BASE_FRAIGHT_CHARGE')
+        worksheet.write(0, 5, 'FREIGHT_DISCOUNT')
+        worksheet.write(0, 6, 'ACCESSORIAL_CHARGE')
+        worksheet.write(0, 7, 'QC_ASSIGNMENT_ID')
+        worksheet.write(0, 8, 'QC_STATUS')
+        worksheet.write(0, 9, 'FECHA')
+        
+        containerQcList=wmsClDao.getContainerQc()
+
+        row=1
+        for container in containerQcList:
+            worksheet.write(row, 0, container.container_id)
+            worksheet.write(row, 1, container.weight)
+            worksheet.write(row, 2, container.user_def1)
+            worksheet.write(row, 3, container.total_freight_charge)
+            worksheet.write(row, 4, container.base_freight_charge)
+            worksheet.write(row, 5, container.freight_discount)
+            worksheet.write(row, 6, container.accessorial_charge)
+            worksheet.write(row, 7, container.qc_assignment_id)
+            worksheet.write(row, 8, container.qc_status)
+            worksheet.write(row, 9, container.fecha) 
+            row=row+1
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'ContainerQcCl.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getdownloadItemContainerQcCl(request):
+    try:
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'ITEM')
+        worksheet.write(0, 1, 'NUMOCUR')
+        worksheet.write(0, 2, 'TOTALCONT')
+        
+        wmsclDao=WMSCLDao()
+        itemContainerQcList=wmsclDao.getItemContainerQc()
+
+        row=1
+        for container in itemContainerQcList:
+            worksheet.write(row, 0, container.item)
+            worksheet.write(row, 1, container.numocur)
+            worksheet.write(row, 2, container.totalcont)
+            row=row+1
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'ItemContainerQcCl.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 ######################################### COLOMBIA ############################################################
 
