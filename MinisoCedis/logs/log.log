@@ -365,3 +365,8 @@
 2024-10-04 13:35:41,059 [ERROR] - Se presento una incidencia: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]Sintaxis incorrecta cerca de 'format'. (102) (SQLExecDirectW); [42000] [Microsoft][ODBC SQL Server Driver][SQL Server]No se puede preparar la instrucción o instrucciones. (8180)")
 2024-10-04 13:44:08,999 [ERROR] - Se presento una incidencia al obtener los registros: Tienda.__init__() missing 1 required positional argument: 'nombreAlmacen'
 2024-10-04 13:44:09,015 [ERROR] - Se presento una incidencia: Tienda.__init__() missing 1 required positional argument: 'nombreAlmacen'
+2024-10-04 16:34:12,559 [ERROR] - Se presento una incidencia: 'RecepcionTiendaDaoCl' object has no attribute 'getConfirmacionPendientes'
+2024-10-04 17:50:03,872 [ERROR] - Se presento una incidencia al obtener los registros: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]El identificador formado por varias partes 'soli.Fecha' no se pudo enlazar. (4104) (SQLExecDirectW)")
+2024-10-04 17:50:03,902 [ERROR] - Se presento una incidencia: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]El identificador formado por varias partes 'soli.Fecha' no se pudo enlazar. (4104) (SQLExecDirectW)")
+2024-10-04 17:50:07,840 [ERROR] - Se presento una incidencia al obtener los registros: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]El identificador formado por varias partes 'soli.Fecha' no se pudo enlazar. (4104) (SQLExecDirectW)")
+2024-10-04 17:50:07,843 [ERROR] - Se presento una incidencia: ('42000', "[42000] [Microsoft][ODBC SQL Server Driver][SQL Server]El identificador formado por varias partes 'soli.Fecha' no se pudo enlazar. (4104) (SQLExecDirectW)")

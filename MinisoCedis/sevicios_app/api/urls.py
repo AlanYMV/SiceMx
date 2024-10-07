@@ -171,6 +171,7 @@ urlpatterns = [
     path('contenedores_salida/<str:contenedorSalida>', getContenedoresSalida, name='getContenedoresSalida'),
     path('contenedor_detalle_file/<str:idContenedorSalida>', getContedorDetalleFile, name='getContedorDetalleFile'),
     path('prioritarios_cl/<str:container>', getPorcentajeSKUsPrioritariosCl, name='getPorcentajeSKUsPrioritariosCl'),
+    path('confirmacion_pendientes/', getConfirmacionesPendientes, name='getConfirmacionesPendientes'), #new
 
     #################################################Colombia####################################################
     #################################################Inventario#################################################

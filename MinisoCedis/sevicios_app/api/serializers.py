@@ -539,4 +539,9 @@ class AuditoriaTiendaSerializer(serializers.Serializer):
         totalContenedores=serializers.CharField()
         contenedoresAuditados=serializers.CharField()
         porcentaje=serializers.CharField()
-    
+
+class ConfirmacionesPendientes(serializers.Serializer):
+        carga = serializers.CharField()
+        pedido = serializers.CharField()
+        numContenedores = serializers.CharField()
+        fecha = serializers.CharField()
