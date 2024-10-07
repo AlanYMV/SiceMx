@@ -517,7 +517,7 @@ class RecepcionTiendaDaoCl():
                 conexion=self.getConexion()
                 cursor=conexion.cursor()
                 confirmList=[]
-                cursor.execute("select Carga,Pedido,NumContenedores,convert(nvarchar(MAX),Fecha,20) fecha from Recepcion where Confirmado=1")
+                cursor.execute("select Carga,Pedido,NumContenedores,convert(nvarchar(MAX),Fecha,20) fecha from Recepcion where Confirmado=0")
                 registros=cursor.fetchall()
                 for registro in registros:
                     confirm=ConfirmationPending(registro[0], registro[1], registro[2], registro[3])
