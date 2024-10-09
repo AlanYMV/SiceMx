@@ -22,6 +22,7 @@ from sevicios_app.vo.shorpick import Shorpick
 from sevicios_app.vo.unlock import Unlock
 from sevicios_app.vo.contenedorQc import ContenedorQc
 from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
+from sevicios_app.vo.kardex import Kardex
 
 logger = logging.getLogger('')
 
@@ -778,6 +779,37 @@ class WMSDao():
                 itemContenedorQc=ItemContenedorQc(registro[0], registro[1], registro[2])
                 itemContenedorQcList.append(itemContenedorQc)
             return itemContenedorQcList
+        except Exception as exception:
+            logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+            raise exception
+        finally:
+            if conexion!= None:
+                self.closeConexion(conexion)
+
+    def getConsultKardex(self): #ConsultKardex
+        try:
+            conexion=self.getConexion()
+            cursor=conexion.cursor()
+            kardexList=[]
+            cursor.execute("SELECT TH.ITEM, TH.LOCATION,DATEADD(HH,-5,th.DATE_TIME_STAMP) DATE_STAMP, th.USER_STAMP, CAST(th.QUANTITY AS decimal(10,0)) QUANTITY " +
+                            ", CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0)) BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                            "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY " +
+                            ", CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY " +
+                            "FROM TRANSACTION_HISTORY th (NOLOCK) " +
+                            "WHERE TH.ITEM IN ('2016584011101','2017411023106') " +
+                            "UNION ALL " +
+                            "SELECT TH.ITEM, TH.LOCATION,DATEADD(HH,-5,th.DATE_TIME_STAMP) DATE_STAMP, th.USER_STAMP, CAST(th.QUANTITY AS decimal(10,0)) QUANTITY" +
+                            ", CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0)) BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                            "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY " +
+                            ", CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY " +
+                            "FROM AR_TRANSACTION_HISTORY th (NOLOCK) " +
+                            "WHERE TH.ITEM IN('2016584011101','2017411023106') " +
+                            "ORDER BY DATEADD(HH,-5,th.DATE_TIME_STAMP) ASC ")
+            registros=cursor.fetchall()
+            for registro in registros:
+                kardex=Kardex(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], registro[10])
+                kardexList.append(kardex)
+            return kardexList
         except Exception as exception:
             logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
             raise exception

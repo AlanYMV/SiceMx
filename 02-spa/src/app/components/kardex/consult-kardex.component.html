@@ -1,0 +1,83 @@
+<h1>Kardex</h1>
+<hr>
+<div>
+    <p></p>
+    <div class="row">
+        <div class="col">
+            <select class="form-select" #statusContenedorDetalle>
+                <option selected value="">Item</option>
+            </select>
+            <select class="form-select" #statusContenedorDetalle>
+                <option selected value="">Contenedor</option>
+            </select>
+        </div>
+        <div class="col">
+            <select class="form-select" #statusContenedorDetalle>
+                <option selected value="">Ubicacion</option>
+            </select>
+            <select class="form-select" #statusContenedorDetalle>
+                <option selected value="">Epq</option>
+            </select>
+        </div>
+        <div class="col">
+            <select class="form-select" #statusContenedorDetalle>
+                <option selected value="">Usuario</option>
+            </select>
+            <select class="form-select" #statusContenedorDetalle>
+                <option selected value="">Tipo de trabajo</option>
+            </select>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col">
+            Fecha :
+        </div>
+        <div class="col">
+            <input class="form-control" type="date" placeholder="Fecha fin" required pattern="\d{4}-\d{2}-\d{2}" #fechaFin>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" >Buscar</button>
+        </div>
+    </div>
+</div>
+<p></p>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Location</th>
+            <th scope="col">Date Stamp</th>
+            <th scope="col">User Tamp</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Before on Hand qty</th>
+            <th scope="col">After on Hand qty</th>
+            <th scope="col">Before in Transit qty</th>
+            <th scope="col">After in Transit qty</th>
+            <th scope="col">Before Alloc qty</th>
+            <th scope="col">After Alloc qty</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let karde of kardexs">
+            <td>{{karde.item}}</td>
+            <td>{{karde.location}}</td>
+            <td>{{karde.date_stamp}}</td>
+            <td>{{karde.user_tamp}}</td>
+            <td>{{karde.quantity}}</td>
+            <td>{{karde.before_on_hand_qty}}</td>
+            <td>{{karde.after_on_hand_qty}}</td>
+            <td>{{karde.before_in_transit_qty}}</td>
+            <td>{{karde.after_in_transit_qty}}</td>
+            <td>{{karde.before_alloc_qty}}</td>
+            <td>{{karde.after_alloc_qty}}</td>
+        </tr>
+    </tbody>
+</table>
+<div class="row" *ngIf="kardexs.length==0">
+    <div class="col-md-12">
+        <div class="alert alert-info" role="alert" align="Center">
+            No existen kardex.
+        </div>
+    </div>
+</div>

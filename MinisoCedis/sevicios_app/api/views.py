@@ -4850,3 +4850,14 @@ def getConfirmacionesPendientes(request):
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET']) #New
+def getConsultaKardex(request):
+    try:
+        wmsDao=WMSDao()
+        kardexList=wmsDao.getConsultKardex()
+        serializer=ConsultaKardex(kardexList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -41,6 +41,7 @@ import { WaveAnalysisComponent } from './components/wave-analysis/wave-analysis.
 import { PedimentoComponent } from './components/pedimento/pedimento.component';
 import { PesoContenedorComponent } from './components/peso-contenedor/peso-contenedor.component';
 import { ConfirmPending } from './components/confirmacion-pendientes/confirmacion-pendientes.component';
+import { ColsultKardex } from './components/kardex/consult-kardex.component';
 
 
 @NgModule({
@@ -75,7 +76,8 @@ import { ConfirmPending } from './components/confirmacion-pendientes/confirmacio
     WaveAnalysisComponent,
     PedimentoComponent,
     PesoContenedorComponent,
-    ConfirmPending
+    ConfirmPending,
+    ColsultKardex
   ],
   imports: [
     BrowserModule,

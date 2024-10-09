@@ -545,3 +545,16 @@ class ConfirmacionesPendientes(serializers.Serializer):
         pedido = serializers.CharField()
         numContenedores = serializers.CharField()
         fecha = serializers.CharField()
+
+class ConsultaKardex(serializers.Serializer):
+        item = serializers.CharField()
+        location = serializers.CharField()
+        date_stamp = serializers.CharField()
+        user_tamp = serializers.CharField()
+        quantity = serializers.CharField()
+        before_on_hand_qty = serializers.CharField()
+        after_on_hand_qty = serializers.CharField()
+        before_in_transit_qty = serializers.CharField()
+        after_in_transit_qty = serializers.CharField()
+        before_alloc_qty = serializers.CharField()
+        after_alloc_qty = serializers.CharField()

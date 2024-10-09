@@ -412,13 +412,17 @@ class RecepcionTiendaDao():
             conexion=self.getConexion()
             cursor=conexion.cursor()
             tiendaCorreoList=[]
-            cursor.execute("SELECT distinct TIPE.NOMBRE_ALMACEN "+
-                           "FROM(select TP.SOLICITUD_ESTATUS, TP.CARGA, TP.PEDIDO, TP.NOMBRE_ALMACEN, TP.FECHA_EMBARQUE, TP.FECHA_PLANEADA, TP.TRANSITO, TP.CROSS_DOCK, ISNULL((SELECT FECHA_REAL FROM FECHA_TRAFICO FT WHERE FT.CARGA=TP.CARGA AND FT.PEDIDO=TP.PEDIDO), TP.FECHA_PLANEADA) FECHA_ENTREGA from TIENDA_PENDIENTE TP) TIPE "+
-                           "WHERE TIPE.SOLICITUD_ESTATUS='EN TRANSITO' AND "+
-                           "format(TIPE.FECHA_ENTREGA, 'yyyy-MM-dd')<=format(GETDATE(), 'yyyy-MM-dd') "+ #Modification code <=
-                           "AND (TIPE.NOMBRE_ALMACEN LIKE 'T%' OR TIPE.NOMBRE_ALMACEN LIKE 'MO%') "+ #Modification code MO% 
-                           "and substring(TIPE.NOMBRE_ALMACEN, 1, 5) not in (SELECT substring(subject, 22, 5) FROM [msdb].[dbo].[sysmail_sentitems] "+
-                           "where subject like 'PEDIDOS PENDIENTES -%' and format(sent_date, 'yyyy-MM-dd')=format(GETDATE(),'yyyy-MM-dd'))")
+            cursor.execute("SELECT distinct TIPE.NOMBRE_ALMACEN " +
+                            "FROM(select TP.SOLICITUD_ESTATUS, TP.CARGA, TP.PEDIDO, TP.NOMBRE_ALMACEN, TP.FECHA_EMBARQUE, TP.FECHA_PLANEADA, TP.TRANSITO, TP.CROSS_DOCK, ISNULL((SELECT FECHA_REAL FROM FECHA_TRAFICO FT WHERE FT.CARGA=TP.CARGA AND FT.PEDIDO=TP.PEDIDO), TP.FECHA_PLANEADA) FECHA_ENTREGA from TIENDA_PENDIENTE TP) TIPE " +
+                            "WHERE TIPE.SOLICITUD_ESTATUS='EN TRANSITO' AND " +
+                            "format(TIPE.FECHA_ENTREGA, 'yyyy-MM-dd')<=format(GETDATE(), 'yyyy-MM-dd') " + #Changed + <=
+                            "AND (TIPE.NOMBRE_ALMACEN LIKE 'T%' OR TIPE.NOMBRE_ALMACEN LIKE 'MO%') " + # Changed + Mo%
+                            "and (SELECT AlmacenCve FROM Almacen WHERE AlmacenNombre = TIPE.NOMBRE_ALMACEN) " +
+                            "not in (SELECT SUBSTRING(subject, 22, 5) FROM [msdb].[dbo].[sysmail_sentitems] " +
+                            "WHERE subject LIKE 'PEDIDOS PENDIENTES -%' AND FORMAT(sent_date, 'yyyy-MM-dd') = FORMAT(GETDATE(), 'yyyy-MM-dd') " +
+                            "UNION " +
+                            "SELECT SUBSTRING(subject, 22, 8) FROM [msdb].[dbo].[sysmail_sentitems]  " +
+                            "WHERE subject LIKE 'PEDIDOS PENDIENTES -%' AND FORMAT(sent_date, 'yyyy-MM-dd') = FORMAT(GETDATE(), 'yyyy-MM-dd'))" )  #Changed + Union for T0000 and MO-T0000    
             registros=cursor.fetchall()
             for registro in registros:
                 tiendaCorreo=TiendaCorreo(registro[0])

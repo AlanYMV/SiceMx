@@ -81,6 +81,7 @@ urlpatterns = [
     path('unlock&shorpick/', getUnlockANDShorpick, name='getUnlockANDShorpick'),
     path('container_qc/', getdownloadContainerQc, name='getdownloadContainerQc'),
     path('item_container_qc/', getdownloadItemContainerQc, name='getdownloadItemContainerQc'),
+    path('consult_kardex/', getConsultaKardex, name='getConsultaKardex'),
     #^
     path('cantidad_cajas/<str:item>', getCantidadCajas, name='getCantidadCajas'),
     path('prioritarios/<str:container>', getPorcentajeSKUsPrioritarios, name='getPorcentajeSKUsPrioritarios'),

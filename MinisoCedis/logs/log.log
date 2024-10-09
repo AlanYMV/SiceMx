@@ -374,3 +374,5 @@
 2024-10-07 17:44:59,737 [ERROR] - Se presento una incidencia: name 'ConfirmationPending' is not defined
 2024-10-07 17:46:12,111 [ERROR] - Se presento una incidencia al obtener los registros: name 'ConfirmationPending' is not defined
 2024-10-07 17:46:12,138 [ERROR] - Se presento una incidencia: name 'ConfirmationPending' is not defined
+2024-10-08 13:50:24,934 [ERROR] - Se presento una incidencia al obtener los reistros: Kardex.__init__() missing 1 required positional argument: 'after_alloc_qty'
+2024-10-08 13:50:24,950 [ERROR] - Se presento una incidencia: Kardex.__init__() missing 1 required positional argument: 'after_alloc_qty'
