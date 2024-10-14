@@ -4,40 +4,35 @@
     <p></p>
     <div class="row">
         <div class="col">
-            <select class="form-select" #statusContenedorDetalle>
-                <option selected value="">Item</option>
-            </select>
-            <select class="form-select" #statusContenedorDetalle>
-                <option selected value="">Contenedor</option>
-            </select>
+            <input class="form-control" type="text" size="20" placeholder="Item" #item><br>
+            <input class="form-control" type="text" size="40" placeholder="Contenedor" #contenedor><br>
+            
         </div>
         <div class="col">
-            <select class="form-select" #statusContenedorDetalle>
-                <option selected value="">Ubicacion</option>
-            </select>
-            <select class="form-select" #statusContenedorDetalle>
-                <option selected value="">Epq</option>
-            </select>
+            <input class="form-control" type="text" size="20" placeholder="Ubicacion" #ubicacion><br>
+            <input class="form-control" type="text" size="20" placeholder="Usuario" #usuario><br>
         </div>
         <div class="col">
-            <select class="form-select" #statusContenedorDetalle>
-                <option selected value="">Usuario</option>
-            </select>
-            <select class="form-select" #statusContenedorDetalle>
-                <option selected value="">Tipo de trabajo</option>
-            </select>
+            <input class="form-control" type="text" size="20" placeholder="Tipo de trabajo" #tipoDeTrabajo><br>
         </div>
     </div>
     <br>
     <div class="row">
         <div class="col">
-            Fecha :
+            Fecha Inicio:
+        </div>
+        <div class="col">
+            <input class="form-control" type="date" placeholder="Fecha fin" required pattern="\d{4}-\d{2}-\d{2}" #fechaInicio>
+        </div>
+        <div class="col">
+            Fecha Fin:
         </div>
         <div class="col">
             <input class="form-control" type="date" placeholder="Fecha fin" required pattern="\d{4}-\d{2}-\d{2}" #fechaFin>
         </div>
         <div class="col">
-            <button class="btn btn-primary" >Buscar</button>
+            <button class="btn btn-primary" (click)="buscarKardex(item.value, contenedor.value, ubicacion.value,usuario.value,tipoDeTrabajo.value,fechaInicio.value,fechaFin.value)">Buscar</button>
+            <button class="btn btn-primary ms-2" (click)="onDownloadClick(item.value, contenedor.value, ubicacion.value, usuario.value, tipoDeTrabajo.value, fechaInicio.value, fechaFin.value)">Descargar Kardex</button>
         </div>
     </div>
 </div>
@@ -74,10 +69,8 @@
         </tr>
     </tbody>
 </table>
-<div class="row" *ngIf="kardexs.length==0">
-    <div class="col-md-12">
-        <div class="alert alert-info" role="alert" align="Center">
-            No existen kardex.
-        </div>
+<div class="col-md-12">
+    <div class="alert alert-info" role="alert" align="Center">
+        Aqui solo se visualizan maximo 100 registros
     </div>
 </div>

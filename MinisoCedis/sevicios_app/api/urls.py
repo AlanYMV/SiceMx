@@ -1,5 +1,6 @@
 from django.urls import path
 from sevicios_app.api.views import *
+from django.urls import re_path
 
 urlpatterns = [
     path('pedidos/', pedidos_list, name='pedidos-list'),
@@ -81,7 +82,8 @@ urlpatterns = [
     path('unlock&shorpick/', getUnlockANDShorpick, name='getUnlockANDShorpick'),
     path('container_qc/', getdownloadContainerQc, name='getdownloadContainerQc'),
     path('item_container_qc/', getdownloadItemContainerQc, name='getdownloadItemContainerQc'),
-    path('consult_kardex/', getConsultaKardex, name='getConsultaKardex'),
+    re_path(r'^consult_kardex/?(?P<item>[^/]*)/?(?P<container_id>[^/]*)/?(?P<location>[^/]*)/?(?P<user_stamp>[^/]*)/?(?P<work_type>[^/]*)/?(?P<dateStar>[^/]*)/?(?P<dateEnd>[^/]*)/?$', getConsultaKardex, name='getConsultaKardex'),
+    re_path(r'^download_kardex/?(?P<item>[^/]*)/?(?P<container_id>[^/]*)/?(?P<location>[^/]*)/?(?P<user_stamp>[^/]*)/?(?P<work_type>[^/]*)/?(?P<dateStar>[^/]*)/?(?P<dateEnd>[^/]*)/?$', getKardexDownload, name='getKardexDownload'),
     #^
     path('cantidad_cajas/<str:item>', getCantidadCajas, name='getCantidadCajas'),
     path('prioritarios/<str:container>', getPorcentajeSKUsPrioritarios, name='getPorcentajeSKUsPrioritarios'),

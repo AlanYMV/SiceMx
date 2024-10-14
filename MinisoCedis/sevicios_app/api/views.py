@@ -28,6 +28,7 @@ from sevicios_app.vo.shorpick import Shorpick
 from sevicios_app.vo.unlock import Unlock
 from sevicios_app.vo.contenedorQc import ContenedorQc
 from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
+from django.http import JsonResponse
 
 logger = logging.getLogger('')
 
@@ -4852,12 +4853,101 @@ def getConfirmacionesPendientes(request):
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['GET']) #New
-def getConsultaKardex(request):
+def getConsultaKardex(request,item = "",container_id = "",location = "",user_stamp = "",work_type = "",dateStar = "", dateEnd = ""):
     try:
+        print("getConsultaKardex")
+        print(f"item: {item}")
+        print(f"container_id: {container_id}")
+        print(f"location: {location}")
+        print(f"user_stamp: {user_stamp}")
+        print(f"work_type: {work_type}")
+        print(f"dateStart: {dateStar}")
+        print(f"dateEnd: {dateEnd}")
+        print(dateStar)
+        print(dateEnd)
         wmsDao=WMSDao()
-        kardexList=wmsDao.getConsultKardex()
+        kardexList=wmsDao.getConsultKardex(item,container_id,location,user_stamp,work_type,dateStar,dateEnd)
         serializer=ConsultaKardex(kardexList, many=True)
         return Response(serializer.data)
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getKardexDownload(request,item = "",container_id = "",location = "",user_stamp = "",work_type = "",dateStar = "", dateEnd = ""):
+    
+    wmsDao=WMSDao()
+    cont = wmsDao.timeDownloadKardex(item, container_id, location, user_stamp, work_type, dateStar, dateEnd)
+    hourK = datetime.now()
+
+    if (cont < 1000 or hourK.hour >= 22):
+        try:
+            print(f"Si {cont}  {hourK.hour}")
+            output = io.BytesIO()
+
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'ITEM')
+            worksheet.write(0, 1, 'TRANSACTION_TYPE')
+            worksheet.write(0, 2, 'LOCATION')
+            worksheet.write(0, 3, 'CONTAINER_ID')
+            worksheet.write(0, 4, 'REFERENCE_ID')
+            worksheet.write(0, 5, 'REFERENCE_TYPE')
+            worksheet.write(0, 6, 'WORK_TYPE')
+            worksheet.write(0, 7, 'DATE_STAMP')
+            worksheet.write(0, 8, 'USER_STAMP')
+            worksheet.write(0, 9, 'QUANTITY')
+            worksheet.write(0, 10, 'BEFORE_STS')
+            worksheet.write(0, 11, 'AFTER_STS')
+            worksheet.write(0, 12, 'BEFORE_ON_HAND_QTY')
+            worksheet.write(0, 13, 'AFTER_ON_HAND_QTY')
+            worksheet.write(0, 14, 'BEFORE_IN_TRANSIT_QTY')
+            worksheet.write(0, 15, 'AFTER_IN_TRANSIT_QTY')
+            worksheet.write(0, 16, 'BEFORE_SUSPENSE_QTY')
+            worksheet.write(0, 17, 'AFTER_SUSPENSE_QTY')
+            worksheet.write(0, 18, 'BEFORE_ALLOC_QTY')
+            worksheet.write(0, 19, 'AFTER_ALLOC_QTY')
+            worksheet.write(0, 20, 'DIRECTION')
+            
+            kardexList=wmsDao.getDownloadKardex(item, container_id, location, user_stamp, work_type, dateStar, dateEnd)
+            
+            row=1
+            for kardex in kardexList:
+                worksheet.write(row, 0, kardex.item)
+                worksheet.write(row, 1, kardex.transaction_type)
+                worksheet.write(row, 2, kardex.location)
+                worksheet.write(row, 3, kardex.container_id)
+                worksheet.write(row, 4, kardex.reference_id)
+                worksheet.write(row, 5, kardex.reference_type)
+                worksheet.write(row, 6, kardex.work_type)
+                worksheet.write(row, 7, kardex.date_stamp)
+                worksheet.write(row, 8, kardex.user_stamp)
+                worksheet.write(row, 9, kardex.quantity)
+                worksheet.write(row, 10, kardex.before_sts)
+                worksheet.write(row, 11, kardex.after_sts)
+                worksheet.write(row, 12, kardex.before_on_hand_qty)
+                worksheet.write(row, 13, kardex.after_on_hand_qty)
+                worksheet.write(row, 14, kardex.before_in_transit_qty)
+                worksheet.write(row, 15, kardex.after_in_transit_qty)
+                worksheet.write(row, 16, kardex.before_suspense_qty)
+                worksheet.write(row, 17, kardex.after_suspense_qty)
+                worksheet.write(row, 18, kardex.before_alloc_qty)
+                worksheet.write(row, 19, kardex.after_alloc_qty)
+                worksheet.write(row, 20, kardex.direction)
+                row=row+1
+
+            workbook.close()
+
+            output.seek(0)
+
+            filename = 'Kardex.xlsx'
+            response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=%s' % filename
+            return response
+        except Exception as exception:
+            logger.error(f'Se presento una incidencia: {exception}')
+            return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    else:
+        print(f"No {cont}  {hourK.hour}")
+        return JsonResponse({'message': 'No'})

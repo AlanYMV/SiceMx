@@ -23,6 +23,7 @@ from sevicios_app.vo.unlock import Unlock
 from sevicios_app.vo.contenedorQc import ContenedorQc
 from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
 from sevicios_app.vo.kardex import Kardex
+from sevicios_app.vo.kardexDownload import KardexDownload
 
 logger = logging.getLogger('')
 
@@ -786,33 +787,295 @@ class WMSDao():
             if conexion!= None:
                 self.closeConexion(conexion)
 
-    def getConsultKardex(self): #ConsultKardex
+    def getConsultKardex(self,item = "",container_id = "",location = "",user_stamp = "",work_type = "", dateStart = "", dateEnd = ""): #ConsultKardex
+        if (item or container_id or location or user_stamp or work_type or dateStart or dateEnd):
+            try:
+                print("getConsultKardex")
+                print(f"item: {item}")
+                print(f"container_id: {container_id}")
+                print(f"location: {location}")
+                print(f"user_stamp: {user_stamp}")
+                print(f"work_type: {work_type}")
+                print(f"dateStart: {dateStart}")
+                print(f"dateEnd: {dateEnd}")
+                conexion=self.getConexion()
+                cursor=conexion.cursor()
+                kardexList=[]
+
+                base_query = (" SELECT TOP 50 TH.ITEM, TH.LOCATION, DATEADD(HH, -5, th.DATE_TIME_STAMP) DATE_STAMP, th.USER_STAMP,  " +
+                                "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0)) BEFORE_ON_HAND_QTY,  " +
+                                "CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY,  " +
+                                "CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY,  " +
+                                "CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY  " +
+                                "FROM TRANSACTION_HISTORY th (NOLOCK) WHERE ")
+
+                conditions = []
+                params = []
+
+                if item:
+                    conditions.append(" TH.ITEM = ? ")
+                    params.append(item)
+
+                if container_id:
+                    conditions.append(" TH.CONTAINER_ID = ? ")
+                    params.append(container_id)
+
+                if location:
+                    conditions.append(" TH.LOCATION = ? ")
+                    params.append(location)
+                
+                if user_stamp:
+                    conditions.append(" TH.USER_STAMP = ? ")
+                    params.append(user_stamp)
+
+                if work_type:
+                    conditions.append(" TH.WORK_TYPE = ? ")
+                    params.append(work_type)
+                
+                if dateStart:
+                    conditions.append(" CONVERT(VARCHAR, DATEADD(HH, -5, th.DATE_TIME_STAMP), 23) >= ? ")
+                    params.append(dateStart)
+
+                if dateEnd:
+                    conditions.append(" CONVERT(VARCHAR, DATEADD(HH, -5, th.DATE_TIME_STAMP), 23) <= ? ")
+                    params.append(dateEnd)
+
+                if conditions:
+                    base_query += " " + " AND ".join(conditions)
+                
+                base_query += (" UNION ALL " +
+                                " SELECT TOP 50 TH.ITEM, TH.LOCATION, DATEADD(HH, -5, th.DATE_TIME_STAMP) DATE_STAMP, th.USER_STAMP,  " +
+                                "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0)) BEFORE_ON_HAND_QTY,  " +
+                                "CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY,  " +
+                                "CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY,  " +
+                                "CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY  " +
+                                "FROM AR_TRANSACTION_HISTORY th (NOLOCK) WHERE ")
+
+                if conditions:
+                    base_query += " " + " AND ".join(conditions)
+
+                if item:
+                    params.append(item)
+
+                if container_id:
+                    params.append(container_id)
+
+                if location:
+                    params.append(location)
+                
+                if user_stamp:
+                    params.append(user_stamp)
+
+                if work_type:
+                    params.append(work_type)
+
+                if dateStart:
+                    params.append(dateStart)
+
+                if dateEnd:
+                    params.append(dateEnd)
+
+                base_query += " ORDER BY DATEADD(HH, -5, th.DATE_TIME_STAMP) ASC"
+                print(base_query)
+                print(params)
+
+                cursor.execute(base_query,params)
+                registros=cursor.fetchall()
+                for registro in registros:
+                    kardex=Kardex(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], registro[10])
+                    kardexList.append(kardex)
+                return kardexList
+            except Exception as exception:
+                logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+                raise exception
+            finally:
+                if conexion!= None:
+                    self.closeConexion(conexion)
+                    
+    def getDownloadKardex(self,item = "",container_id = "",location = "",user_stamp = "",work_type = "", dateStart = "", dateEnd = ""): #ConsultKardex
+        if (item or container_id or location or user_stamp or work_type or dateStart or dateEnd):
+            try:
+                conexion=self.getConexion()
+                cursor=conexion.cursor()
+                kardexList=[]
+
+                print("getDownloadKardex")
+                print(f"item: {item}")
+                print(f"container_id: {container_id}")
+                print(f"location: {location}")
+                print(f"user_stamp: {user_stamp}")
+                print(f"work_type: {work_type}")
+                print(f"dateStart: {dateStart}")
+                print(f"dateEnd: {dateEnd}")
+
+                base_query = (" SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " +
+                                "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                                "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
+                                "CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
+                                "FROM TRANSACTION_HISTORY th (NOLOCK) WHERE ")
+
+                conditions = []
+                params = []
+
+                if item:
+                    conditions.append(" TH.ITEM = ? ")
+                    params.append(item)
+
+                if container_id:
+                    conditions.append(" TH.CONTAINER_ID = ? ")
+                    params.append(container_id)
+
+                if location:
+                    conditions.append(" TH.LOCATION = ? ")
+                    params.append(location)
+                
+                if user_stamp:
+                    conditions.append(" TH.USER_STAMP = ? ")
+                    params.append(user_stamp)
+
+                if work_type:
+                    conditions.append(" TH.WORK_TYPE = ? ")
+                    params.append(work_type)
+                
+                if dateStart:
+                    conditions.append(" CONVERT(VARCHAR, DATEADD(HH, -5, th.DATE_TIME_STAMP), 23) >= ? ")
+                    params.append(dateStart)
+
+                if dateEnd:
+                    conditions.append(" CONVERT(VARCHAR, DATEADD(HH, -5, th.DATE_TIME_STAMP), 23) <= ? ")
+                    params.append(dateEnd)
+
+                if conditions:
+                    base_query += " " + " AND ".join(conditions)
+                
+                base_query += (" UNION ALL " +
+                                " SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " +
+                                "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                                "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
+                                "CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
+                                "FROM AR_TRANSACTION_HISTORY th (NOLOCK) WHERE ")
+
+                if conditions:
+                    base_query += " " + " AND ".join(conditions)
+
+                if item:
+                    params.append(item)
+
+                if container_id:
+                    params.append(container_id)
+
+                if location:
+                    params.append(location)
+                
+                if user_stamp:
+                    params.append(user_stamp)
+
+                if work_type:
+                    params.append(work_type)
+
+                if dateStart:
+                    params.append(dateStart)
+
+                if dateEnd:
+                    params.append(dateEnd)
+
+                base_query += " ORDER BY convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) ASC"
+                print(base_query)
+                print(params)
+
+                cursor.execute(base_query,params)
+                registros=cursor.fetchall()
+                for registro in registros:
+                    kardex=KardexDownload(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], registro[10], registro[11], registro[12], registro[13], registro[14], registro[15], registro[16], registro[17], registro[18], registro[19],registro[20])
+                    kardexList.append(kardex)
+                return kardexList
+            except Exception as exception:
+                logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+                raise exception
+            finally:
+                if conexion!= None:
+                    self.closeConexion(conexion)
+
+    def timeDownloadKardex(self,item = "",container_id = "",location = "",user_stamp = "",work_type = "",dateStar = "", dateEnd = ""):
         try:
-            conexion=self.getConexion()
-            cursor=conexion.cursor()
-            kardexList=[]
-            cursor.execute("SELECT TH.ITEM, TH.LOCATION,DATEADD(HH,-5,th.DATE_TIME_STAMP) DATE_STAMP, th.USER_STAMP, CAST(th.QUANTITY AS decimal(10,0)) QUANTITY " +
-                            ", CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0)) BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
-                            "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY " +
-                            ", CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY " +
-                            "FROM TRANSACTION_HISTORY th (NOLOCK) " +
-                            "WHERE TH.ITEM IN ('2016584011101','2017411023106') " +
-                            "UNION ALL " +
-                            "SELECT TH.ITEM, TH.LOCATION,DATEADD(HH,-5,th.DATE_TIME_STAMP) DATE_STAMP, th.USER_STAMP, CAST(th.QUANTITY AS decimal(10,0)) QUANTITY" +
-                            ", CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0)) BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
-                            "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY " +
-                            ", CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY " +
-                            "FROM AR_TRANSACTION_HISTORY th (NOLOCK) " +
-                            "WHERE TH.ITEM IN('2016584011101','2017411023106') " +
-                            "ORDER BY DATEADD(HH,-5,th.DATE_TIME_STAMP) ASC ")
-            registros=cursor.fetchall()
-            for registro in registros:
-                kardex=Kardex(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], registro[10])
-                kardexList.append(kardex)
-            return kardexList
+                conexion=self.getConexion()
+                cursor=conexion.cursor()
+                queryTime = ("select sum(C.contador) from ( " +
+                            "select COUNT(*) contador from TRANSACTION_HISTORY TH WHERE  " )
+                
+                conditions = []
+                params = []
+
+                if item:
+                    conditions.append(" TH.ITEM = ? ")
+                    params.append(item)
+
+                if container_id:
+                    conditions.append(" TH.CONTAINER_ID = ? ")
+                    params.append(container_id)
+
+                if location:
+                    conditions.append(" TH.LOCATION = ? ")
+                    params.append(location)
+                
+                if user_stamp:
+                    conditions.append(" TH.USER_STAMP = ? ")
+                    params.append(user_stamp)
+
+                if work_type:
+                    conditions.append(" TH.WORK_TYPE = ? ")
+                    params.append(work_type)
+                
+                if dateStar:
+                    conditions.append(" CONVERT(VARCHAR, DATEADD(HH, -5, th.DATE_TIME_STAMP), 23) >= ? ")
+                    params.append(dateStar)
+
+                if dateEnd:
+                    conditions.append(" CONVERT(VARCHAR, DATEADD(HH, -5, th.DATE_TIME_STAMP), 23) <= ? ")
+                    params.append(dateEnd)
+
+                if conditions:
+                    queryTime += " " + " AND ".join(conditions)
+
+                queryTime += ("union all " +
+                              "select COUNT(*) contador from AR_TRANSACTION_HISTORY TH WHERE ")
+                
+                if conditions:
+                    queryTime += " " + " AND ".join(conditions)
+
+                if item:
+                    params.append(item)
+
+                if container_id:
+                    params.append(container_id)
+
+                if location:
+                    params.append(location)
+                
+                if user_stamp:
+                    params.append(user_stamp)
+
+                if work_type:
+                    params.append(work_type)
+
+                if dateStar:
+                    params.append(dateStar)
+
+                if dateEnd:
+                    params.append(dateEnd)
+
+                queryTime += " ) C "
+                print(queryTime)
+                print(params)
+
+                cursor.execute(queryTime,params)
+                contador = cursor.fetchone()
+                print(contador[0])
+                return contador[0]
+
         except Exception as exception:
-            logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
-            raise exception
+                logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+                raise exception
         finally:
             if conexion!= None:
                 self.closeConexion(conexion)

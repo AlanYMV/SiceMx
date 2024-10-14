@@ -12,20 +12,84 @@ export class ColsultKardex implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    this.http.get("http://127.0.0.1:8000/servicios/consult_kardex/")
-    .subscribe((data: any) => {
-     this.kardexs=data;
-    });
   }
 
-  buscarKardex(tienda:string, fechaInicio:string, fechaFin:string){
-    this.http.get("http://127.0.0.1:8000/servicios/consult_kardex/")
-    .subscribe((data: any) => {
-     this.kardexs=data;
-    });
-  }
+        buscarKardex(item: string, container_id?: string, location?: string, user_stamp?: string, work_type?: string, fechaInicio?: string, fechaFin?: string) {
+            let url = `http://127.0.0.1:8000/servicios/consult_kardex/`;
 
+            url += `${item || ''}/`;
+            url += `${container_id || ''}/`;
+            url += `${location || ''}/`;
+            url += `${user_stamp || ''}/`;
+            url += `${work_type || ''}/`;
+            url += `${fechaInicio || ''}/`;
+            url += `${fechaFin || ''}/`;
+
+            this.http.get(url)
+                .subscribe((data: any) => {
+                    this.kardexs = data;
+                });
+          }
+
+
+
+          messageDiv = document.getElementById('message') as HTMLDivElement;
+
+          downloadKardex(item: string, container_id?: string, location?: string, user_stamp?: string, work_type?: string, fechaInicio?: string, fechaFin?: string) {
+            let url = `http://127.0.0.1:8000/servicios/download_kardex/`;
+
+            url += `${item || ''}/`;
+            url += `${container_id || ''}/`;
+            url += `${location || ''}/`;
+            url += `${user_stamp || ''}/`;
+            url += `${work_type || ''}/`;
+            url += `${fechaInicio || ''}/`;
+            url += `${fechaFin || ''}/`;
+
+            return url;
+          };
+
+          async fetchKardexDownload(url: string) {
+            try {
+              const response = await fetch(url, { method: 'GET' });
+        
+              if (!response.ok) {
+                throw new Error("Error");
+              }
+        
+              const contentType = response.headers.get("content-type");
+              if (contentType && contentType.includes("application/json")) {
+                const jsonResponse = await response.json();
+                alert("No se cumple con las condiciones \nSon mas de 10,000 registros y son antes de las 10 de la noche")
+                return;
+              }
+        
+              const blob = await response.blob();
+              const downloadUrl = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.style.display = 'none';
+              a.href = downloadUrl;
+              a.download = 'Kardex.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+              alert("Error al tratar de descargar")
+            }
+          }
+        
+          onDownloadClick(item: string, container_id: string, location: string, user_stamp: string, work_type: string, fechaInicio: string, fechaFin: string) {
+            const url = this.downloadKardex(item, container_id, location, user_stamp, work_type, fechaInicio, fechaFin);
+            this.fetchKardexDownload(url);
+          }
+        
 }
+  
+        
+        
+
+
+
 
 interface Kardex{
   item: string,
