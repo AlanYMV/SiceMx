@@ -203,8 +203,8 @@ urlpatterns = [
     path('cuadraje_file_col/', getCuadrajeFile, name='getCuadrajeFile'),
 
     #################################################STORAGE TEMPLATE#################################################
-    path('storage_templateCL/', storagesTemplatesCL, name='storagesTemplatesCL'),
-    path('descarga_storageCL/', descargaStoragesCL, name='descargaStoragesCL'),
+    path('storage_templateCol/', storagesTemplatesCOL, name='storagesTemplatesCOL'), #Modify 
+    path('descarga_storageCol/', descargaStoragesCOL, name='descargaStoragesCOL'), #Modify
     path('transacciones_pick_putCL/', getTransaccionesCL, name='getTransaccionesCL'),
     path('transacciones_pick_put_fileCL/', getTransaccionesFileCL, name='getTransaccionesFileCL'),
     
@@ -220,8 +220,8 @@ urlpatterns = [
     path('splits_col/', getSplitsCol, name='getSplitsCol'),
     path('splits_file_col/', getSplitsFileCol, name='getSplitsFileCol'),
     #path('unit_mesure_location_col/<str:location>/<str:item>', getUnitMesureLocation, name='getUnitMesureLocation'),
-    path('precios_cl/', preciosCl, name='preciosCl'),
-    path('descarga_precios_cl/', descargaPreciosCl, name='descargaPreciosCl'),
+    path('precios_col/', getPreciosCol, name='getPreciosCol'), #Modify
+    path('descarga_precios_col/', downloadPreciosCol, name='downloadPreciosCol'), #Modify
     path('tareas_abiertas_file_col/', getTareasReaSurtAbiertasFileCol, name='getTareasReaSurtAbiertasFileCol'),
     path('contenedores_file_col/', getContenedoresFileCol, name='getContenedoresFileCol'),
     path('recibos_detalle_file_cl/', getDiferenciasDetalleReciboCl, name='getDiferenciasDetalleReciboCl'),

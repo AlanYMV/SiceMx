@@ -29,6 +29,7 @@ from sevicios_app.vo.unlock import Unlock
 from sevicios_app.vo.contenedorQc import ContenedorQc
 from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
 from django.http import JsonResponse
+from sevicios_app.api.dao.SapDaoCol import *
 
 logger = logging.getLogger('')
 
@@ -4951,3 +4952,157 @@ def getKardexDownload(request,item = "",container_id = "",location = "",user_sta
     else:
         print(f"No {cont}  {hourK.hour}")
         return JsonResponse({'message': 'No'})
+
+#New Colombia 
+
+@api_view(['GET'])
+def storagesTemplatesCOL(request):
+    try:
+        sapDaoCol = SapDaoCol()
+        storagesTemplatesList=sapDaoCol.getStorageTemplatesCol('100')
+        serializer=StorageTemplateSerializer(storagesTemplatesList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def descargaStoragesCOL(request):
+    try:
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'SKU')
+        worksheet.write(0, 1, 'Storage Template')
+        worksheet.write(0, 2, 'Grupo Logistico')
+        worksheet.write(0, 3, 'Unidad')
+        worksheet.write(0, 4, 'Familia')
+        worksheet.write(0, 5, 'Subfamilia')
+        worksheet.write(0, 6, 'Subsubfamilia')
+        worksheet.write(0, 7, 'uSysCat4')
+        worksheet.write(0, 8, 'uSysCat5')
+        worksheet.write(0, 9, 'uSysCat6')
+        worksheet.write(0, 10, 'uSysCat7')
+        worksheet.write(0, 11, 'uSysCat8')
+        worksheet.write(0, 12, 'Height')
+        worksheet.write(0, 13, 'Width')
+        worksheet.write(0, 14, 'Length')
+        worksheet.write(0, 15, 'Volume')
+        worksheet.write(0, 16, 'Weight')
+        sapDaoCol = SapDaoCol()
+        storagesTemplatesList=sapDaoCol.getStorageTemplatesCol('')
+
+        row=1
+        for storageTemplate in storagesTemplatesList:
+            worksheet.write(row, 0, storageTemplate.itemCode)
+            worksheet.write(row, 1, storageTemplate.storageTemplate)
+            worksheet.write(row, 2, storageTemplate.grupoLogistico)
+            worksheet.write(row, 3, storageTemplate.salUnitMsr)
+            worksheet.write(row, 4, storageTemplate.familia)
+            worksheet.write(row, 5, storageTemplate.subFamilia)
+            worksheet.write(row, 6, storageTemplate.subSubFamilia)
+            worksheet.write(row, 7, storageTemplate.uSysCat4)
+            worksheet.write(row, 8, storageTemplate.uSysCat5)
+            worksheet.write(row, 9, storageTemplate.uSysCat6)
+            worksheet.write(row, 10, storageTemplate.uSysCat7)
+            worksheet.write(row, 11, storageTemplate.uSysCat8)
+            worksheet.write(row, 12, storageTemplate.height)
+            worksheet.write(row, 13, storageTemplate.width)
+            worksheet.write(row, 14, storageTemplate.length)
+            worksheet.write(row, 15, storageTemplate.volume)
+            worksheet.write(row, 16, storageTemplate.weight)
+            row=row+1
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'StorageTemplate.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getPreciosCol(request):
+    try:
+        sapDaoCol=SapDaoCol()
+        preciosList=sapDaoCol.getPreciosCol('100')
+
+        serializer=PreciosSerializerCol(preciosList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def downloadPreciosCol(request):
+    try:
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'Item')
+        worksheet.write(0, 1, 'Codigos de Barras')
+        worksheet.write(0, 2, 'Categoria')
+        worksheet.write(0, 3, 'Subcategoria')
+        worksheet.write(0, 4, 'Clase')
+        worksheet.write(0, 5, 'Descripción')
+        worksheet.write(0, 6, 'Storage Template')
+        worksheet.write(0, 7, 'Storage Template User')
+        worksheet.write(0, 8, 'Licencia')
+        worksheet.write(0, 9, 'Height')
+        worksheet.write(0, 10, 'Width')
+        worksheet.write(0, 11, 'Length')
+        worksheet.write(0, 12, 'Volume')
+        worksheet.write(0, 13, 'Weight')
+        worksheet.write(0, 14, 'Estandar Sin Ivan')
+        worksheet.write(0, 15, 'Estandar Con Ivan')
+        worksheet.write(0, 16, 'Adicional Sin Ivan')
+        worksheet.write(0, 17, 'Adicional Con Ivan')
+        worksheet.write(0, 18, 'Aeropuerto Sin Ivan')
+        worksheet.write(0, 19, 'Aeropuerto Con Ivan')
+        worksheet.write(0, 20, 'Proveedor')
+
+        sapDaoCol=SapDaoCol()
+        preciosList=sapDaoCol.getPreciosCol('')
+
+        row=1
+        for precio in preciosList:
+            worksheet.write(row, 0, precio.itemCode)
+            worksheet.write(row, 1, precio.codigoBarras)
+            worksheet.write(row, 2, precio.categoria)
+            worksheet.write(row, 3, precio.subcategoria)
+            worksheet.write(row, 4, precio.clase)
+            worksheet.write(row, 5, precio.itemName)
+            worksheet.write(row, 6, precio.storageTemplate)
+            worksheet.write(row, 7, precio.stUsr)
+            worksheet.write(row, 8, precio.licencia)
+            worksheet.write(row, 9, precio.height)
+            worksheet.write(row, 10, precio.width)
+            worksheet.write(row, 11, precio.length)
+            worksheet.write(row, 12, precio.volume)
+            worksheet.write(row, 13, precio.weight)
+            worksheet.write(row, 14, precio.estandarSinIva)
+            worksheet.write(row, 15, precio.estandarConIva)
+            worksheet.write(row, 16, precio.adicionalSinIva)
+            worksheet.write(row, 17, precio.adicionalConIva)
+            worksheet.write(row, 18, precio.aeropuertoSinIva)
+            worksheet.write(row, 19, precio.aeropuertoConIva)
+            worksheet.write(row, 20, precio.proveedor)
+            row=row+1
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'Precios.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
