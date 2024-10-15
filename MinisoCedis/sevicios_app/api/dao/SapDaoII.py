@@ -8,6 +8,7 @@ from sevicios_app.vo.precio import Precio
 from sevicios_app.vo.infoPedidoSinTr import InfoPedidoSinTr
 from sevicios_app.vo.pedidoSapPlaneacion import PedidoSapPlaneacion
 from sevicios_app.vo.respuesta import Respuesta
+from sevicios_app.vo.huellaDigital import HuellaDigital
 
 logger = logging.getLogger('')
 
@@ -546,6 +547,36 @@ class SAPDaoII():
                                 registro[10], registro[11], registro[12], registro[13], registro[14], registro[15], registro[16], registro[17])
                     ventasList.append(venta)
             return ventasList
+        except Exception as exception:
+            logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
+            raise exception
+        finally:
+            if conexion!= None:
+                self.closeConexion(conexion)
+
+    def getHuellaDigital(self):
+        try:
+            conexion=self.getConexion()
+            cursor=conexion.cursor()
+            respuestaList=[]
+            cursor.execute('SELECT  T0."frozenFor", T0."ItemCode", T0."ItemName", T1."ItmsGrpNam" as "Familia", T2."Name" as "SubFamilia",  ' +
+                            'T3."Name" as "SubSubFamilia",T0."U_SYS_CAT4" as "Fragil", T0."U_SYS_CAT5" as "Movimiento", T0."U_SYS_CAT6" as "AltoValor",  ' +
+                            'T0."U_SYS_CAT7" as "Bolsa", T0."U_SYS_CAT8" as "Flujo",T4."BcdCode", T5."UomEntry",T5."Height1", T5."Width1",  ' +
+                            'T5."Length1",T5."Volume",T6."UgpCode", t5."Weight1",T0."U_SYS_GUML" as "Grupo de UM Logistico" ' +
+                            'FROM "SBOMINISO"."OITM"  T0 INNER JOIN "SBOMINISO"."OITB"  T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod"  ' +
+                            'INNER JOIN "SBOMINISO"."@SUBFAMILIA"  T2 ON T0."U_SUBFAMILIA" = T2."Code"  ' +
+                            'INNER JOIN "SBOMINISO"."@SUBSUBFAMILIA"  T3 ON T0."U_SUBSUBFAMILIA" = T3."Code"  ' +
+                            'INNER JOIN "SBOMINISO"."OBCD" T4 ON T0."ItemCode" = T4."ItemCode"  ' +
+                            'INNER JOIN "SBOMINISO"."ITM12" T5 ON T0."ItemCode" = T5."ItemCode" ' +
+                            'INNER JOIN "SBOMINISO"."OUGP" T6 ON  T6."UgpEntry" = T0."UgpEntry" ' +
+                            'INNER JOIN "SBOMINISO"."UGP1" T7 ON T7."UgpEntry" = T0."UgpEntry" and T7."UomEntry" = T5."UomEntry" ' +
+                            'WHERE T5."UomType" =\'P\' ')
+            
+            registros=cursor.fetchall()
+            for registro in registros:
+                huella=HuellaDigital(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], registro[10], registro[11], registro[12], registro[13], registro[14], registro[15], registro[16], registro[17], registro[18], registro[19])
+                respuestaList.append(huella)
+            return respuestaList
         except Exception as exception:
             logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
             raise exception

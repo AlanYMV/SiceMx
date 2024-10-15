@@ -40,8 +40,8 @@ class SapDaoCol():
                             'T0."U_SYS_GUML"  as "GrupoLogistico", '+
                             'T0."SalUnitMsr", '+
                             'T2."ItmsGrpNam" as "Familia", '+
-                            'SF."Name" as "SubFamilia", '+
-                            'SSF."Name" as "SubSubFamilia", '+
+                            'T0."U_SUBFAMILIA" as "SubFamilia", '+
+                            'T0."U_SUBSUBFAMILIA" as "SubSubFamilia", '+
                             'T0."U_SYS_CAT4", '+
                             'T0."U_SYS_CAT5", '+
                             'T0."U_SYS_CAT6", '+
@@ -56,7 +56,8 @@ class SapDaoCol():
                             'INNER JOIN "SBO_MINISO_COLOMBIA"."OUGP"  T1 ON T0."UgpEntry" = T1."UgpEntry" '+
                             'INNER JOIN "SBO_MINISO_COLOMBIA"."OITB" T2 ON T0."ItmsGrpCod" = T2."ItmsGrpCod" '+
                             'LEFT JOIN "SBO_MINISO_COLOMBIA"."@SUBSUBFAMILIA" SSF ON T0."U_SUBSUBFAMILIA" = SSF."Code" '+
-                            'LEFT JOIN "SBO_MINISO_COLOMBIA"."@SUBFAMILIA" SF ON T0."U_SUBFAMILIA" = SF."Code"')
+                            'LEFT JOIN "SBO_MINISO_COLOMBIA"."@SUBFAMILIA" SF ON T0."U_SUBFAMILIA" = SF."Code" ' + 
+                            'ORDER BY T0."ItemCode" ')
             registros=cursor.fetchall()
             for registro in registros:
                 storageTemplate=StorageTemplate(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], registro[10], 
