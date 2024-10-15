@@ -84,6 +84,8 @@ urlpatterns = [
     path('item_container_qc/', getdownloadItemContainerQc, name='getdownloadItemContainerQc'),
     re_path(r'^consult_kardex/?(?P<item>[^/]*)/?(?P<container_id>[^/]*)/?(?P<location>[^/]*)/?(?P<user_stamp>[^/]*)/?(?P<work_type>[^/]*)/?(?P<dateStar>[^/]*)/?(?P<dateEnd>[^/]*)/?$', getConsultaKardex, name='getConsultaKardex'),
     re_path(r'^download_kardex/?(?P<item>[^/]*)/?(?P<container_id>[^/]*)/?(?P<location>[^/]*)/?(?P<user_stamp>[^/]*)/?(?P<work_type>[^/]*)/?(?P<dateStar>[^/]*)/?(?P<dateEnd>[^/]*)/?$', getKardexDownload, name='getKardexDownload'),
+    path('huella_digital/', getHuellaDigital, name='getHuellaDigital'),
+    path('download_huella_digital/', downloadHuellaDigital, name='downloadHuellaDigital'),
     #^
     path('cantidad_cajas/<str:item>', getCantidadCajas, name='getCantidadCajas'),
     path('prioritarios/<str:container>', getPorcentajeSKUsPrioritarios, name='getPorcentajeSKUsPrioritarios'),

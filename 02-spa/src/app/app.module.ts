@@ -42,6 +42,7 @@ import { PedimentoComponent } from './components/pedimento/pedimento.component';
 import { PesoContenedorComponent } from './components/peso-contenedor/peso-contenedor.component';
 import { ConfirmPending } from './components/confirmacion-pendientes/confirmacion-pendientes.component';
 import { ColsultKardex } from './components/kardex/consult-kardex.component';
+import { ConsultHuella } from './components/huella-digital/huella-digital.component';
 
 
 @NgModule({
@@ -77,7 +78,8 @@ import { ColsultKardex } from './components/kardex/consult-kardex.component';
     PedimentoComponent,
     PesoContenedorComponent,
     ConfirmPending,
-    ColsultKardex
+    ColsultKardex,
+    ConsultHuella
   ],
   imports: [
     BrowserModule,

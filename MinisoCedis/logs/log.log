@@ -444,3 +444,6 @@
 The serializer field might be named incorrectly and not match any attribute or key on the `PrecioCol` instance.
 Original exception text was: 'PrecioCol' object has no attribute 'aeropuestoConIva'.
 2024-10-15 10:13:59,355 [ERROR] - Se presento una incidencia: 'PrecioCol' object has no attribute 'precioSinIva'
+2024-10-15 13:09:14,467 [ERROR] - Se presento una incidencia: Got AttributeError when attempting to get a value for field `codigoBarras` on serializer `PreciosSerializerCol`.
+The serializer field might be named incorrectly and not match any attribute or key on the `HuellaDigital` instance.
+Original exception text was: 'HuellaDigital' object has no attribute 'codigoBarras'.

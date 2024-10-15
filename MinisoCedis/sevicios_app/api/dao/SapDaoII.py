@@ -554,29 +554,32 @@ class SAPDaoII():
             if conexion!= None:
                 self.closeConexion(conexion)
 
-    def getHuellaDigital(self):
+    def getHuellaDigitalConsult(self, numRegistros):
         try:
             conexion=self.getConexion()
             cursor=conexion.cursor()
-            respuestaList=[]
-            cursor.execute('SELECT  T0."frozenFor", T0."ItemCode", T0."ItemName", T1."ItmsGrpNam" as "Familia", T2."Name" as "SubFamilia",  ' +
+            huellaList=[]
+            registros=''
+            if numRegistros:
+                registros='TOP '+numRegistros
+            cursor.execute('SELECT ' + registros +' T0."frozenFor", T0."ItemCode", T0."ItemName", T1."ItmsGrpNam" as "Familia", T2."Name" as "SubFamilia",  ' +
                             'T3."Name" as "SubSubFamilia",T0."U_SYS_CAT4" as "Fragil", T0."U_SYS_CAT5" as "Movimiento", T0."U_SYS_CAT6" as "AltoValor",  ' +
-                            'T0."U_SYS_CAT7" as "Bolsa", T0."U_SYS_CAT8" as "Flujo",T4."BcdCode", T5."UomEntry",T5."Height1", T5."Width1",  ' +
-                            'T5."Length1",T5."Volume",T6."UgpCode", t5."Weight1",T0."U_SYS_GUML" as "Grupo de UM Logistico" ' +
+                            'T0."U_SYS_CAT7" as "Bolsa", T0."U_SYS_CAT8" as "Flujo",T4."BcdCode", T5."U_SYS_UNID", ' +
+                            'T5."U_SYS_ALTO", T5."U_SYS_ANCH", T5."U_SYS_LONG", T5."U_SYS_VOLU", T0."U_SYS_GUML" as "Grupo de UM Logistico", ' +
+                            'T5."U_SYS_PESO", T0."U_SYS_GUMC" as "Grupo de UM Compras" ' +
                             'FROM "SBOMINISO"."OITM"  T0 INNER JOIN "SBOMINISO"."OITB"  T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod"  ' +
                             'INNER JOIN "SBOMINISO"."@SUBFAMILIA"  T2 ON T0."U_SUBFAMILIA" = T2."Code"  ' +
                             'INNER JOIN "SBOMINISO"."@SUBSUBFAMILIA"  T3 ON T0."U_SUBSUBFAMILIA" = T3."Code"  ' +
                             'INNER JOIN "SBOMINISO"."OBCD" T4 ON T0."ItemCode" = T4."ItemCode"  ' +
-                            'INNER JOIN "SBOMINISO"."ITM12" T5 ON T0."ItemCode" = T5."ItemCode" ' +
-                            'INNER JOIN "SBOMINISO"."OUGP" T6 ON  T6."UgpEntry" = T0."UgpEntry" ' +
-                            'INNER JOIN "SBOMINISO"."UGP1" T7 ON T7."UgpEntry" = T0."UgpEntry" and T7."UomEntry" = T5."UomEntry" ' +
-                            'WHERE T5."UomType" =\'P\' ')
+                            'INNER JOIN "SBOMINISO"."@SYS_DIMENSIONES" T5 ON T0."ItemCode" = T5."U_SYS_CODA" ' +
+                            'WHERE T5."U_SYS_TIPO" = \'L\' ')
             
             registros=cursor.fetchall()
             for registro in registros:
-                huella=HuellaDigital(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], registro[10], registro[11], registro[12], registro[13], registro[14], registro[15], registro[16], registro[17], registro[18], registro[19])
-                respuestaList.append(huella)
-            return respuestaList
+                huella=HuellaDigital(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8], registro[9], 
+                                     registro[10], registro[11], registro[12], registro[13], registro[14], registro[15], registro[16], registro[17], registro[18], registro[19])
+                huellaList.append(huella)
+            return huellaList
         except Exception as exception:
             logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
             raise exception

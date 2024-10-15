@@ -30,6 +30,7 @@ import { PesoContenedorComponent } from "./components/peso-contenedor/peso-conte
 import { DownloadsContainerQc } from "./components/container-qc/container-qc.component";
 import { ConfirmPending } from "./components/confirmacion-pendientes/confirmacion-pendientes.component";
 import { ColsultKardex } from "./components/kardex/consult-kardex.component";
+import { ConsultHuella } from "./components/huella-digital/huella-digital.component";
 
 const APP_ROUTES : Routes = [
     { path:'home', component: HomeComponent},
@@ -63,6 +64,7 @@ const APP_ROUTES : Routes = [
     { path:'containerQc',component: DownloadsContainerQc},
     { path:'confirmacion-pendientes', component: ConfirmPending},
     { path:'consult-kardex', component: ColsultKardex},
+    { path:'huella-digital', component: ConsultHuella},
     { path:'**', pathMatch: 'full', redirectTo: 'home'}
 ];
 

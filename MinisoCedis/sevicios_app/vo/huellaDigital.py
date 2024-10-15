@@ -1,6 +1,6 @@
 class HuellaDigital():
 
-    def __init__(self, frozenFor, itemCode, itemName, familia, subFamilia, subSubFamilia, fragil, movimiento, altoValor, bolsa, flujo, bcdCode, uomEntry, height1, width1, length1,volume,ugpCode, weight1,grupoUMLogistico):
+    def __init__(self, frozenFor, itemCode, itemName, familia, subFamilia, subSubFamilia, fragil, movimiento, altoValor, bolsa, flujo, bcdCode, u_sys_unid, u_sys_alto, u_sys_anch, u_sys_long, u_sys_volu, grupoUMLogistico, u_sys_peso, grupoUMCompas):
         self.frozenFor =  frozenFor
         self.itemCode =  itemCode
         self.itemName =  itemName
@@ -13,11 +13,11 @@ class HuellaDigital():
         self.bolsa =  bolsa
         self.flujo =  flujo
         self.bcdCode =  bcdCode
-        self.uomEntry =  uomEntry
-        self.height1 =  height1
-        self.width1 =  width1
-        self.length1 =  length1
-        self.volume =  volume
-        self.ugpCode =  ugpCode
-        self.weight1 =  weight1
+        self.u_sys_unid = u_sys_volu
+        self.u_sys_alto = u_sys_long
+        self.u_sys_anch = u_sys_anch
+        self.u_sys_long = u_sys_alto
+        self.u_sys_volu = u_sys_unid
         self.grupoUMLogistico = grupoUMLogistico
+        self.u_sys_peso = u_sys_peso
+        self.grupoUMCompas = grupoUMCompas

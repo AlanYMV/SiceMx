@@ -23,13 +23,9 @@ from sevicios_app.api.dao.TraficoDao import TraficoDao
 from sevicios_app.api.dao.WmsCLDao import WMSCLDao
 from sevicios_app.api.dao.WmsCOLDao import WMSCOLDao
 from sevicios_app.api.serializers import *
-from sevicios_app.vo.cuadraje import Cuadraje
-from sevicios_app.vo.shorpick import Shorpick
-from sevicios_app.vo.unlock import Unlock
-from sevicios_app.vo.contenedorQc import ContenedorQc
-from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
 from django.http import JsonResponse
 from sevicios_app.api.dao.SapDaoCol import *
+from sevicios_app.api.dao.SapDaoII import *
 
 logger = logging.getLogger('')
 
@@ -5099,6 +5095,85 @@ def downloadPreciosCol(request):
         output.seek(0)
 
         filename = 'Precios.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getHuellaDigital(request):
+    try:
+        sapDaoII=SAPDaoII()
+        huellaList=sapDaoII.getHuellaDigitalConsult('100')
+
+        serializer=HuellaDigitalSerializer(huellaList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def downloadHuellaDigital(request):
+    try:
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'FrozenFor')
+        worksheet.write(0, 1, 'ItemCode')
+        worksheet.write(0, 2, 'ItemName')
+        worksheet.write(0, 3, 'Familia')
+        worksheet.write(0, 4, 'SubFamilia')
+        worksheet.write(0, 5, 'SubSubFamilia')
+        worksheet.write(0, 6, 'Fragil')
+        worksheet.write(0, 7, 'Movimiento')
+        worksheet.write(0, 8, 'AltoValor')
+        worksheet.write(0, 9, 'Bolsa')
+        worksheet.write(0, 10, 'Flujo')
+        worksheet.write(0, 11, 'BcdCode')
+        worksheet.write(0, 12, 'Volume')
+        worksheet.write(0, 13, 'Height')
+        worksheet.write(0, 14, 'Width')
+        worksheet.write(0, 15, 'Lenght')
+        worksheet.write(0, 16, 'Unidad Medida')
+        worksheet.write(0, 17, 'GrupoUMLogistico')
+        worksheet.write(0, 18, 'Weight')
+        worksheet.write(0, 19, 'GrupoUMCompas')
+
+        sapDaoII = SAPDaoII()
+        huellas=sapDaoII.getHuellaDigitalConsult('')
+
+        row=1
+        for huella in huellas:
+            worksheet.write(row, 0, huella.frozenFor)
+            worksheet.write(row, 1, huella.itemCode)
+            worksheet.write(row, 2, huella.itemName)
+            worksheet.write(row, 3, huella.familia)
+            worksheet.write(row, 4, huella.subFamilia)
+            worksheet.write(row, 5, huella.subSubFamilia)
+            worksheet.write(row, 6, huella.fragil)
+            worksheet.write(row, 7, huella.movimiento)
+            worksheet.write(row, 8, huella.altoValor)
+            worksheet.write(row, 9, huella.bolsa)
+            worksheet.write(row, 10, huella.flujo)
+            worksheet.write(row, 11, huella.bcdCode)
+            worksheet.write(row, 12, huella.u_sys_unid)
+            worksheet.write(row, 13, huella.u_sys_alto)
+            worksheet.write(row, 14, huella.u_sys_anch)
+            worksheet.write(row, 15, huella.u_sys_long)
+            worksheet.write(row, 16, huella.u_sys_volu)
+            worksheet.write(row, 17, huella.grupoUMLogistico)
+            worksheet.write(row, 18, huella.u_sys_peso)
+            worksheet.write(row, 19, huella.grupoUMCompas)
+            row=row+1
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'Huella_Digital.xlsx'
         response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
 

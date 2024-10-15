@@ -1,0 +1,35 @@
+<h1>Huella Digital</h1>
+<hr>
+<div>
+    <a href="http://127.0.0.1:8000/servicios/download_huella_digital/" class="btn btn-primary">Descargar Huella Digital</a>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Activo</th>
+            <th scope="col">Item</th>
+            <th scope="col">Descripcion</th>
+            <th scope="col">Familia</th>
+            <th scope="col">Codigo de barras</th>
+            <th scope="col">Altura</th>
+            <th scope="col">Anchura</th>
+            <th scope="col">Longitud</th>
+            <th scope="col">Peso</th>
+            <th scope="col">Unidad de Medida</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let huella of huellas">
+            <td>{{huella.frozenFor}}</td>
+            <td>{{huella.itemCode}}</td>
+            <td>{{huella.itemName}}</td>
+            <td>{{huella.familia}}</td>
+            <td>{{huella.bcdCode}}</td>
+            <td>{{huella.u_sys_alto}}</td>
+            <td>{{huella.u_sys_anch}}</td>
+            <td>{{huella.u_sys_long}}</td>
+            <td>{{huella.u_sys_peso}}</td>
+            <td>{{huella.u_sys_volu}}</td>
+        </tr>
+    </tbody>
+</table>
