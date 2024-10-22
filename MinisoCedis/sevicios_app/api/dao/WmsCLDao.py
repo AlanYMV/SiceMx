@@ -489,7 +489,8 @@ class WMSCLDao():
                 conexion=self.getConexion()
                 cursor=conexion.cursor()
                 containerList=[]
-                cursor.execute("select CONTAINER_ID, WEIGHT, USER_DEF1, TOTAL_FREIGHT_CHARGE, BASE_FREIGHT_CHARGE, FREIGHT_DISCOUNT, ACCESSORIAL_CHARGE, QC_ASSIGNMENT_ID, QC_STATUS, (select convert(nvarchar(MAX), activity_date_time, 20) from TRANSACTION_HISTORY th where th.CONTAINER_ID =SC.CONTAINER_ID and TRANSACTION_TYPE=210) fecha "+
+                cursor.execute("select CONTAINER_ID, WEIGHT, USER_DEF1, TOTAL_FREIGHT_CHARGE, BASE_FREIGHT_CHARGE, FREIGHT_DISCOUNT, ACCESSORIAL_CHARGE, QC_ASSIGNMENT_ID, QC_STATUS, " +
+                               "(select convert(nvarchar(MAX), DATEADD(HH,-6, activity_date_time), 20) from TRANSACTION_HISTORY th where th.CONTAINER_ID =SC.CONTAINER_ID and TRANSACTION_TYPE=210) fecha "+ #Modify -6 hour
                                 "from SHIPPING_CONTAINER SC " +
                                 "where SC.FREIGHT_DISCOUNT>0 and SC.CONTAINER_ID is not null and SC.QC_ASSIGNMENT_ID is not null")
                 registros=cursor.fetchall()

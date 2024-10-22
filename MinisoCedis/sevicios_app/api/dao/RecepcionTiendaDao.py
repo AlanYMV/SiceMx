@@ -10,6 +10,7 @@ from sevicios_app.vo.pedidoPorCerrar import PedidoPorCerrar
 from sevicios_app.vo.reciboTienda import ReciboTienda
 from sevicios_app.vo.tiendaCorreo import TiendaCorreo
 from sevicios_app.vo.confirmationPending import ConfirmationPending
+from sevicios_app.vo.auditoriaTienda import AuditoriaTienda
 
 logger = logging.getLogger('')
 
@@ -452,3 +453,44 @@ class RecepcionTiendaDao():
             finally:
                 if conexion!= None:
                     self.closeConexion(conexion)
+
+    def getAuditoriaTienda(self, tienda, fechaInicio, fechaFin):
+        try:
+            conexion=self.getConexion()
+            cursor=conexion.cursor()
+            auditoriaTiendaList=[]
+            if tienda.startswith('Todas'):
+                cursor.execute("select soli.SolicitudWarehouseTo, soli.SolicitudID, " +
+                               "soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
+                                "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados " +
+                                "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion " +
+                                "from Solicitud sol where sol.SolicitudStatus=4) soli " +
+                                "where (select AlmacenCve from Almacen where AlmacenCve like '%DI' and AlmacenEstatus = 'N' and soli.SolicitudWarehouseTo = AlmacenCve) = soli.SolicitudWarehouseTo " +
+                                "and format(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? and format(soli.fechaRecepcion, 'yyyy-MM-dd') <=? " +
+                                "order by soli.SolicitudNoTransporte desc",  (fechaInicio, fechaFin))
+            else:
+                cursor.execute("select soli.SolicitudWarehouseTo,  soli.SolicitudID, " +
+                               "soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
+                                "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados " +
+                                "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion " +
+                                "from Solicitud sol where sol.SolicitudWarehouseTo=? and sol.SolicitudStatus=4) soli " +
+                                "where format(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? and format(soli.fechaRecepcion, 'yyyy-MM-dd') <=? " +
+                                "order by soli.SolicitudNoTransporte desc", (tienda, fechaInicio, fechaFin))
+            registros=cursor.fetchall()
+            for registro in registros:
+                if registro[4] !=0:
+                    # print(registro[4])
+                    porcentaje = str(round(registro[5]/registro[4]*100,2)) + " %"
+                    print(porcentaje)
+                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], porcentaje)
+                    auditoriaTiendaList.append(auditoriaTienda)
+                else:
+                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], 'NA')
+                    auditoriaTiendaList.append(auditoriaTienda)
+            return auditoriaTiendaList
+        except Exception as exception:
+            logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
+            raise exception
+        finally:
+            if conexion!= None:
+                self.closeConexion(conexion)

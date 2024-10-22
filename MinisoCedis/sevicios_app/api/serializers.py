@@ -626,3 +626,11 @@ class HuellaDigitalSerializer(serializers.Serializer):
     grupoUMLogistico = serializers.CharField()
     u_sys_peso = serializers.CharField()
     grupoUMCompas = serializers.CharField()
+
+class AuditoriaTiendaClSerializerCl(serializers.Serializer): #Remove pedido
+        tienda=serializers.CharField() 
+        carga=serializers.CharField()
+        fechaRecepcion=serializers.CharField()
+        totalContenedores=serializers.CharField()
+        contenedoresAuditados=serializers.CharField()
+        porcentaje=serializers.CharField()

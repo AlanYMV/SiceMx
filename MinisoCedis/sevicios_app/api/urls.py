@@ -183,26 +183,26 @@ urlpatterns = [
 
     #################################################Colombia####################################################
     #################################################Inventario#################################################
-    path('inventario_col_items/', inventarioItems, name='inventarioItems'),
-    path('inventario_col_wmserp/', inventarioWmsErp, name='inventarioWmsErp'),
-    path('inventario_col_wms/', inventarioWms, name='inventarioWms'),
-    path('top_one_hundred_col/', topOneHundred, name='topOneHundred'),
-    path('inventario_col_detalle_wmserp/<str:item>/', inventarioDetalleErpWms, name='inventarioDetalleErpWms'),
-    path('inventario_col_file/', inventarioFile, name='inventarioFile'),
-    path('top_one_hundred_col_file/', topOneHundredFile, name='topOneHundredFile'),
-    path('execute_inventario_col/', executeInvetarioCedis, name='executeInvetarioCedis'),
+    path('inventario_col_items/', inventarioItemsCol, name='inventarioItemsCol'), # /
+    path('inventario_col_wmserp/', inventarioWmsErpCol, name='inventarioWmsErpCol'), # /
+    path('inventario_col_wms/', inventarioWmsCol, name='inventarioWmsCol'), # /
+    path('top_one_hundred_col/', topOneHundredCol, name='topOneHundredCol'), # /
+    path('inventario_col_detalle_wmserp/<str:item>/', inventarioDetalleErpWmsCol, name='inventarioDetalleErpWmsCol'), # /
+    path('inventario_col_file/', inventarioFileCol, name='inventarioFile'), # /
+    path('top_one_hundred_col_file/', topOneHundredFileCol, name='topOneHundredFileCol'), # /
+    path('execute_inventario_col/', executeInvetarioCedisCol, name='executeInvetarioCedisCol'), # /
     #################################################Cuadraje#################################################
-    path('cuadraje_col/', getCuadraje, name='getCuadraje'),
-    path('pendiente_semana_col/', getPendienteSemana, name='getPendienteSemana'),
-    path('execute_cuadraje_col/', executeCuadraje, name='executeCuadraje'),
-    path('insert_sapreceipt_col/<str:idReceipt>/', insertSapReceiptVal, name='insertSapReceiptVal'),
-    path('insert_sapshipment_col/<str:idShipment>/', insertSapShipmentVal, name='insertSapShipmentVal'),
-    path('update_diferencias_col/', executeUpdateDiferencias, name='executeUpdateDiferencias'),
-    path('recibo_sap_col/<str:recibos>/', getReciboSap, name='getReciboSap'),
-    path('recibo_sap_valor_col/<str:valor>/', getReciboSapByValor, name='getReciboSapByValor'),
-    path('pedido_sap_col/<str:pedidos>/', getPedidoSap, name='getPedidoSap'),
-    path('pedido_sap_valor_col/<str:valor>/', getPedidoSapByValor, name='getPedidoSapByValor'),
-    path('cuadraje_file_col/', getCuadrajeFile, name='getCuadrajeFile'),
+    path('cuadraje_col/', getCuadrajeCol, name='getCuadrajeCol'), # /
+    path('pendiente_semana_col/', getPendienteSemanaCol, name='getPendienteSemanaCol'), # /
+    path('execute_cuadraje_col/', executeCuadrajeCol, name='executeCuadrajeCol'), # /
+    path('insert_sapreceipt_col/<str:idReceipt>/', insertSapReceiptValCol, name='insertSapReceiptValCol'), # /
+    path('insert_sapshipment_col/<str:idShipment>/', insertSapShipmentValCol, name='insertSapShipmentValCol'), # /
+    path('update_diferencias_col/', executeUpdateDiferenciasCol, name='executeUpdateDiferenciasCol'), # /
+    path('recibo_sap_col/<str:recibos>/', getReciboSapCol, name='getReciboSapCol'), # /
+    path('recibo_sap_valor_col/<str:valor>/', getReciboSapByValorCol, name='getReciboSapByValorCol'), # /
+    path('pedido_sap_col/<str:pedidos>/', getPedidoSapCol, name='getPedidoSapCol'), # /
+    path('pedido_sap_valor_col/<str:valor>/', getPedidoSapByValorCol, name='getPedidoSapByValorCol'), # /
+    path('cuadraje_file_col/', getCuadrajeFileCol, name='getCuadrajeFileCol'), # /
 
     #################################################STORAGE TEMPLATE#################################################
     path('storage_templateCol/', storagesTemplatesCOL, name='storagesTemplatesCOL'), #Modify 
@@ -215,15 +215,15 @@ urlpatterns = [
     path('lineas_ola_file_cl/<str:ola>', getLineasOlaFileCl, name='getLineasOlaFileCl'),
     path('ola_pza_cont_cl/', getOlaPiezasContenedoresCl, name='getOlaPiezasContenedoresCl'),
     path('ola_pza_cont_file_cl/', getOlaPiezasContenedoresFileCl, name='getOlaPiezasContenedoresFileCl'),
-    path('wave_analysis_cl/<str:wave>', getWaveAnalysisCl, name='getWaveAnalysisCl'),
-    path('wave_analysis_file_cl/<str:wave>', getWaveAnalysisFileCl, name='getWaveAnalysisFileCl'),
+    path('wave_analysis_col/<str:wave>', getWaveAnalysisCol, name='getWaveAnalysisCol'),
+    path('wave_analysis_file_col/<str:wave>', getWaveAnalysisFileCol, name='getWaveAnalysisFileCol'),
 
     #################################################OTROS#################################################
     path('splits_col/', getSplitsCol, name='getSplitsCol'),
     path('splits_file_col/', getSplitsFileCol, name='getSplitsFileCol'),
     #path('unit_mesure_location_col/<str:location>/<str:item>', getUnitMesureLocation, name='getUnitMesureLocation'),
-    path('precios_col/', getPreciosCol, name='getPreciosCol'), #Modify
-    path('descarga_precios_col/', downloadPreciosCol, name='downloadPreciosCol'), #Modify
+    path('precios_col/', getPreciosCol, name='getPreciosCol'), 
+    path('descarga_precios_col/', downloadPreciosCol, name='downloadPreciosCol'), 
     path('tareas_abiertas_file_col/', getTareasReaSurtAbiertasFileCol, name='getTareasReaSurtAbiertasFileCol'),
     path('contenedores_file_col/', getContenedoresFileCol, name='getContenedoresFileCol'),
     path('recibos_detalle_file_cl/', getDiferenciasDetalleReciboCl, name='getDiferenciasDetalleReciboCl'),

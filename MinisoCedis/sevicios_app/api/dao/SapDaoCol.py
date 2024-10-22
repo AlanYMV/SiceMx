@@ -7,6 +7,7 @@ from sevicios_app.vo.storageTemplate import StorageTemplate
 from sevicios_app.vo.precioCol import PrecioCol
 from sevicios_app.vo.infoPedidoSinTr import InfoPedidoSinTr
 from sevicios_app.vo.pedidoSapPlaneacion import PedidoSapPlaneacion
+from sevicios_app.vo.carga import Carga
 
 logger = logging.getLogger('')
 
@@ -73,9 +74,7 @@ class SapDaoCol():
 
     def getPreciosCol(self, numRegistros):
         try:
-            print('Entro a getPrecios')
             conexion=self.getConexion()
-            print('Obtuvo la conexión')
             cursor=conexion.cursor()
             preciosList=[]
             registros=''

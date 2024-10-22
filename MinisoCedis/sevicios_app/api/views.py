@@ -26,6 +26,7 @@ from sevicios_app.api.serializers import *
 from django.http import JsonResponse
 from sevicios_app.api.dao.SapDaoCol import *
 from sevicios_app.api.dao.SapDaoII import *
+from sevicios_app.api.dao.ScaleIntColDao import ScaleIntColDao
 
 logger = logging.getLogger('')
 
@@ -4481,9 +4482,10 @@ def getSplitsFileCol(request):
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['GET'])
+@api_view(['GET']) #Modify
 def getTareasReaSurtAbiertasFileCol(request):
     try:
+        print("Tareas abiertas Col")
         wmsColDao=WMSCOLDao()
         output = io.BytesIO()
 
@@ -4543,6 +4545,7 @@ def getTareasReaSurtAbiertasFileCol(request):
         filename = 'TareasAbiertas.xlsx'
         response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        print("Tareas abiertas col fin")
         return response
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
@@ -4877,9 +4880,9 @@ def getKardexDownload(request,item = "",container_id = "",location = "",user_sta
     cont = wmsDao.timeDownloadKardex(item, container_id, location, user_stamp, work_type, dateStar, dateEnd)
     hourK = datetime.now()
 
-    if (cont < 1000 or hourK.hour >= 22):
+    if (cont < 10000 or hourK.hour >= 22):
         try:
-            print(f"Si {cont}  {hourK.hour}")
+            print(f"Kardex: No: {cont} Hora: {hourK.hour}")
             output = io.BytesIO()
 
             workbook = xlsxwriter.Workbook(output)
@@ -4946,7 +4949,6 @@ def getKardexDownload(request,item = "",container_id = "",location = "",user_sta
             return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     else:
-        print(f"No {cont}  {hourK.hour}")
         return JsonResponse({'message': 'No'})
 
 #New Colombia 
@@ -5178,6 +5180,565 @@ def downloadHuellaDigital(request):
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
 
         return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getWaveAnalysisCol(request, wave):
+    try:
+        wmsCOLDao=WMSCOLDao()
+        waveList=wmsCOLDao.getWaveAnalysis(True, wave)
+        serializer=WaveSerializer(waveList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def getWaveAnalysisFileCol(request, wave):
+    try:
+        wmsCOLDao=WMSCOLDao()
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'ITEM')
+        worksheet.write(0, 1, 'DESCRIPCION')
+        worksheet.write(0, 2, 'STORAGE TEMPLATE')
+        worksheet.write(0, 3, 'SHIPMENT ID')
+        worksheet.write(0, 4, 'LAUNCH NUM')
+        worksheet.write(0, 5, 'STATUS')
+        worksheet.write(0, 6, 'REQUESTED QTY')
+        worksheet.write(0, 7, 'ALLOCATED QTY')
+        worksheet.write(0, 8, 'AV')
+        worksheet.write(0, 9, 'OH')
+        worksheet.write(0, 10, 'AL')
+        worksheet.write(0, 11, 'IT')
+        worksheet.write(0, 12, 'SU')
+        worksheet.write(0, 13, 'CUSTOMER')
+        worksheet.write(0, 14, 'ITEM CATEGORY')
+        worksheet.write(0, 15, 'CREATION DATE')
+        worksheet.write(0, 16, 'SCHEDULED SHIP DATE')
+        worksheet.write(0, 17, 'DIVISION')
+        worksheet.write(0, 18, 'CONV')
+        
+        waveList=wmsCOLDao.getWaveAnalysis(False, wave)
+    
+        row=1
+        for wav in waveList:
+            worksheet.write(row, 0, wav.item)
+            worksheet.write(row, 1, wav.description)
+            worksheet.write(row, 2, wav.storageTemplate)
+            worksheet.write(row, 3, wav.shipmentId)
+            worksheet.write(row, 4, wav.launchNum)
+            worksheet.write(row, 5, wav.status)
+            worksheet.write(row, 6, wav.requestedQty)
+            worksheet.write(row, 7, wav.allocatedQty)
+            worksheet.write(row, 8, wav.av)
+            worksheet.write(row, 9, wav.oh)
+            worksheet.write(row, 10, wav.al)
+            worksheet.write(row, 11, wav.it)
+            worksheet.write(row, 12, wav.su)
+            worksheet.write(row, 13, wav.customer)
+            worksheet.write(row, 14, wav.itemCategory)
+            worksheet.write(row, 15, wav.creationDateTimeStamp)
+            worksheet.write(row, 16, wav.scheduledShipDate)
+            worksheet.write(row, 17, wav.division)
+            worksheet.write(row, 18, wav.conv)
+            row=row+1
+
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'WaveAnalysisCol'+wave+'.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def inventarioWmsErpCol(request):
+    try:
+        scaleIntColDao=ScaleIntColDao()
+        wmsErpList=scaleIntColDao.getWmsErp()
+        serializer=InventarioWmsErpSerializer(wmsErpList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def inventarioItemsCol(request):
+    try:
+        print('inventarioItemsCol')
+        scaleIntColDao=ScaleIntColDao()
+        itemsList=scaleIntColDao.getItems()
+        serializer=InventarioItemSerializer(itemsList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def topOneHundredCol(request):
+    try:
+        scaleIntColDao=ScaleIntColDao()
+        TopList=scaleIntColDao.getTopOneHundred(True)
+        serializer=InventarioTopSerializer(TopList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def inventarioDetalleErpWmsCol(request, item):
+    try:
+        scaleIntColDao=ScaleIntColDao()
+        detallesErpWmsList=scaleIntColDao.getInventarioDetalleErpWms(item)
+        serializer=InventarioDetalleErpWmsSerializer(detallesErpWmsList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def executeInvetarioCedisCol(request):
+    try:
+        monitoreoDao=MonitoreoDao()
+        monitoreoDao.executeInvetarioCedisCol()
+        return Response(status=status.HTTP_200_OK)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+@api_view(['GET'])
+def inventarioFileCol(request):
+    try:
+        scaleIntDao=ScaleIntDao()
+        monitoreoDao=MonitoreoDao()
+        
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'WAREHOUSE')
+        worksheet.write(0, 1, 'WMS ONHAND')
+        worksheet.write(0, 2, 'ERP ONHAND')
+        worksheet.write(0, 3, 'DIFERENCIA')
+        worksheet.write(0, 4, 'DIFERENCIA ABS')
+        worksheet.write(0, 5, 'WMS INTRANSIT')
+        worksheet.write(0, 6, '#ITEMS WMS')
+        worksheet.write(0, 7, '#ITEMS ERP')
+        worksheet.write(0, 8, '#ITEMS DIF')
+        
+        wmsErpList=scaleIntDao.getWmsErp()
+        row=1
+        for wmsErp in wmsErpList:
+            worksheet.write(row, 0, wmsErp.warehouse)
+            worksheet.write(row, 1, wmsErp.wmsOnHand)
+            worksheet.write(row, 2, wmsErp.erpOnHand)
+            worksheet.write(row, 3, wmsErp.diferencia)
+            worksheet.write(row, 4, wmsErp.diferenciaAbsoluta)
+            worksheet.write(row, 5, wmsErp.wmsInTransit)
+            worksheet.write(row, 6, wmsErp.numItemsWms)
+            worksheet.write(row, 7, wmsErp.numItemsErp)
+            worksheet.write(row, 8, wmsErp.numItemsDif)
+            row=row+1
+
+        row=row+1
+        worksheet.write(row, 0, 'WAREHOUSE')
+        worksheet.write(row, 1, 'WMS ONHAND')
+        worksheet.write(row, 2, 'ERP ONHAND')
+        worksheet.write(row, 3, '#ITEMS')
+        
+        itemsList=scaleIntDao.getItems()
+        row=row+1
+        for item in itemsList:
+            worksheet.write(row, 0, item.warehouse)
+            worksheet.write(row, 1, item.wmsOnHand)
+            worksheet.write(row, 2, item.erpOnHand)
+            worksheet.write(row, 3, item.numItems)
+            row=row+1
+        
+        row=row+1
+        worksheet.write(row, 0, 'WAREHOUSE CODE')
+        worksheet.write(row, 1, 'Solicitado')
+        worksheet.write(row, 2, 'OnHand')
+        worksheet.write(row, 3, 'Comprometido')
+        worksheet.write(row, 4, 'Disponible')
+        worksheet.write(row, 5, 'SKU SOL')
+        worksheet.write(row, 6, 'SKU OHD')
+        worksheet.write(row, 7, 'SKU CMP')
+        worksheet.write(row, 8, 'Fecha Actualizacion')
+        
+        inventariosWmsList=monitoreoDao.getInventarioWms()
+        row=row+1
+        for inventarioWms in inventariosWmsList:
+            worksheet.write(row, 0, inventarioWms.warehouseCode)
+            worksheet.write(row, 1, inventarioWms.solicitado)
+            worksheet.write(row, 2, inventarioWms.onHand)
+            worksheet.write(row, 3, inventarioWms.comprometido)
+            worksheet.write(row, 4, inventarioWms.disponible)
+            worksheet.write(row, 5, inventarioWms.skuSolicitado)
+            worksheet.write(row, 6, inventarioWms.skuOnHand)
+            worksheet.write(row, 7, inventarioWms.skuComprometido)
+            worksheet.write(row, 8, inventarioWms.fechaActualizacion)
+            row=row+1
+        
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'Inventario.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def topOneHundredFileCol(request):
+    try:
+        scaleIntColDao=ScaleIntColDao()
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'DATE TIME')
+        worksheet.write(0, 1, 'ITEM')
+        worksheet.write(0, 2, 'WAREHOUSE')
+        worksheet.write(0, 3, 'WMS SUSPENSE')
+        worksheet.write(0, 4, 'WMS INTRANSIT')
+        worksheet.write(0, 5, 'WMS ONHAND')
+        worksheet.write(0, 6, 'ERP ONHAND')
+        worksheet.write(0, 7, 'DIF ONHAND')
+        worksheet.write(0, 8, 'DIF OH ABS')
+        
+        TopList=scaleIntColDao.getTopOneHundred(False)
+        
+        row=1
+        for top in TopList:
+            worksheet.write(row, 0, top.fecha.strftime("%m/%d/%Y %H:%M:%S"))
+            worksheet.write(row, 1, top.item)
+            worksheet.write(row, 2, top.warehouse)
+            worksheet.write(row, 3, top.wmsComprometido)
+            worksheet.write(row, 4, top.wmsTransito)
+            worksheet.write(row, 5, top.wmsOnHand)
+            worksheet.write(row, 6, top.erpOnHand)
+            worksheet.write(row, 7, top.difOnHand)
+            worksheet.write(row, 8, top.difOnHandAbsolute)
+            row=row+1
+
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'TopOneHundredCol.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def inventarioWmsCol(request):
+    try:
+        monitoreoDao=MonitoreoDao()
+        inventariosWmsList=monitoreoDao.getInventarioWmsCol()
+        serializer=InventarioWmsSerializer(inventariosWmsList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def inventarioFileCol(request):
+    try:
+        scaleIntColDao=ScaleIntColDao()
+        monitoreoDao=MonitoreoDao()
+        
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'WAREHOUSE')
+        worksheet.write(0, 1, 'WMS ONHAND')
+        worksheet.write(0, 2, 'ERP ONHAND')
+        worksheet.write(0, 3, 'DIFERENCIA')
+        worksheet.write(0, 4, 'DIFERENCIA ABS')
+        worksheet.write(0, 5, 'WMS INTRANSIT')
+        worksheet.write(0, 6, '#ITEMS WMS')
+        worksheet.write(0, 7, '#ITEMS ERP')
+        worksheet.write(0, 8, '#ITEMS DIF')
+        
+        wmsErpList=scaleIntColDao.getWmsErp()
+        row=1
+        for wmsErp in wmsErpList:
+            worksheet.write(row, 0, wmsErp.warehouse)
+            worksheet.write(row, 1, wmsErp.wmsOnHand)
+            worksheet.write(row, 2, wmsErp.erpOnHand)
+            worksheet.write(row, 3, wmsErp.diferencia)
+            worksheet.write(row, 4, wmsErp.diferenciaAbsoluta)
+            worksheet.write(row, 5, wmsErp.wmsInTransit)
+            worksheet.write(row, 6, wmsErp.numItemsWms)
+            worksheet.write(row, 7, wmsErp.numItemsErp)
+            worksheet.write(row, 8, wmsErp.numItemsDif)
+            row=row+1
+
+        row=row+1
+        worksheet.write(row, 0, 'WAREHOUSE')
+        worksheet.write(row, 1, 'WMS ONHAND')
+        worksheet.write(row, 2, 'ERP ONHAND')
+        worksheet.write(row, 3, '#ITEMS')
+        
+        itemsList=scaleIntColDao.getItems()
+        row=row+1
+        for item in itemsList:
+            worksheet.write(row, 0, item.warehouse)
+            worksheet.write(row, 1, item.wmsOnHand)
+            worksheet.write(row, 2, item.erpOnHand)
+            worksheet.write(row, 3, item.numItems)
+            row=row+1
+        
+        row=row+1
+        worksheet.write(row, 0, 'WAREHOUSE CODE')
+        worksheet.write(row, 1, 'Solicitado')
+        worksheet.write(row, 2, 'OnHand')
+        worksheet.write(row, 3, 'Comprometido')
+        worksheet.write(row, 4, 'Disponible')
+        worksheet.write(row, 5, 'SKU SOL')
+        worksheet.write(row, 6, 'SKU OHD')
+        worksheet.write(row, 7, 'SKU CMP')
+        worksheet.write(row, 8, 'Fecha Actualizacion')
+        
+        inventariosWmsList=monitoreoDao.getInventarioWmsCol()
+        row=row+1
+        for inventarioWms in inventariosWmsList:
+            worksheet.write(row, 0, inventarioWms.warehouseCode)
+            worksheet.write(row, 1, inventarioWms.solicitado)
+            worksheet.write(row, 2, inventarioWms.onHand)
+            worksheet.write(row, 3, inventarioWms.comprometido)
+            worksheet.write(row, 4, inventarioWms.disponible)
+            worksheet.write(row, 5, inventarioWms.skuSolicitado)
+            worksheet.write(row, 6, inventarioWms.skuOnHand)
+            worksheet.write(row, 7, inventarioWms.skuComprometido)
+            worksheet.write(row, 8, inventarioWms.fechaActualizacion)
+            row=row+1
+        
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'InventarioCol.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getCuadrajeCol(request):
+    try:
+        monitoreoDao=MonitoreoDao()
+        cuadrajesList=monitoreoDao.getDatosCuadrajeCol()
+        serializer=CuadrajeSerializer(cuadrajesList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def getPendienteSemanaCol(request):
+    try:
+        monitoreoDao=MonitoreoDao()
+        pendientesSemanaList=monitoreoDao.getPendienteSemanaCol()
+        serializer=PendienteSemanaSerializer(pendientesSemanaList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def executeCuadrajeCol(request):
+    try:
+        monitoreoDao=MonitoreoDao()
+        monitoreoDao.executeCuadrajeCol()
+        return Response(status=status.HTTP_200_OK)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def executeUpdateDiferenciasCol(request):
+    try:
+        monitoreoDao=MonitoreoDao()
+        monitoreoDao.executeUpdateDiferenciasCol()
+        return Response(status=status.HTTP_200_OK)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getReciboSapCol(request, recibos):
+    try:
+        recibosSplit=recibos.split(',')
+        indice =True
+        busqueda=''
+        for recibo in recibosSplit:
+            if(indice==False):
+                busqueda=busqueda + ","
+            busqueda=busqueda+"'"+recibo.strip()+"'"
+            if(indice):
+                indice=False
+        monitoreoDao=MonitoreoDao()
+        logger.error("Entro a getReciboSap Col"+busqueda)
+        recibosList=monitoreoDao.getReciboSapCol(busqueda)
+        serializer=ReciboSapSerializer(recibosList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def getReciboSapByValorCol(request, valor):
+    try:
+        monitoreoDao=MonitoreoDao()
+        recibosList=monitoreoDao.getReciboSapByValorCol(valor)
+        serializer=ReciboSapSerializer(recibosList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def getPedidoSapCol(request, pedidos):
+    try:
+        pedidosSplit=pedidos.split(',')
+        indice =True
+        busqueda=''
+        for pedido in pedidosSplit:
+            if(indice==False):
+                busqueda=busqueda + ","
+            busqueda=busqueda+"'"+pedido.strip()+"'"
+            if(indice):
+                indice=False
+        monitoreoDao=MonitoreoDao()
+        pedidosList=monitoreoDao.getPedidoSapCol(busqueda)
+        serializer=PedidoSapSerializer(pedidosList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def getPedidoSapByValorCol(request, valor):
+    try:
+        monitoreoDao=MonitoreoDao()
+        if valor == 'O':
+            pedidosList=monitoreoDao.getPedidoSapAbiertosCol()
+        else:
+            pedidosList=monitoreoDao.getPedidoSapByValorCol(valor, True)
+        serializer=PedidoSapSerializer(pedidosList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def getCuadrajeFileCol(request):
+    try:
+        monitoreoDao=MonitoreoDao()
+        cuadrajesList=monitoreoDao.getDatosCuadrajeCol()
+        cuadraje=cuadrajesList[0]
+        
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 1, 'RECIBO')
+        worksheet.write(0, 2, 'PEDIDO')
+        worksheet.write(1, 0, 'TOTAL DE FOLIOS')
+        worksheet.write(1, 1, cuadraje.recibosTotal)
+        worksheet.write(1, 2, cuadraje.pedidosTotal)
+        worksheet.write(2, 0, 'FOLIOS OK')
+        worksheet.write(2, 1, cuadraje.recibosOk)
+        worksheet.write(2, 2, cuadraje.pedidosOk)
+        worksheet.write(3, 0, 'FOLIOS CON DIFERENCIA EN CANTIDAD')
+        worksheet.write(3, 1, cuadraje.recibosQty)
+        worksheet.write(3, 2, cuadraje.pedidosQty)
+        worksheet.write(4, 0, 'FOLIOS PENDINETES DE CERRAR EN ERP')
+        worksheet.write(4, 1, cuadraje.recibosCloseErp)
+        worksheet.write(4, 2, cuadraje.pedidosCloseErp)
+        worksheet.write(5, 0, 'FOLIOS PENDIENTES DE CERRAR EN ERP Y WMS')
+        worksheet.write(5, 1, cuadraje.recibosRev)
+        worksheet.write(5, 2, cuadraje.pedidosRev)
+        
+        pendientesSemanaList=monitoreoDao.getPendienteSemanaCol()
+        
+        worksheet.write(7, 0, 'MES-AÑO')
+        worksheet.write(7, 1, 'SEMANA')
+        worksheet.write(7, 2, 'NUMERO')
+        worksheet.write(7, 3, 'TIENDAS')
+        worksheet.write(7, 4, 'RE-ETIQUETADO')
+        row=8
+        for pendienteSemana in pendientesSemanaList:
+            worksheet.write(row, 0, pendienteSemana.fecha)
+            worksheet.write(row, 1, pendienteSemana.shipDate)
+            worksheet.write(row, 2, pendienteSemana.numeroRegistros)
+            worksheet.write(row, 3, pendienteSemana.piezas)
+            worksheet.write(row, 4, pendienteSemana.reetiquetado)
+            row=row+1
+        worksheet.write(row, 1, 'PEDIDOS ABIERTOS SOLO EN ERP')
+        worksheet.write(row, 2, cuadraje.pedidosAbiertos)
+        worksheet.write(row, 3, cuadraje.pedidosAbiertosNum)    
+        
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'CuadrajeCol.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def insertSapReceiptValCol(request, idReceipt):
+    try:
+        monitoreoDao=MonitoreoDao()
+        monitoreoDao.insertSapReceiptValCol(idReceipt)
+        return Response(status=status.HTTP_200_OK)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def insertSapShipmentValCol(request, idShipment):
+    try:
+        monitoreoDao=MonitoreoDao()
+        monitoreoDao.insertSapShipmentValCol(idShipment)
+        return Response(status=status.HTTP_200_OK)
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

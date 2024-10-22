@@ -9,8 +9,8 @@ from sevicios_app.vo.tiendaPendienteFecha import TiendaPendienteFecha
 from sevicios_app.vo.pedidoPorCerrar import PedidoPorCerrar
 from sevicios_app.vo.reciboTienda import ReciboTienda
 from sevicios_app.vo.tienda import Tienda
-from sevicios_app.vo.auditoriaTienda import AuditoriaTienda
 from sevicios_app.vo.confirmationPending import ConfirmationPending
+from sevicios_app.vo.auditoriaTienda import AuditoriaTienda
 
 logger = logging.getLogger('')
 
@@ -480,7 +480,8 @@ class RecepcionTiendaDaoCl():
             cursor=conexion.cursor()
             auditoriaTiendaList=[]
             if tienda.startswith('Todas'):
-                cursor.execute("select soli.SolicitudWarehouseTo, soli.SolicitudID, soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
+                cursor.execute("select soli.SolicitudWarehouseTo, soli.SolicitudID, " +
+                               "soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
                                 "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados " +
                                 "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion " +
                                 "from Solicitud sol where sol.SolicitudStatus=4) soli " +
@@ -488,7 +489,8 @@ class RecepcionTiendaDaoCl():
                                 "and format(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? and format(soli.fechaRecepcion, 'yyyy-MM-dd') <=? " +
                                 "order by soli.SolicitudNoTransporte desc",  (fechaInicio, fechaFin))
             else:
-                cursor.execute("select soli.SolicitudWarehouseTo, soli.SolicitudID, soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
+                cursor.execute("select soli.SolicitudWarehouseTo,  soli.SolicitudID, " +
+                               "soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
                                 "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados " +
                                 "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion " +
                                 "from Solicitud sol where sol.SolicitudWarehouseTo=? and sol.SolicitudStatus=4) soli " +
@@ -499,7 +501,7 @@ class RecepcionTiendaDaoCl():
                 if registro[4] !=0:
                     # print(registro[4])
                     porcentaje = str(round(registro[5]/registro[4]*100,2)) + " %"
-                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5],porcentaje)
+                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], porcentaje)
                     auditoriaTiendaList.append(auditoriaTienda)
                 else:
                     auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], 'NA')

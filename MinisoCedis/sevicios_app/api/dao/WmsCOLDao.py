@@ -32,6 +32,10 @@ class WMSCOLDao():
             conexion = None
 
             conexion = pyodbc.connect('DRIVER={SQL Server};SERVER=' + direccion_servidor+';DATABASE='+nombre_bd+';UID='+nombre_usuario+';PWD=' + password)
+            if conexion:
+                print("Conexion exitosa")
+            else:
+                print("Error al conectarse")
             return conexion
         except Exception as exception:
             logger.error(f"Se presento un error al establecer la conexion: {exception}")
@@ -126,8 +130,10 @@ class WMSCOLDao():
 
     def getWaveAnalysis(self, oneHundred, wave):
         try:
+            conexion = None #
             conexion=self.getConexion()
             cursor=conexion.cursor()
+            print("Wave")
             waveList=[]
             top=""
             if oneHundred:
@@ -150,7 +156,7 @@ class WMSCOLDao():
                            "SHIPMENT_DETAIL sh (NOLOCK) "+
                            "inner join SHIPMENT_HEADER HE (NOLOCK) on sh.SHIPMENT_ID = HE.SHIPMENT_ID "+ 
                            "left outer join METADATA_INSIGHT_INVENTORY_VIEW MT (NOLOCK) on sh.ITEM = MT.ITEM "+ 
-                           "and MT.ACTIVE = 'Y' and MT.INVENTORY_STS = 'Disponible' "+
+                           "and MT.ACTIVE = 'Y' and MT.INVENTORY_STS = 'CEN-L-LIBRE UTILIZACION' "+
                            "left join ITEM it (NOLOCK) on sh.ITEM = it.ITEM "+
                            "WHERE "+ 
                            "HE.LEADING_STS <= 300 "+
@@ -259,13 +265,16 @@ class WMSCOLDao():
     
     def getTareasReaSurtAbiertas(self):
         try:
+            conexion = None #
             conexion=self.getConexion()
+            print("Tareas Abiertas")
             cursor=conexion.cursor()
             tareasList=[]
-            cursor.execute("SELECT WI.WORK_UNIT, WI.INSTRUCTION_TYPE, WI.WORK_TYPE, WI.USER_DEF1, WI.USER_DEF6, WI.CONDITION, WI.ITEM, WI.ITEM_DESC, WI.REFERENCE_ID, WI.FROM_LOC, WI.FROM_QTY, "+
+            cursor.execute("SELECT WI.WORK_UNIT, WI.INSTRUCTION_TYPE, WI.WORK_TYPE, WI.USER_DEF1, I.ITEM_CATEGORY1, WI.CONDITION, WI.ITEM, WI.ITEM_DESC, WI.REFERENCE_ID, WI.FROM_LOC, WI.FROM_QTY, "+
                            "WI.TO_LOC, WI.TO_QTY, WI.LAUNCH_NUM, WI.INTERNAL_INSTRUCTION_NUM, WI.CONVERTED_QTY, WI.CONTAINER_ID, CT.CONTAINER_TYPE, FORMAT(WI.AGING_DATE_TIME, 'dd/MM/yyyy hh:mm:ss'), "+
                            "FORMAT(WI.START_DATE_TIME, 'dd/MM/yyyy hh:mm:ss') "+  
                            "FROM WORK_INSTRUCTION WI LEFT JOIN (SELECT * FROM SHIPPING_CONTAINER WHERE CONTAINER_TYPE <> '-' AND CONTAINER_ID IS NOT NULL) CT ON WI.CONTAINER_ID = CT.CONTAINER_ID "+ 
+                           "LEFT JOIN ITEM I ON WI.ITEM = I.ITEM " +
                            "WHERE (WORK_TYPE = 'Reab de Reserva a Picking' or WORK_TYPE LIKE 'Surt%') AND INSTRUCTION_TYPE = 'Detail' AND CONDITION ='OPEN'")
             registros=cursor.fetchall()
             for registro in registros:
@@ -273,7 +282,7 @@ class WMSCOLDao():
                 tareasList.append(tareaReaSurtAbierta)
             return tareasList
         except Exception as exception:
-            logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+            logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
             raise exception
         finally:
             if conexion!= None:

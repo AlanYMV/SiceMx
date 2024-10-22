@@ -750,7 +750,8 @@ class WMSDao():
             conexion=self.getConexion()
             cursor=conexion.cursor()
             containerList=[]
-            cursor.execute("select CONTAINER_ID, WEIGHT, USER_DEF1, TOTAL_FREIGHT_CHARGE, BASE_FREIGHT_CHARGE, FREIGHT_DISCOUNT, ACCESSORIAL_CHARGE, QC_ASSIGNMENT_ID, QC_STATUS, (select convert(nvarchar(MAX), activity_date_time, 20) from TRANSACTION_HISTORY th where th.CONTAINER_ID =SC.CONTAINER_ID and TRANSACTION_TYPE=210) fecha "+
+            cursor.execute("select CONTAINER_ID, WEIGHT, USER_DEF1, TOTAL_FREIGHT_CHARGE, BASE_FREIGHT_CHARGE, FREIGHT_DISCOUNT, ACCESSORIAL_CHARGE, QC_ASSIGNMENT_ID, QC_STATUS, " +
+                           "(select convert(nvarchar(MAX), DATEADD(HH,-6, activity_date_time), 20) from TRANSACTION_HISTORY th where th.CONTAINER_ID =SC.CONTAINER_ID and TRANSACTION_TYPE=210) fecha "+ #Modify -6 hours
                             "from SHIPPING_CONTAINER SC " +
                             "where SC.FREIGHT_DISCOUNT>0 and SC.CONTAINER_ID is not null and SC.QC_ASSIGNMENT_ID is not null")
             registros=cursor.fetchall()
@@ -790,14 +791,6 @@ class WMSDao():
     def getConsultKardex(self,item = "",container_id = "",location = "",user_stamp = "",work_type = "", dateStart = "", dateEnd = ""): #ConsultKardex
         if (item or container_id or location or user_stamp or work_type or dateStart or dateEnd):
             try:
-                print("getConsultKardex")
-                print(f"item: {item}")
-                print(f"container_id: {container_id}")
-                print(f"location: {location}")
-                print(f"user_stamp: {user_stamp}")
-                print(f"work_type: {work_type}")
-                print(f"dateStart: {dateStart}")
-                print(f"dateEnd: {dateEnd}")
                 conexion=self.getConexion()
                 cursor=conexion.cursor()
                 kardexList=[]
@@ -876,8 +869,6 @@ class WMSDao():
                     params.append(dateEnd)
 
                 base_query += " ORDER BY DATEADD(HH, -5, th.DATE_TIME_STAMP) ASC"
-                print(base_query)
-                print(params)
 
                 cursor.execute(base_query,params)
                 registros=cursor.fetchall()
@@ -899,16 +890,9 @@ class WMSDao():
                 cursor=conexion.cursor()
                 kardexList=[]
 
-                print("getDownloadKardex")
-                print(f"item: {item}")
-                print(f"container_id: {container_id}")
-                print(f"location: {location}")
-                print(f"user_stamp: {user_stamp}")
-                print(f"work_type: {work_type}")
-                print(f"dateStart: {dateStart}")
-                print(f"dateEnd: {dateEnd}")
+                print("Download Kardex")
 
-                base_query = (" SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " +
+                base_query = (" SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " + # 103
                                 "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
                                 "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
                                 "CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
@@ -977,11 +961,72 @@ class WMSDao():
                     params.append(dateStart)
 
                 if dateEnd:
-                    params.append(dateEnd)
+                    params.append(dateEnd) 
+                
+                # base_query += (" UNION ALL " + # 108
+                #                 " SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " + 
+                #                 " CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                #                 " CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
+                #                 " CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
+                #                 " FROM [192.168.84.108].[ILS].[dbo].[TRANSACTION_HISTORY] th (NOLOCK) WHERE ")
 
-                base_query += " ORDER BY convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) ASC"
-                print(base_query)
-                print(params)
+                # if conditions:
+                #     base_query += " " + " AND ".join(conditions)
+
+                # if item:
+                #     params.append(item)
+
+                # if container_id:
+                #     params.append(container_id)
+
+                # if location:
+                #     params.append(location)
+                
+                # if user_stamp:
+                #     params.append(user_stamp)
+
+                # if work_type:
+                #     params.append(work_type)
+
+                # if dateStart:
+                #     params.append(dateStart)
+
+                # if dateEnd:
+                #     params.append(dateEnd)
+					
+                # base_query += (" UNION ALL " +
+                #                 "SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " +
+                #                 "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                #                 "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
+                #                 "CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
+                #                 "FROM [192.168.84.108].[ILS].[dbo].[AR_TRANSACTION_HISTORY] th (NOLOCK) WHERE ")
+
+                # if conditions:
+                #     base_query += " " + " AND ".join(conditions)
+
+                # if item:
+                #     params.append(item)
+
+                # if container_id:
+                #     params.append(container_id)
+
+                # if location:
+                #     params.append(location)
+                
+                # if user_stamp:
+                #     params.append(user_stamp)
+
+                # if work_type:
+                #     params.append(work_type)
+
+                # if dateStart:
+                #     params.append(dateStart)
+
+                # if dateEnd:
+                #     params.append(dateEnd)
+					
+
+                base_query += " ORDER BY convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DESC"
 
                 cursor.execute(base_query,params)
                 registros=cursor.fetchall()

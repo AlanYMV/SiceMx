@@ -11,7 +11,7 @@ export class ConsultHuella implements OnInit {
   huellas:HuellaDigital[]=[];
 
   constructor(private http: HttpClient){
-      this.http.get("http://127.0.0.1:8000/servicios/huella_digital/")
+      this.http.get("http://192.168.84.108:8080/servicios/huella_digital/")
          .subscribe((data: any) => {
           console.log(data);
           this.huellas=data;

@@ -15,7 +15,7 @@ export class ColsultKardex implements OnInit {
   }
 
         buscarKardex(item: string, container_id?: string, location?: string, user_stamp?: string, work_type?: string, fechaInicio?: string, fechaFin?: string) {
-            let url = `http://127.0.0.1:8000/servicios/consult_kardex/`;
+            let url = `http://192.168.84.108:8080/servicios/consult_kardex/`;
 
             url += `${item || ''}/`;
             url += `${container_id || ''}/`;
@@ -36,7 +36,7 @@ export class ColsultKardex implements OnInit {
           messageDiv = document.getElementById('message') as HTMLDivElement;
 
           downloadKardex(item: string, container_id?: string, location?: string, user_stamp?: string, work_type?: string, fechaInicio?: string, fechaFin?: string) {
-            let url = `http://127.0.0.1:8000/servicios/download_kardex/`;
+            let url = `http://192.168.84.108:8080/servicios/download_kardex/`;
 
             url += `${item || ''}/`;
             url += `${container_id || ''}/`;
@@ -60,7 +60,7 @@ export class ColsultKardex implements OnInit {
               const contentType = response.headers.get("content-type");
               if (contentType && contentType.includes("application/json")) {
                 const jsonResponse = await response.json();
-                alert("No se cumple con las condiciones \nSon mas de 10,000 registros y son antes de las 10 de la noche")
+                alert("No se cumple con las condiciones \nSi son mas de 10,000 registros intente despues de las 10 de la noche \nPara no comprometer al servidor y a los demas usuarios")
                 return;
               }
         
