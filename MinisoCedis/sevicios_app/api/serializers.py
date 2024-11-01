@@ -627,10 +627,19 @@ class HuellaDigitalSerializer(serializers.Serializer):
     u_sys_peso = serializers.CharField()
     grupoUMCompas = serializers.CharField()
 
-class AuditoriaTiendaClSerializerCl(serializers.Serializer): #Remove pedido
+class AuditoriaTiendaClSerializerCl(serializers.Serializer): #Remove pedido and carga
         tienda=serializers.CharField() 
-        carga=serializers.CharField()
         fechaRecepcion=serializers.CharField()
         totalContenedores=serializers.CharField()
         contenedoresAuditados=serializers.CharField()
         porcentaje=serializers.CharField()
+        
+class AuditoriaOrderClSerializer(serializers.Serializer): 
+        order=serializers.CharField() 
+           
+class subFamilyOrderClSerializer(serializers.Serializer): 
+        tienda = serializers.CharField() 
+        sub = serializers.CharField()
+        totalContenedor = serializers.CharField() 
+        auditado = serializers.CharField() 
+        porcentaje = serializers.CharField()

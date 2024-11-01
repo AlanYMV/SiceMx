@@ -4224,7 +4224,7 @@ def getAuditoriasTiendaCl(request, tienda, fechaInicio, fechaFin):
     try:
         recepcionTiendaDaoCl=RecepcionTiendaDaoCl()
         auditoriaList=recepcionTiendaDaoCl.getAuditoriaTienda(tienda, fechaInicio, fechaFin)
-        serializer=AuditoriaTiendaSerializer(auditoriaList, many=True)
+        serializer=AuditoriaTiendaClSerializerCl(auditoriaList, many=True)
         return Response(serializer.data)
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
@@ -4240,12 +4240,12 @@ def getdownloadAuditoriaTiendaCl(request, tienda, fechaInicio, fechaFin): #new
         worksheet = workbook.add_worksheet(tienda)
 
         worksheet.write(0, 0, 'TIENDA')
-        worksheet.write(0, 1, 'PEDIDO')
-        worksheet.write(0, 2, 'CARGA')
-        worksheet.write(0, 3, 'FECHA RECEPCION')
-        worksheet.write(0, 4, 'TOTAL CONTENEDORES')
-        worksheet.write(0, 5, 'CONTENEDORES AUDITADOS')
-        worksheet.write(0, 6, 'PORCENTAJE')
+        # worksheet.write(0, 1, 'PEDIDO')
+        # worksheet.write(0, 1, 'CARGA')
+        worksheet.write(0, 1, 'FECHA RECEPCION')
+        worksheet.write(0, 2, 'TOTAL CONTENEDORES')
+        worksheet.write(0, 3, 'CONTENEDORES AUDITADOS')
+        worksheet.write(0, 4, 'PORCENTAJE')
 
         
         recepcionTiendaDaoCl=RecepcionTiendaDaoCl()
@@ -4254,12 +4254,12 @@ def getdownloadAuditoriaTiendaCl(request, tienda, fechaInicio, fechaFin): #new
         row=1
         for auditoria in auditoriaList:
             worksheet.write(row, 0, auditoria.tienda)
-            worksheet.write(row, 1, auditoria.pedido)
-            worksheet.write(row, 2, auditoria.carga)
-            worksheet.write(row, 3, auditoria.fechaRecepcion)
-            worksheet.write(row, 4, auditoria.totalContenedores)
-            worksheet.write(row, 5, auditoria.contenedoresAuditados)
-            worksheet.write(row, 6, auditoria.porcentaje)
+            # worksheet.write(row, 1, auditoria.pedido)
+            # worksheet.write(row, 1, auditoria.carga)
+            worksheet.write(row, 1, auditoria.fechaRecepcion)
+            worksheet.write(row, 2, auditoria.totalContenedores)
+            worksheet.write(row, 3, auditoria.contenedoresAuditados)
+            worksheet.write(row, 4, auditoria.porcentaje)
             row=row+1
 
         workbook.close()
@@ -5739,6 +5739,30 @@ def insertSapShipmentValCol(request, idShipment):
         monitoreoDao=MonitoreoDao()
         monitoreoDao.insertSapShipmentValCol(idShipment)
         return Response(status=status.HTTP_200_OK)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def OrderAudiCl(request, tienda, fecha):
+    try:
+        print(f"{tienda}, {fecha}")
+        recepcionTiendaDaoCl=RecepcionTiendaDaoCl()
+        orderList=recepcionTiendaDaoCl.getOrderAudi(tienda, fecha)
+        serializer=AuditoriaOrderClSerializer(orderList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def subFamilyOrdersCl(request, tienda, fecha):
+    try:
+        recepcionTiendaDaoCl=RecepcionTiendaDaoCl()
+        subfamily=recepcionTiendaDaoCl.getSubFamilyOrders(tienda, fecha)
+        serializer=subFamilyOrderClSerializer(subfamily, many=True)
+        return Response(serializer.data)
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

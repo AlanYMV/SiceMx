@@ -10,7 +10,9 @@ from sevicios_app.vo.pedidoPorCerrar import PedidoPorCerrar
 from sevicios_app.vo.reciboTienda import ReciboTienda
 from sevicios_app.vo.tienda import Tienda
 from sevicios_app.vo.confirmationPending import ConfirmationPending
-from sevicios_app.vo.auditoriaTienda import AuditoriaTienda
+from sevicios_app.vo.auditoriaTiendaCl import AuditoriaTiendaCl
+from sevicios_app.vo.orderAudi import OrderAudi
+from sevicios_app.vo.subfamilyOrder import SubFamilyOrder
 
 logger = logging.getLogger('')
 
@@ -480,31 +482,39 @@ class RecepcionTiendaDaoCl():
             cursor=conexion.cursor()
             auditoriaTiendaList=[]
             if tienda.startswith('Todas'):
-                cursor.execute("select soli.SolicitudWarehouseTo, soli.SolicitudID, " +
-                               "soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
-                                "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados " +
-                                "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion " +
-                                "from Solicitud sol where sol.SolicitudStatus=4) soli " +
-                                "where (select AlmacenCve from Almacen where AlmacenCve like '%DI' and AlmacenEstatus = 'N' and soli.SolicitudWarehouseTo = AlmacenCve) = soli.SolicitudWarehouseTo " +
-                                "and format(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? and format(soli.fechaRecepcion, 'yyyy-MM-dd') <=? " +
-                                "order by soli.SolicitudNoTransporte desc",  (fechaInicio, fechaFin))
+                cursor.execute(" WITH registros AS (SELECT soli.SolicitudNoTransporte, SUM(soli.SolicitudTotalContenedores) TotalContenedores,  " +
+                                "   (SELECT COUNT(*) FROM AuditoriaContenedor audi WHERE audi.AuditoriaSolicitudId=soli.SolicitudId  " +
+                                "   AND audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte AND audi.AuditoriaContenedorStatus!=1 ) ContenedoresAuditados, " +
+                                "   MAX(soli.SolicitudWarehouseTo) SolicitudWarehouseTo, MAX(convert(nvarchar(MAX),soli.fechaRecepcion,23)) fechaRecepcion " +
+                                "   FROM (SELECT sol.SolicitudID, sol.SolicitudNoTransporte, SUM(sol.SolicitudTotalContenedores) SolicitudTotalContenedores, sol.SolicitudWarehouseTo,  " +
+                                "   (SELECT TOP 1 TransportistaFecha FROM SolicitudTransportista st WHERE st.SolicitudID=sol.SolicitudID AND st.SolicitudNoTransporte=sol.SolicitudNoTransporte AND st.TransportistaOrigen='TIENDA') fechaRecepcion " +
+                                "   FROM Solicitud sol WHERE sol.SolicitudStatus=4 GROUP BY sol.SolicitudID, sol.SolicitudNoTransporte, sol.SolicitudWarehouseTo ) soli " +
+                                "   WHERE FORMAT(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? " +
+                                "   AND FORMAT(soli.fechaRecepcion, 'yyyy-MM-dd') <= ? GROUP BY soli.SolicitudNoTransporte, soli.SolicitudId ) " +
+                                " SELECT SolicitudWarehouseTo, fechaRecepcion, SUM(TotalContenedores) AS TotalContenedores, SUM(ContenedoresAuditados) AS ContenedoresAuditados " +
+                                " FROM registros GROUP BY    SolicitudWarehouseTo,   fechaRecepcion ORDER BY fechaRecepcion DESC ",  (fechaInicio, fechaFin))
             else:
-                cursor.execute("select soli.SolicitudWarehouseTo,  soli.SolicitudID, " +
-                               "soli.SolicitudNoTransporte, convert(nvarchar(MAX),soli.fechaRecepcion,20), soli.SolicitudTotalContenedores TotalContenedores, " +
-                                "(select COUNT(*) from AuditoriaContenedor audi where audi.AuditoriaSolicitudId=soli.SolicitudId and audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte and audi.AuditoriaContenedorStatus!=1) ContenedoresAuditados " +
-                                "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion " +
-                                "from Solicitud sol where sol.SolicitudWarehouseTo=? and sol.SolicitudStatus=4) soli " +
-                                "where format(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? and format(soli.fechaRecepcion, 'yyyy-MM-dd') <=? " +
-                                "order by soli.SolicitudNoTransporte desc", (tienda, fechaInicio, fechaFin))
+                cursor.execute(" WITH registros AS (SELECT soli.SolicitudNoTransporte, SUM(soli.SolicitudTotalContenedores) TotalContenedores,  " +
+                                "   ( SELECT COUNT(*) FROM AuditoriaContenedor audi WHERE audi.AuditoriaSolicitudId=soli.SolicitudId  " +
+                                "   AND audi.AuditoriaSolicitudTransNo=soli.SolicitudNoTransporte AND audi.AuditoriaContenedorStatus!=1 ) ContenedoresAuditados, " +
+                                "   MAX(soli.SolicitudWarehouseTo) SolicitudWarehouseTo, MAX(convert(nvarchar(MAX),soli.fechaRecepcion,23)) fechaRecepcion " +
+                                "   FROM ( SELECT sol.SolicitudID, sol.SolicitudNoTransporte, SUM(sol.SolicitudTotalContenedores) SolicitudTotalContenedores, sol.SolicitudWarehouseTo,  " +
+                                "   (SELECT TOP 1 TransportistaFecha FROM SolicitudTransportista st WHERE st.SolicitudID=sol.SolicitudID AND st.SolicitudNoTransporte=sol.SolicitudNoTransporte AND st.TransportistaOrigen='TIENDA') fechaRecepcion " +
+                                "   FROM Solicitud sol WHERE sol.SolicitudWarehouseTo= ?  " +
+                                "   AND sol.SolicitudStatus=4 GROUP BY sol.SolicitudID, sol.SolicitudNoTransporte, sol.SolicitudWarehouseTo ) soli " +
+                                "   WHERE FORMAT(soli.fechaRecepcion, 'yyyy-MM-dd') >= ? " +
+                                "   AND FORMAT(soli.fechaRecepcion, 'yyyy-MM-dd') <= ? GROUP BY soli.SolicitudNoTransporte, soli.SolicitudId ) " +
+                                " SELECT SolicitudWarehouseTo, fechaRecepcion, SUM(TotalContenedores) AS TotalContenedores, SUM(ContenedoresAuditados) AS ContenedoresAuditados " +
+                                " FROM registros GROUP BY    SolicitudWarehouseTo,   fechaRecepcion ORDER BY fechaRecepcion DESC ", (tienda, fechaInicio, fechaFin))
             registros=cursor.fetchall()
             for registro in registros:
-                if registro[4] !=0:
-                    # print(registro[4])
-                    porcentaje = str(round(registro[5]/registro[4]*100,2)) + " %"
-                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], porcentaje)
+                if registro[2] !=0:
+                    # print(registro[4]) 
+                    porcentaje = str(round(registro[3]/registro[2]*100,2)) + " %"
+                    auditoriaTienda=AuditoriaTiendaCl(registro[0], registro[1], registro[2], registro[3],  porcentaje)
                     auditoriaTiendaList.append(auditoriaTienda)
                 else:
-                    auditoriaTienda=AuditoriaTienda(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], 'NA')
+                    auditoriaTienda=AuditoriaTiendaCl(registro[0], registro[1], registro[2], registro[3], 'NA')
                     auditoriaTiendaList.append(auditoriaTienda)
             return auditoriaTiendaList
         except Exception as exception:
@@ -531,3 +541,66 @@ class RecepcionTiendaDaoCl():
             finally:
                 if conexion!= None:
                     self.closeConexion(conexion)
+
+
+    def getOrderAudi(self,tienda, fecha):
+            try:
+                conexion=self.getConexion()
+                cursor=conexion.cursor()
+                orderList=[]
+                cursor.execute("select  soli.SolicitudID " +
+                                "from (select sol.SolicitudID, sol.SolicitudNoTransporte,sol.SolicitudTotalContenedores, sol.SolicitudWarehouseTo, (select top 1 TransportistaFecha from SolicitudTransportista st where st.SolicitudID=sol.SolicitudID and st.SolicitudNoTransporte=sol.SolicitudNoTransporte and st.TransportistaOrigen='TIENDA') fechaRecepcion  " +
+                                "from Solicitud sol where sol.SolicitudStatus=4) soli  " +
+                                "where (select AlmacenCve from Almacen where AlmacenCve like '%DI' and AlmacenEstatus = 'N' and soli.SolicitudWarehouseTo = AlmacenCve) = soli.SolicitudWarehouseTo  " +
+                                "and soli.SolicitudWarehouseTo = ? " +
+                                # "and soli.SolicitudNoTransporte = ? " +
+                                "and format(soli.fechaRecepcion, 'yyyy-MM-dd') = ?  " +
+                                "order by soli.SolicitudNoTransporte desc ",tienda, fecha)
+                registros=cursor.fetchall()
+                for registro in registros:
+                    orderAudi=OrderAudi(registro[0])
+                    orderList.append(orderAudi)
+                return orderList
+            except Exception as exception:
+                logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
+                raise exception
+            finally:
+                if conexion!= None:
+                    self.closeConexion(conexion)
+
+                    
+    def getSubFamilyOrders(self, tienda,fecha):
+        try:
+            conexion=self.getConexion()
+            cursor=conexion.cursor()
+            subfamilyList=[]
+            query = ("Select  s.SolicitudWarehouseTo , ship.user_def2,COUNT(ship.container_id) totalContenedores,COUNT(audi.AuditoriaContenedorID) contenedoresAuditados " +
+                    " from Solicitud s join SolicitudContenedor soc on s.SolicitudID = soc.SolicitudID and s.SolicitudNoTransporte = soc.SolicitudNoTransporte " +
+                    " left join  " +
+                    " (select distinct sc.user_def2, sc.parent_container_id as container_id from [192.168.84.34].[ILS].[dbo].[SHIPPING_CONTAINER] sc where sc.parent_container_id is not null " +
+                    " union all  " +
+                    " select distinct ssc.user_def2, ssc.parent_container_id as container_id from [192.168.84.34].[ILS].[dbo].[AR_SHIPPING_CONTAINER] ssc where ssc.parent_container_id is not null) ship on ship.container_id COLLATE Modern_Spanish_CI_AS = soc.ContenedorId COLLATE Modern_Spanish_CI_AS " +
+                    " left join AuditoriaContenedor audi  on audi.AuditoriaContenedorID=soc.ContenedorId AND audi.AuditoriaContenedorStatus!=1 " +
+                    " where s.SolicitudWarehouseTo = ? " +
+                    " and (SELECT TOP 1 format(st.TransportistaFecha,'yyyy-MM-dd') FROM SolicitudTransportista st  " +
+                    " WHERE st.SolicitudID = s.SolicitudID  AND st.SolicitudNoTransporte = s.SolicitudNoTransporte AND st.TransportistaOrigen = 'TIENDA') = ? " +
+                    " group by s.SolicitudWarehouseTo,ship.user_def2  ")
+            
+            cursor.execute(query,tienda,fecha )
+            print(query)
+            registros=cursor.fetchall()
+            for registro in registros:
+                if registro[2] !=0:
+                    porcentaje = str(round(registro[3]/registro[2]*100,2)) + " %"
+                    subfamilyOrder=SubFamilyOrder(registro[0], registro[1], registro[2], registro[3],porcentaje)
+                    subfamilyList.append(subfamilyOrder)
+                else:
+                    subfamilyOrder=SubFamilyOrder(registro[0], registro[1], registro[2], registro[3], 'NA')
+                    subfamilyList.append(subfamilyOrder)
+            return subfamilyList
+        except Exception as exception:
+            logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
+            raise exception
+        finally:
+            if conexion!= None:
+                self.closeConexion(conexion)

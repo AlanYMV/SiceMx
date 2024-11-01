@@ -515,3 +515,23 @@ Original exception text was: 'AuditoriaTiendaCl' object has no attribute 'pedido
 2024-10-22 13:14:32,033 [ERROR] - Entro a getReciboSap Col'212085'
 2024-10-22 13:14:32,033 [ERROR] - Entro al proceso getReciboSap Col
 2024-10-22 13:14:32,033 [ERROR] - SELECT DocSDT, CLOSE_QTY_SDT, CLOSE_QTY_TR, OPEN_QTY_SDT, OPEN_QTY_TR, TOTAL_QTY_SDT, TOTAL_QTY_TR, WMS, DIF, CLOSE_DATE, STS_WMS, VAL FROM SAP_RECEIPT_COL WHERE DocSDT in ('212085')  ORDER BY DocSDT
+2024-10-22 16:21:42,832 [ERROR] - Entro a getReciboSap Col'','','','','',''
+2024-10-22 16:21:42,832 [ERROR] - Entro al proceso getReciboSap Col
+2024-10-22 16:21:43,037 [ERROR] - SELECT DocSDT, CLOSE_QTY_SDT, CLOSE_QTY_TR, OPEN_QTY_SDT, OPEN_QTY_TR, TOTAL_QTY_SDT, TOTAL_QTY_TR, WMS, DIF, CLOSE_DATE, STS_WMS, VAL FROM SAP_RECEIPT_COL WHERE DocSDT in ('','','','','','')  ORDER BY DocSDT
+2024-10-29 09:56:28,201 [ERROR] - Se presento una incidencia al obtener los registros: AuditoriaTiendaCl.__init__() missing 1 required positional argument: 'porcentaje'
+2024-10-29 09:56:28,219 [ERROR] - Se presento una incidencia: AuditoriaTiendaCl.__init__() missing 1 required positional argument: 'porcentaje'
+2024-10-29 09:56:38,672 [ERROR] - Se presento una incidencia al obtener los registros: AuditoriaTiendaCl.__init__() missing 1 required positional argument: 'porcentaje'
+2024-10-29 09:56:38,688 [ERROR] - Se presento una incidencia: AuditoriaTiendaCl.__init__() missing 1 required positional argument: 'porcentaje'
+2024-10-29 09:57:39,868 [ERROR] - Se presento una incidencia: Got AttributeError when attempting to get a value for field `carga` on serializer `AuditoriaTiendaClSerializerCl`.
+The serializer field might be named incorrectly and not match any attribute or key on the `AuditoriaTiendaCl` instance.
+Original exception text was: 'AuditoriaTiendaCl' object has no attribute 'carga'.
+2024-10-29 16:50:11,627 [ERROR] - Se presento una incidencia al obtener los registros: SubFamilyOrder.__init__() takes 8 positional arguments but 9 were given
+2024-10-29 16:50:11,662 [ERROR] - Se presento una incidencia: SubFamilyOrder.__init__() takes 8 positional arguments but 9 were given
+2024-10-29 16:51:21,166 [ERROR] - Se presento una incidencia al obtener los registros: SubFamilyOrder.__init__() takes 8 positional arguments but 9 were given
+2024-10-29 16:51:21,201 [ERROR] - Se presento una incidencia: SubFamilyOrder.__init__() takes 8 positional arguments but 9 were given
+2024-10-30 12:32:27,553 [ERROR] - Se presento una incidencia al obtener los registros: ('The SQL contains 0 parameter markers, but 2 parameters were supplied', 'HY000')
+2024-10-30 12:32:27,553 [ERROR] - Se presento una incidencia: ('The SQL contains 0 parameter markers, but 2 parameters were supplied', 'HY000')
+2024-10-30 12:32:37,595 [ERROR] - Se presento una incidencia al obtener los registros: ('The SQL contains 0 parameter markers, but 2 parameters were supplied', 'HY000')
+2024-10-30 12:32:37,614 [ERROR] - Se presento una incidencia: ('The SQL contains 0 parameter markers, but 2 parameters were supplied', 'HY000')
+2024-10-30 12:34:46,402 [ERROR] - Se presento una incidencia al obtener los registros: ('The SQL contains 0 parameter markers, but 2 parameters were supplied', 'HY000')
+2024-10-30 12:34:46,418 [ERROR] - Se presento una incidencia: ('The SQL contains 0 parameter markers, but 2 parameters were supplied', 'HY000')
