@@ -643,3 +643,18 @@ class subFamilyOrderClSerializer(serializers.Serializer):
         totalContenedor = serializers.CharField() 
         auditado = serializers.CharField() 
         porcentaje = serializers.CharField()
+
+class AssortedWorkUnitSerializer(serializers.Serializer):
+        container_id = serializers.CharField()
+        container_type = serializers.CharField()
+        work_unit = serializers.CharField()
+        from_loc = serializers.CharField()
+        item = serializers.CharField()
+        quantity = serializers.CharField()
+
+class ItemLocationSerializer(serializers.Serializer):
+        id = serializers.CharField()
+        item = serializers.CharField()
+        location = serializers.CharField()
+        found = serializers.CharField()
+        date = serializers.CharField()

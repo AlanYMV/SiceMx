@@ -1,6 +1,5 @@
-from django.urls import path
+from django.urls import path,re_path
 from sevicios_app.api.views import *
-from django.urls import re_path
 
 urlpatterns = [
     path('pedidos/', pedidos_list, name='pedidos-list'),
@@ -237,7 +236,16 @@ urlpatterns = [
     path('estatus_ola_file_cl/', getEstatusOlaFileCl, name='getEstatusOlaFileCl'),
     path('detalle_ola_cl/', getDetalleEstatusContenedoresCl, name='getDetalleEstatusContenedoresCl'),
     path('inventario_almacenaje_file_cl/', getInventarioAlmacenajeFileCl, name='getInventarioAlmacenajeFileCl'),
-    path('confirmacion_pendientes/', getConfirmacionesPendientes, name='getConfirmacionesPendientes'), #new
-
-
+    path('confirmacion_pendientes/', getConfirmacionesPendientes, name='getConfirmacionesPendientes'),
+    path('registrar_contenedores_mx/', registrar_contenedores, name='registrar_contenedores'), #Alta contenedor
+    path('eliminar_contenedores_mx/', eliminar_contenedores, name='eliminar_contenedores'), #Baja contenedor
+    path('actualizar_dimensiones_mx/', actualizar_unidad_de_medida, name='actualizar_unidad_de_medida'), #Actualizacion Dimensiones Item
+    path('unidad_trabajo_surtido_reserva/<str:launch_num>', getWorkUnitAssorted, name='getWorkUnitAssorted'),
+    path('unidad_trabajo_surtido_reserva_descarga/<str:launch_num>', getWorkUnitAssortedFile, name='getWorkUnitAssortedFile'),
+    path('agregar_articulo_ubicacion/<str:item>/<str:location>', getInsertItemUbicacion, name='getInsertItemUbicacion'),
+    path('articulos_ubicacion/', getItemLocation, name='getItemLocation'),
+    path('descargar_articulos_ubicacion/<str:date>', getDownloadItemLocation, name='getDownloadItemLocation'),
+    path('registrar_contenedores_cl/', registrar_contenedores_cl, name='registrar_contenedores_cl'),
+    path('eliminar_contenedores_cl/', eliminar_contenedores_cl, name='eliminar_contenedores_cl'), 
+    path('actualizar_dimensiones_cl/', actualizar_unidad_de_medida_cl, name='actualizar_unidad_de_medida_cl'), 
 ]

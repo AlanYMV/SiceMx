@@ -1,0 +1,36 @@
+<h1>Ubicación de artículos</h1>
+<hr>
+
+<div class="row" style="display: flex; align-items: center; gap: 5px;">
+    <div class="col-auto" style="padding: 0; margin-right: 5px;">
+        Fecha: 
+    </div>
+    <div class="col-auto" style="padding: 0; margin-left: 5px;">
+        <input class="form-control" type="date" placeholder="Fecha" required pattern="\d{4}-\d{2}-\d{2}" id="fecha">
+    </div>
+    <div class="col-auto" style="padding: 0; margin-left: 5px;">
+      <button class="btn btn-primary d-inline" (click)="descargarConFecha()">Descargar</button>
+    </div>
+</div>
+
+<hr>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Articulo</th>
+            <th scope="col">Ubicacion</th>
+            <th scope="col">Encontrado</th>
+            <th scope="col">Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of itemLs">
+            <td>{{item.id}}</td>
+            <td>{{item.item}}</td>
+            <td>{{item.location}}</td>
+            <td>{{item.found}}</td>
+            <td>{{item.date}}</td>
+        </tr>
+    </tbody>
+</table>

@@ -31,6 +31,10 @@ import { DownloadsContainerQc } from "./components/container-qc/container-qc.com
 import { ConfirmPending } from "./components/confirmacion-pendientes/confirmacion-pendientes.component";
 import { ColsultKardex } from "./components/kardex/consult-kardex.component";
 import { ConsultHuella } from "./components/huella-digital/huella-digital.component";
+import { ContainerTypeUp } from './components/container-type-up/container-type-up.component';
+import { DimensionItem } from './components/dimension-item/dimension-item.component';
+import { WUReserveAssorted } from './components/wu-reserve.assorted/wu-reserve-assorted.component';
+import { ItemLocation } from './components/item-location/item-location.component';
 
 const APP_ROUTES : Routes = [
     { path:'home', component: HomeComponent},
@@ -65,6 +69,10 @@ const APP_ROUTES : Routes = [
     { path:'confirmacion-pendientes', component: ConfirmPending},
     { path:'consult-kardex', component: ColsultKardex},
     { path:'huella-digital', component: ConsultHuella},
+    { path:'container-type-up', component: ContainerTypeUp},
+    { path:'dimension-item', component: DimensionItem},
+    { path:'wu-reserve-assorted', component: WUReserveAssorted},
+    { path:'item-location', component: ItemLocation},
     { path:'**', pathMatch: 'full', redirectTo: 'home'}
 ];
 

@@ -23,10 +23,17 @@ from sevicios_app.api.dao.TraficoDao import TraficoDao
 from sevicios_app.api.dao.WmsCLDao import WMSCLDao
 from sevicios_app.api.dao.WmsCOLDao import WMSCOLDao
 from sevicios_app.api.serializers import *
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from sevicios_app.api.dao.SapDaoCol import *
 from sevicios_app.api.dao.SapDaoII import *
 from sevicios_app.api.dao.ScaleIntColDao import ScaleIntColDao
+from sevicios_app.api.dao.WmsDaoQA import *
+from sevicios_app.api.dao.ContainerService import ContainerService
+from sevicios_app.api.dao.ContainerServiceCl import ContainerServiceCl
+import pandas as pd
+from django.views.decorators.csrf import csrf_exempt
+from sevicios_app.api.dao.SapDaoMx import SapDaoMx
+import time
 
 logger = logging.getLogger('')
 
@@ -328,7 +335,7 @@ def descargaArticulos(request):
 @api_view(['GET'])
 def storagesTemplates(request):
     try:
-        sapDao=SAPDao()
+        sapDao=SapDaoMx()
         storagesTemplatesList=sapDao.getStorageTemplates('100')
         serializer=StorageTemplateSerializer(storagesTemplatesList, many=True)
         return Response(serializer.data)
@@ -454,7 +461,7 @@ def descargaStorages(request):
         worksheet.write(0, 14, 'Length')
         worksheet.write(0, 15, 'Volume')
         worksheet.write(0, 16, 'Weight')
-        sapDao=SAPDao()
+        sapDao=SapDaoMx()
         storagesTemplatesList=sapDao.getStorageTemplates('')
 
         row=1
@@ -4853,7 +4860,7 @@ def getConfirmacionesPendientes(request):
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['GET']) #New
-def getConsultaKardex(request,item = "",container_id = "",location = "",user_stamp = "",work_type = "",dateStar = "", dateEnd = ""):
+def getConsultaKardex(request,item,container_id,location,user_stamp,work_type,dateStar, dateEnd):
     try:
         print("getConsultaKardex")
         print(f"item: {item}")
@@ -4870,11 +4877,12 @@ def getConsultaKardex(request,item = "",container_id = "",location = "",user_sta
         serializer=ConsultaKardex(kardexList, many=True)
         return Response(serializer.data)
     except Exception as exception:
+        print(exception)
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['GET'])
-def getKardexDownload(request,item = "",container_id = "",location = "",user_stamp = "",work_type = "",dateStar = "", dateEnd = ""):
+def getKardexDownload(request,item,container_id,location,user_stamp,work_type,dateStar, dateEnd):
     
     wmsDao=WMSDao()
     cont = wmsDao.timeDownloadKardex(item, container_id, location, user_stamp, work_type, dateStar, dateEnd)
@@ -4978,16 +4986,17 @@ def descargaStoragesCOL(request):
         worksheet.write(0, 4, 'Familia')
         worksheet.write(0, 5, 'Subfamilia')
         worksheet.write(0, 6, 'Subsubfamilia')
-        worksheet.write(0, 7, 'uSysCat4')
-        worksheet.write(0, 8, 'uSysCat5')
-        worksheet.write(0, 9, 'uSysCat6')
-        worksheet.write(0, 10, 'uSysCat7')
-        worksheet.write(0, 11, 'uSysCat8')
-        worksheet.write(0, 12, 'Height')
-        worksheet.write(0, 13, 'Width')
-        worksheet.write(0, 14, 'Length')
-        worksheet.write(0, 15, 'Volume')
-        worksheet.write(0, 16, 'Weight')
+        worksheet.write(0, 7, 'uSysLote')
+        worksheet.write(0, 8, 'uSysCat4')
+        worksheet.write(0, 9, 'uSysCat5')
+        worksheet.write(0, 10, 'uSysCat6')
+        worksheet.write(0, 11, 'uSysCat7')
+        worksheet.write(0, 12, 'uSysCat8')
+        worksheet.write(0, 13, 'Height')
+        worksheet.write(0, 14, 'Width')
+        worksheet.write(0, 15, 'Length')
+        worksheet.write(0, 16, 'Volume')
+        worksheet.write(0, 17, 'Weight')
         sapDaoCol = SapDaoCol()
         storagesTemplatesList=sapDaoCol.getStorageTemplatesCol('')
 
@@ -5000,16 +5009,17 @@ def descargaStoragesCOL(request):
             worksheet.write(row, 4, storageTemplate.familia)
             worksheet.write(row, 5, storageTemplate.subFamilia)
             worksheet.write(row, 6, storageTemplate.subSubFamilia)
-            worksheet.write(row, 7, storageTemplate.uSysCat4)
-            worksheet.write(row, 8, storageTemplate.uSysCat5)
-            worksheet.write(row, 9, storageTemplate.uSysCat6)
-            worksheet.write(row, 10, storageTemplate.uSysCat7)
-            worksheet.write(row, 11, storageTemplate.uSysCat8)
-            worksheet.write(row, 12, storageTemplate.height)
-            worksheet.write(row, 13, storageTemplate.width)
-            worksheet.write(row, 14, storageTemplate.length)
-            worksheet.write(row, 15, storageTemplate.volume)
-            worksheet.write(row, 16, storageTemplate.weight)
+            worksheet.write(row, 7, storageTemplate.uSysLote)
+            worksheet.write(row, 8, storageTemplate.uSysCat4)
+            worksheet.write(row, 9, storageTemplate.uSysCat5)
+            worksheet.write(row, 10, storageTemplate.uSysCat6)
+            worksheet.write(row, 11, storageTemplate.uSysCat7)
+            worksheet.write(row, 12, storageTemplate.uSysCat8)
+            worksheet.write(row, 13, storageTemplate.height)
+            worksheet.write(row, 14, storageTemplate.width)
+            worksheet.write(row, 15, storageTemplate.length)
+            worksheet.write(row, 16, storageTemplate.volume)
+            worksheet.write(row, 17, storageTemplate.weight)
             row=row+1
         workbook.close()
 
@@ -5766,3 +5776,521 @@ def subFamilyOrdersCl(request, tienda, fecha):
     except Exception as exception:
         logger.error(f'Se presento una incidencia: {exception}')
         return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@csrf_exempt
+@api_view(['POST'])
+def handle_request(request, action):
+    logger.info("Entrando en handle_request con acción: %s", action)
+    print("Entrando en handle_request con acción:", action)
+    if(action == ''):
+        action = 'add'
+    if request.method == 'POST':
+        logger.info("Método POST recibido")
+        print("Método POST recibido")
+        try:
+            file = request.FILES['file']
+            logger.info("Archivo recibido: %s", file.name)
+            print("Archivo recibido:", file.name)
+            dataframe = pd.read_excel(file)
+            logger.info("Dataframe cargado con éxito")
+            print("Dataframe cargado con éxito")
+
+            validation_error = ContainerService.validate_columns(dataframe, action)
+            if validation_error:
+                logger.warning("Error de validación: %s", validation_error)
+                print("Error de validación:", validation_error)
+                return JsonResponse({"error": validation_error}, status=400)
+
+            data = dataframe.to_dict(orient='records')
+            logger.info("Datos recibidos: %s", data)
+
+            if action == 'add':
+                row_status = ContainerService.registrar_contenedores(data)
+            elif action == 'delete':
+                row_status = ContainerService.eliminar_contenedores(data)
+            elif action == 'update':
+                row_status = ContainerService.actualizar_unidad_de_medida(data)
+
+            output = ContainerService.create_excel(row_status, f'resultado_{action}.xlsx')
+            logger.info("Creación del archivo de salida completada")
+            print("Creación del archivo de salida completada")
+            return FileResponse(output, as_attachment=True, filename=f'resultado_{action}.xlsx')
+
+        except Exception as e:
+            logger.error("Error al procesar la solicitud: %s", e, exc_info=True)
+            print("Error al procesar la solicitud:", e)
+            return JsonResponse({"error": str(e)}, status=500)
+
+        
+@api_view(['GET'])
+def getWorkUnitAssorted(request, launch_num):
+    try:
+        wmsDao=WMSDao()
+        recibosList=wmsDao.getAssortedWorkUnit(launch_num)
+        serializer=AssortedWorkUnitSerializer(recibosList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+       
+@api_view(['GET'])
+def getWorkUnitAssortedFile(request,launch_num):
+    try:
+        wmsDao=WMSDao()
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'Contenedor Id')
+        worksheet.write(0, 1, 'Tipo de contenedor')
+        worksheet.write(0, 2, 'Unidad de trabajo')
+        worksheet.write(0, 3, 'Ubicacion Origen')
+        worksheet.write(0, 4, 'Articulo')
+        worksheet.write(0, 5, 'Cantidad')
+        
+        TopList=wmsDao.getAssortedWorkUnit(launch_num)
+        
+        row=1
+        for top in TopList:
+            worksheet.write(row, 0, top.container_id)
+            worksheet.write(row, 1, top.container_type)
+            worksheet.write(row, 2, top.work_unit)
+            worksheet.write(row, 3, top.from_loc)
+            worksheet.write(row, 4, top.item)
+            worksheet.write(row, 5, top.quantity)
+            row=row+1
+
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'UnidadTrabajoSurtidoReserva.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+db_helper = ContainerService()
+
+expected_columns = {
+    'add': ['CONTAINER_TYPE', 'DESCRIPTION', 'CONTAINER_CLASS', 'EMPTY_WEIGHT', 'WEIGHT_UM', 'LENGTH', 'WIDTH', 'HEIGHT', 'ACTIVE', 'WEIGHT_TOLERANCE', 'MAXIMUM_WEIGHT'],
+    'delete': ['CONTAINER_TYPE'],
+    'update': ['SKU', 'UM', 'LONGITUD', 'ANCHURA', 'ALTURA', 'PESO']
+}
+
+@csrf_exempt
+@api_view(['POST'])
+def registrar_contenedores(request):
+    if request.method == 'POST':
+        try:
+            print("Agregando contenedores...")
+            file = request.FILES['file']
+            dataframe = pd.read_excel(file)
+
+            # Cambiando tipo de datos
+            dataframe['CONTAINER_TYPE'] = dataframe['CONTAINER_TYPE'].astype(str)
+            dataframe['DESCRIPTION'] = dataframe['DESCRIPTION'].astype(str)
+            dataframe['CONTAINER_CLASS'] = dataframe['CONTAINER_CLASS'].astype(str)
+            dataframe['EMPTY_WEIGHT'] = dataframe['EMPTY_WEIGHT'].astype(float)
+            dataframe['WEIGHT_UM'] = dataframe['WEIGHT_UM'].astype(str)
+            dataframe['LENGTH'] = dataframe['LENGTH'].astype(float)
+            dataframe['WIDTH'] = dataframe['WIDTH'].astype(float)
+            dataframe['HEIGHT'] = dataframe['HEIGHT'].astype(float)
+            dataframe['ACTIVE'] = dataframe['ACTIVE'].astype(str)
+            dataframe['WEIGHT_TOLERANCE'] = dataframe['WEIGHT_TOLERANCE'].astype(float)
+            dataframe['MAXIMUM_WEIGHT'] = dataframe['MAXIMUM_WEIGHT'].astype(float)
+
+            missing_columns = [col for col in expected_columns['add'] if col not in dataframe.columns]
+            if missing_columns:
+                return JsonResponse({"error": f"Faltan las siguientes columnas: {', '.join(missing_columns)}"}, status=400)
+
+            validation_error = db_helper.validate_columns(dataframe, 'add', expected_columns)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+
+            data = dataframe.to_dict(orient='records')
+
+            container_types = list(set(row['CONTAINER_TYPE'] for row in data))
+            existing_containers = db_helper.check_existing_containers(container_types)
+
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'CONTAINER_TYPE')
+            worksheet.write(0, 1, 'Mensaje')
+
+            values_to_insert = []
+            row_status = []
+            seen_containers = set()
+
+            for row in data:
+                if row['CONTAINER_TYPE'] in seen_containers or row['CONTAINER_TYPE'] in existing_containers:
+                    row_status.append((row['CONTAINER_TYPE'], 'Error: Contenedor duplicado'))
+                else:
+                    seen_containers.add(row['CONTAINER_TYPE'])
+                    values_to_insert.append((row['CONTAINER_TYPE'], row['DESCRIPTION'], row['CONTAINER_CLASS'], row['EMPTY_WEIGHT'],
+                                             row['WEIGHT_UM'], row['LENGTH'], row['WIDTH'], row['HEIGHT'], row['ACTIVE'],
+                                             row['WEIGHT_TOLERANCE'], row['MAXIMUM_WEIGHT']))
+                    row_status.append((row['CONTAINER_TYPE'], 'Insertado correctamente'))
+
+            insertion_result = db_helper.insert_containers(values_to_insert)
+            if isinstance(insertion_result, str):
+                print("Error agregando contenedores")
+                return JsonResponse({"error": f"Error al insertar contenedores: {insertion_result}"}, status=500)
+
+            for idx, status in enumerate(row_status):
+                worksheet.write(idx + 1, 0, status[0])
+                worksheet.write(idx + 1, 1, status[1])
+
+            workbook.close()
+            output.seek(0)
+            print("Contenedores agregados correctamente")
+            return FileResponse(output, as_attachment=True, filename='resultado_inserciones.xlsx')
+
+        except Exception as e:
+            print("Error:", str(e))
+            return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+def eliminar_contenedores(request):
+    print("Depurando contenedores...")
+    if request.method == 'POST':
+        try:
+            file = request.FILES['file']
+            dataframe = pd.read_excel(file)
+            missing_columns = [col for col in expected_columns['delete'] if col not in dataframe.columns]
+            if missing_columns:
+                return JsonResponse({"error": f"Faltan las siguientes columnas: {', '.join(missing_columns)}"}, status=400)
+
+            validation_error = db_helper.validate_columns(dataframe, 'delete', expected_columns)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+
+            data = dataframe.to_dict(orient='records')
+            container_types = list(set(row['CONTAINER_TYPE'] for row in data))
+            existing_containers = db_helper.check_existing_containers(container_types)
+
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'CONTAINER_TYPE')
+            worksheet.write(0, 1, 'Mensaje')
+            row_status = []
+            seen_containers = set() 
+            
+            for row in data:
+                if row['CONTAINER_TYPE'] in seen_containers:
+                    row_status.append((row['CONTAINER_TYPE'], 'Error: Contenedor no encontrado'))
+                elif row['CONTAINER_TYPE'] not in existing_containers:
+                    row_status.append((row['CONTAINER_TYPE'], 'Error: Contenedor no encontrado'))
+                else:
+                    seen_containers.add(row['CONTAINER_TYPE'])
+                    row_status.append((row['CONTAINER_TYPE'], 'Eliminado correctamente'))
+
+            deletion_result = db_helper.delete_containers(container_types)
+            if isinstance(deletion_result, str):
+                print("Error borrando contenedores")
+                return JsonResponse({"error": f"Error al eliminar contenedores: {deletion_result}"}, status=500)
+
+            for idx, status in enumerate(row_status):
+                worksheet.write(idx + 1, 0, status[0])
+                worksheet.write(idx + 1, 1, status[1])
+            workbook.close()
+            output.seek(0)
+            print("Contenedores eliminados correctamente")
+            return FileResponse(output, as_attachment=True, filename='resultado_eliminaciones.xlsx')
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+def actualizar_unidad_de_medida(request):
+    print("Actualizando dimensiones...")
+    if request.method == 'POST':
+        try:
+            file = request.FILES['file']
+            dataframe = pd.read_excel(file)
+            validation_error = db_helper.validate_columns(dataframe, 'update', expected_columns)
+            missing_columns = [col for col in expected_columns['update'] if col not in dataframe.columns]
+            print(validation_error)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+            data = dataframe.to_dict(orient='records')
+            logger.info("Datos recibidos: %s", data)
+
+            update_result = db_helper.actualizar_unidad_de_medida(data)
+            if isinstance(update_result, str):
+                print("Error al actualizar las dimensiones")
+                return JsonResponse({"error": update_result}, status=500)
+            
+            no_encontrados = [row for row in data if (row['SKU'], row['UM']) not in db_helper.check_existing_items([row['SKU']], [row['UM']])]
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'SKU')
+            worksheet.write(0, 1, 'UM')
+            worksheet.write(0, 2, 'Mensaje')
+
+            for idx, row in enumerate(data):
+                if row in no_encontrados:
+                    worksheet.write(idx + 1, 0, row['SKU'])
+                    worksheet.write(idx + 1, 1, row['UM'])
+                    worksheet.write(idx + 1, 2, 'No encontrado')
+                else:
+                    worksheet.write(idx + 1, 0, row['SKU'])
+                    worksheet.write(idx + 1, 1, row['UM'])
+                    worksheet.write(idx + 1, 2, 'Actualizado correctamente')
+
+            workbook.close()
+            output.seek(0)
+            logger.info("Archivo Excel creado con éxito")
+            print("Dimensiones actualizadas correctamente")
+            return FileResponse(output, as_attachment=True, filename='resultado_actualizaciones.xlsx')
+
+        except Exception as e:
+            logger.error("Error: %s", e)
+            return JsonResponse({"error": str(e)}, status=500)
+        
+@api_view(['GET'])
+def getInsertItemUbicacion(request, item, location):
+    try:
+        print("Item Location: ")
+        wmsDao = WMSDao()
+        itemFound = wmsDao.getItemLocationInsert(item, location)
+        if itemFound:
+            return Response({'message': 'Artículo encontrado correctamente.'})
+        else:
+            return Response({'message': 'Artículo no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def getItemLocation(request):
+    try:
+        wmsDao=WMSDao()
+        recibosList=wmsDao.getItemLocation()
+        serializer=ItemLocationSerializer(recibosList, many=True)
+        return Response(serializer.data)
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+       
+@api_view(['GET'])
+def getDownloadItemLocation(request,date= ""):
+    try:
+        wmsDao=WMSDao()
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, 'Location ID')
+        worksheet.write(0, 1, 'Articulo')
+        worksheet.write(0, 2, 'Ubicacion')
+        worksheet.write(0, 3, 'Encontrado')
+        worksheet.write(0, 4, 'Fecha')
+        
+        itemList=wmsDao.getItemLocation(date)
+        
+        row=1
+        for item in itemList:
+            worksheet.write(row, 0, item.id)
+            worksheet.write(row, 1, item.item)
+            worksheet.write(row, 2, item.location)
+            worksheet.write(row, 3, item.found)
+            worksheet.write(row, 4, item.date)
+            row=row+1
+
+        workbook.close()
+
+        output.seek(0)
+
+        filename = 'ItemLocation.xlsx'
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    except Exception as exception:
+        logger.error(f'Se presento una incidencia: {exception}')
+        return Response({'Error': f'{exception}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+db_helper_cl = ContainerServiceCl()
+
+@csrf_exempt
+@api_view(['POST'])
+def registrar_contenedores_cl(request):
+    if request.method == 'POST':
+        try:
+            print("Agregando contenedores...")
+            file = request.FILES['file']
+            dataframe = pd.read_excel(file)
+
+            # Cambiando tipo de datos
+            dataframe['CONTAINER_TYPE'] = dataframe['CONTAINER_TYPE'].astype(str)
+            dataframe['DESCRIPTION'] = dataframe['DESCRIPTION'].astype(str)
+            dataframe['CONTAINER_CLASS'] = dataframe['CONTAINER_CLASS'].astype(str)
+            dataframe['EMPTY_WEIGHT'] = dataframe['EMPTY_WEIGHT'].astype(float)
+            dataframe['WEIGHT_UM'] = dataframe['WEIGHT_UM'].astype(str)
+            dataframe['LENGTH'] = dataframe['LENGTH'].astype(float)
+            dataframe['WIDTH'] = dataframe['WIDTH'].astype(float)
+            dataframe['HEIGHT'] = dataframe['HEIGHT'].astype(float)
+            dataframe['ACTIVE'] = dataframe['ACTIVE'].astype(str)
+            dataframe['WEIGHT_TOLERANCE'] = dataframe['WEIGHT_TOLERANCE'].astype(float)
+            dataframe['MAXIMUM_WEIGHT'] = dataframe['MAXIMUM_WEIGHT'].astype(float)
+
+            missing_columns = [col for col in expected_columns['add'] if col not in dataframe.columns]
+            if missing_columns:
+                return JsonResponse({"error": f"Faltan las siguientes columnas: {', '.join(missing_columns)}"}, status=400)
+
+            validation_error = db_helper_cl.validate_columns(dataframe, 'add', expected_columns)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+
+            data = dataframe.to_dict(orient='records')
+
+            container_types = list(set(row['CONTAINER_TYPE'] for row in data))
+            existing_containers = db_helper_cl.check_existing_containers(container_types)
+
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'CONTAINER_TYPE')
+            worksheet.write(0, 1, 'Mensaje')
+
+            values_to_insert = []
+            row_status = []
+            seen_containers = set()
+
+            for row in data:
+                if row['CONTAINER_TYPE'] in seen_containers or row['CONTAINER_TYPE'] in existing_containers:
+                    row_status.append((row['CONTAINER_TYPE'], 'Error: Contenedor duplicado'))
+                else:
+                    seen_containers.add(row['CONTAINER_TYPE'])
+                    values_to_insert.append((row['CONTAINER_TYPE'], row['DESCRIPTION'], row['CONTAINER_CLASS'], row['EMPTY_WEIGHT'],
+                                             row['WEIGHT_UM'], row['LENGTH'], row['WIDTH'], row['HEIGHT'], row['ACTIVE'],
+                                             row['WEIGHT_TOLERANCE'], row['MAXIMUM_WEIGHT']))
+                    row_status.append((row['CONTAINER_TYPE'], 'Insertado correctamente'))
+
+            insertion_result = db_helper_cl.insert_containers(values_to_insert)
+            if isinstance(insertion_result, str):
+                print("Error agregando contenedores")
+                return JsonResponse({"error": f"Error al insertar contenedores: {insertion_result}"}, status=500)
+
+            for idx, status in enumerate(row_status):
+                worksheet.write(idx + 1, 0, status[0])
+                worksheet.write(idx + 1, 1, status[1])
+
+            workbook.close()
+            output.seek(0)
+            print("Contenedores agregados correctamente")
+            return FileResponse(output, as_attachment=True, filename='resultado_inserciones.xlsx')
+
+        except Exception as e:
+            print("Error:", str(e))
+            return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+def eliminar_contenedores_cl(request):
+    print("Depurando contenedores...")
+    if request.method == 'POST':
+        try:
+            file = request.FILES['file']
+            dataframe = pd.read_excel(file)
+            missing_columns = [col for col in expected_columns['delete'] if col not in dataframe.columns]
+            if missing_columns:
+                return JsonResponse({"error": f"Faltan las siguientes columnas: {', '.join(missing_columns)}"}, status=400)
+
+            validation_error = db_helper_cl.validate_columns(dataframe, 'delete', expected_columns)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+
+            data = dataframe.to_dict(orient='records')
+            container_types = list(set(row['CONTAINER_TYPE'] for row in data))
+            existing_containers = db_helper_cl.check_existing_containers(container_types)
+
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'CONTAINER_TYPE')
+            worksheet.write(0, 1, 'Mensaje')
+            row_status = []
+            seen_containers = set() 
+            
+            for row in data:
+                if row['CONTAINER_TYPE'] in seen_containers:
+                    row_status.append((row['CONTAINER_TYPE'], 'Error: Contenedor no encontrado'))
+                elif row['CONTAINER_TYPE'] not in existing_containers:
+                    row_status.append((row['CONTAINER_TYPE'], 'Error: Contenedor no encontrado'))
+                else:
+                    seen_containers.add(row['CONTAINER_TYPE'])
+                    row_status.append((row['CONTAINER_TYPE'], 'Eliminado correctamente'))
+
+            deletion_result = db_helper_cl.delete_containers(container_types)
+            if isinstance(deletion_result, str):
+                print("Error eliminando contenedores")
+                return JsonResponse({"error": f"Error al eliminar contenedores: {deletion_result}"}, status=500)
+
+            for idx, status in enumerate(row_status):
+                worksheet.write(idx + 1, 0, status[0])
+                worksheet.write(idx + 1, 1, status[1])
+            workbook.close()
+            output.seek(0)
+            print("Contenedores eliminados correctamente")
+            return FileResponse(output, as_attachment=True, filename='resultado_eliminaciones.xlsx')
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+def actualizar_unidad_de_medida_cl(request):
+    print("Actualizando dimensiones...")
+    if request.method == 'POST':
+        try:
+            file = request.FILES['file']
+            dataframe = pd.read_excel(file)
+            validation_error = db_helper_cl.validate_columns(dataframe, 'update', expected_columns)
+            missing_columns = [col for col in expected_columns['update'] if col not in dataframe.columns]
+            print(validation_error)
+            if validation_error:
+                return JsonResponse({"error": validation_error}, status=400)
+            data = dataframe.to_dict(orient='records')
+            logger.info("Datos recibidos: %s", data)
+
+            update_result = db_helper_cl.actualizar_unidad_de_medida(data)
+            if isinstance(update_result, str):
+                print("Error al actualizar dimensiones")
+                return JsonResponse({"error": update_result}, status=500)
+            
+            no_encontrados = [row for row in data if (row['SKU'], row['UM']) not in db_helper_cl.check_existing_items([row['SKU']], [row['UM']])]
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            worksheet.write(0, 0, 'SKU')
+            worksheet.write(0, 1, 'UM')
+            worksheet.write(0, 2, 'Mensaje')
+
+            for idx, row in enumerate(data):
+                if row in no_encontrados:
+                    worksheet.write(idx + 1, 0, row['SKU'])
+                    worksheet.write(idx + 1, 1, row['UM'])
+                    worksheet.write(idx + 1, 2, 'No encontrado')
+                else:
+                    worksheet.write(idx + 1, 0, row['SKU'])
+                    worksheet.write(idx + 1, 1, row['UM'])
+                    worksheet.write(idx + 1, 2, 'Actualizado correctamente')
+
+            workbook.close()
+            output.seek(0)
+            logger.info("Archivo Excel creado con éxito")
+            print("Dimensiones actualizadas correctamente")
+            return FileResponse(output, as_attachment=True, filename='resultado_actualizaciones.xlsx')
+
+        except Exception as e:
+            logger.error("Error: %s", e)
+            return JsonResponse({"error": str(e)}, status=500)

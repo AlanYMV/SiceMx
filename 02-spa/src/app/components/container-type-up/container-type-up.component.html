@@ -1,0 +1,11 @@
+<h1>Alta de Container Type</h1>
+<hr>
+<input type="file" id="fileInputAdd" accept=".xlsx"><br><br>
+<button class="btn btn-primary" (click)="onFileChange('add')">Subir Datos</button>
+
+<h1>Eliminar Container Type</h1>
+<hr>
+<input type="file" id="fileInputDelete" accept=".xlsx"><br><br>
+<button class="btn btn-primary" (click)="onFileChange('delete')">Eliminar Datos</button>
+
+<div id="result">{{ resultMessage }}</div>

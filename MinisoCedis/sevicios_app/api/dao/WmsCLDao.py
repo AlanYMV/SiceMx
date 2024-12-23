@@ -21,6 +21,7 @@ from sevicios_app.vo.unitMesure import UnitMesure
 from sevicios_app.vo.porcentaje import Porcentaje
 from sevicios_app.vo.contenedorQc import ContenedorQc
 from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
+from sevicios_app.vo.LocationItem import LocationItem
 
 logger = logging.getLogger('')
 
@@ -526,3 +527,108 @@ class WMSCLDao():
             finally:
                 if conexion!= None:
                     self.closeConexion(conexion)
+
+#Container insert, delete and Update dimension item
+
+    def validate_columns(self, dataframe, action, expected_columns):
+        columns = dataframe.columns
+        missing_columns = [col for col in expected_columns[action] if col not in columns]
+        if missing_columns:
+            return f"Faltan las siguientes columnas: {', '.join(missing_columns)}"
+        return None
+
+    def check_existing_containers(self, container_types):
+        conexion = self.getConexion()
+        cursor = conexion.cursor()
+        placeholders = ', '.join(['?'] * len(container_types))
+        sql_check = f"SELECT CONTAINER_TYPE FROM CONTAINER_TYPE WHERE CONTAINER_TYPE IN ({placeholders})"
+        cursor.execute(sql_check, container_types)
+        results = set(row[0] for row in cursor.fetchall())
+        self.closeConexion(conexion)
+        return results
+    
+    def check_existing_items(self, sku_list, um_list):
+        conexion = self.getConexion()
+        cursor = conexion.cursor()
+        sql_check = """
+        SELECT ITEM, QUANTITY_UM 
+        FROM ITEM_UNIT_OF_MEASURE 
+        WHERE ITEM = ? AND QUANTITY_UM = ?
+        """
+        existing_items = set()
+        for sku, um in zip(sku_list, um_list):
+            cursor.execute(sql_check, (sku, um))
+            for row in cursor.fetchall():
+                existing_items.add((row[0], row[1]))
+        self.closeConexion(conexion)
+        return existing_items
+        
+
+    def insert_containers(self, values_to_insert):
+        conexion = self.getConexion()
+        cursor = conexion.cursor()
+        sql_insert = """
+        INSERT INTO CONTAINER_TYPE(CONTAINER_TYPE, DESCRIPTION, CONTAINER_CLASS, EMPTY_WEIGHT, WEIGHT_UM, LENGTH, WIDTH, HEIGHT, ACTIVE, WEIGHT_TOLERANCE, MAXIMUM_WEIGHT, USE_AS_DEFAULT, DATE_TIME_STAMP)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'N', GETDATE())
+        """
+        try:
+            total_params_per_record = 12  
+            max_params = 2100  
+            sub_batch_size = max_params // total_params_per_record  
+
+            for i in range(0, len(values_to_insert), sub_batch_size):
+                sub_batch = values_to_insert[i:i + sub_batch_size]
+                cursor.executemany(sql_insert, sub_batch)
+            conexion.commit()
+            print("Batch insertado correctamente.")
+            return True
+        except Exception as e:
+            logger.error(f"Error al insertar en bloque: {e}")
+            conexion.rollback()
+            return str(e)
+        finally:
+            self.closeConexion(conexion) 
+
+
+    def delete_containers(self, container_types):
+        conexion = self.getConexion()
+        cursor = conexion.cursor()
+        try:
+            sql_delete = f"DELETE FROM CONTAINER_TYPE WHERE CONTAINER_TYPE in {tuple(container_types)}"
+            cursor.execute(sql_delete)
+            conexion.commit()
+            logger.info("Eliminaciones realizadas con éxito")
+            return True
+        except Exception as e:
+            logger.error(f"Error al eliminar en bloque: {e}")
+            conexion.rollback()
+            return str(e)
+        finally:
+            self.closeConexion(conexion)
+
+    def actualizar_unidad_de_medida(self, data):
+        conexion = self.getConexion()
+        cursor = conexion.cursor()
+        sql_update = """
+        UPDATE ITEM_UNIT_OF_MEASURE
+        SET LENGTH = ?, WIDTH = ?, HEIGHT = ?, WEIGHT = ?
+        WHERE ITEM = ? AND QUANTITY_UM = ?
+        """
+        try:
+            values_to_update = [
+                (row['LONGITUD'], row['ANCHURA'], row['ALTURA'], row['PESO'], row['SKU'], row['UM'])
+                for row in data if (row['SKU'], row['UM']) in self.check_existing_items([row['SKU']], [row['UM']])
+            ]
+            if not values_to_update:
+                return "No se encontraron elementos para actualizar."
+                
+            cursor.executemany(sql_update, values_to_update)
+            conexion.commit()
+            logger.info("Actualizaciones realizadas con éxito")
+            return True
+        except Exception as e:
+            logger.error(f"Error al actualizar en bloque: {e}")
+            conexion.rollback()
+            return str(e)
+        finally:
+            self.closeConexion(conexion)

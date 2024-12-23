@@ -35,203 +35,216 @@ class ScaleIntChileDao():
             conexion=self.getConexion()
             cursor=conexion.cursor()
             comparativoWmsErpList=[]
-            cursor.execute("SELECT "+
-                           "YY.WAREHOUSE "+
-                           ",SUM(YY.WMS_ONHAND) AS WMS_ONHAND "+
-                           ",SUM(YY.ERP_ONHAND) AS ERP_ONHAND "+
-                           ",SUM(YY.DIF_ONHAND) AS DIFERENCIA "+
-                           ",SUM(YY.DIF_OH_ABS) AS 'DIFERENCIA ABS' "+
-                           ",SUM(YY.WMS_INTRANSIT) AS WMS_INTRANSIT "+
-                           ",(SELECT COUNT (XX.ITEM) FROM INVENTARIO XX (NOLOCK) WHERE XX.ERP_ALMACEN = SUBSTRING(WAREHOUSE,1,8)  "+
-                           "AND (XX.WMS_DISPONIBLE + XX.WMS_SUSPENDIDO + XX.WMS_TRANSITO) != 0 AND CONVERT(DATE, XX.FECHA) = CONVERT(DATE,GETDATE())) AS '#ITEMS_WMS' "+
-                           ",(SELECT COUNT (XX.ITEM) FROM INVENTARIO XX (NOLOCK) WHERE XX.ERP_ALMACEN = SUBSTRING(WAREHOUSE,1,8)  "+
-                           "AND (XX.ERP_DISPONIBLE) != 0 AND CONVERT(DATE, XX.FECHA) >= CONVERT(DATE,GETDATE())) AS '#ITEMS_ERP' "+
-                           ",(SELECT COUNT (XX.ITEM) FROM INVENTARIO XX (NOLOCK) WHERE XX.ERP_ALMACEN = SUBSTRING(WAREHOUSE,1,8)  "+
-                           "AND IIF(abs(XX.DIFERENCIA_DISPONIBLE)>0,(abs(XX.DIFERENCIA_DISPONIBLE) - XX.WMS_TRANSITO),abs(XX.DIFERENCIA_DISPONIBLE)) != 0  "+
-                           "AND CONVERT(DATE, XX.FECHA) >= CONVERT(DATE,GETDATE())) AS '#ITEMS_DIF' "+
-                           "FROM ( "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-PT - PRODUCTO TERMINADO' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-PT') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-OU - OUTLET' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-OU') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-MP - MERMA PROVEEDOR' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-MP') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-MA - MERMA ALMACEN' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-MA') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-DS - DESTRUCCION' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-DS') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-CR - CUARENTENA' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-CR') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-AC - ACONDICIONADO' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-AC') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-S2 - SPARTA RENTA' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-S2') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-P1 - PROVEEDOR LOGISFASHION' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-P1') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-P2 - PROVEEDOR FASHION TRANSPORT' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-P2') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-S1 - COSMETICOS ENEA' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-S1') "+
-                           "UNION ALL "+
-                           "SELECT "+
-                           "DATEADD(HH,3,FECHA) as DATE_TIME "+
-                           ",[ITEM] "+
-                           ",'CL001-S3 - SUPERMERCADO' WAREHOUSE "+
-                           ",[WMS_SUSPENDIDO] WMS_SUSPENSE "+
-                           ",[WMS_TRANSITO] WMS_INTRANSIT "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [WMS_DISPONIBLE], [WMS_DISPONIBLE] - [WMS_TRANSITO]) WMS_ONHAND "+
-                           ",[ERP_DISPONIBLE] ERP_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], [DIFERENCIA_DISPONIBLE], [DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO]) DIF_ONHAND "+
-                           ",IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) DIF_OH_ABS "+
-                           "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
-                           "WHERE CONVERT(DATE, FECHA) >= CONVERT(DATE,GETDATE()) "+
-                           "AND (WMS_DISPONIBLE + WMS_SUSPENDIDO + WMS_TRANSITO + ERP_DISPONIBLE) != 0 "+
-                           "AND ERP_ALMACEN IN ('CL001-S3') "+
-                           ") AS YY "+
-                           "GROUP BY YY.WAREHOUSE "+
-                           "ORDER BY ERP_ONHAND DESC")
+            cursor.execute(" SELECT     " +
+                            " YY.WAREHOUSE     " +
+                            " ,SUM(YY.WMS_ONHAND) AS WMS_ONHAND     " +
+                            " ,SUM(YY.ERP_ONHAND) AS ERP_ONHAND     " +
+                            " ,SUM(YY.DIF_ONHAND) AS DIFERENCIA     " +
+                            " ,SUM(YY.DIF_OH_ABS) AS 'DIFERENCIA ABS'     " +
+                            " ,SUM(YY.WMS_INTRANSIT) AS WMS_INTRANSIT     " +
+                            " ,(SELECT COUNT (XX.ITEM) FROM INVENTARIO XX (NOLOCK) WHERE XX.ERP_ALMACEN = SUBSTRING(WAREHOUSE,1,8)      " +
+                            " AND (XX.WMS_DISPONIBLE + XX.WMS_SUSPENDIDO + XX.WMS_TRANSITO) != 0 AND CONVERT(DATE, XX.FECHA) = CONVERT(DATE,GETDATE())) AS '#ITEMS_WMS'     " +
+                            " ,(SELECT COUNT (XX.ITEM) FROM INVENTARIO XX (NOLOCK) WHERE XX.ERP_ALMACEN = SUBSTRING(WAREHOUSE,1,8)      " +
+                            " AND (XX.ERP_DISPONIBLE) != 0 AND CONVERT(DATE, XX.FECHA) >= CONVERT(DATE,GETDATE())) AS '#ITEMS_ERP'     " +
+                            " ,(SELECT COUNT (XX.ITEM) FROM INVENTARIO XX (NOLOCK) WHERE XX.ERP_ALMACEN = SUBSTRING(WAREHOUSE,1,8)      " +
+                            " AND IIF(abs(XX.DIFERENCIA_DISPONIBLE)>0,(abs(XX.DIFERENCIA_DISPONIBLE) - XX.WMS_TRANSITO),abs(XX.DIFERENCIA_DISPONIBLE)) != 0      " +
+                            " AND CONVERT(DATE, XX.FECHA) >= CONVERT(DATE,GETDATE())) AS '#ITEMS_DIF'     " +
+                            " FROM (     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-PT - PRODUCTO TERMINADO' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-PT')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-OU - OUTLET' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)  INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-OU')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-MP - MERMA PROVEEDOR' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-MP')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-MA - MERMA ALMACEN' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS      " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-MA')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.ITEM     " +
+                            " ,'CL001-DS - DESTRUCCION' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-DS')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-CR - CUARENTENA' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-CR')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-AC - ACONDICIONADO' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS      " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-AC')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-S2 - SPARTA RENTA' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-S2')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-P1 - PROVEEDOR LOGISFASHION' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-P1')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-P2 - PROVEEDOR FASHION TRANSPORT' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS      " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-P2')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-S1 - COSMETICOS ENEA' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS       " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-S1')     " +
+                            " UNION ALL     " +
+                            " SELECT     " +
+                            " DATEADD(HH,3,INV.FECHA) as DATE_TIME     " +
+                            " ,INV.[ITEM]     " +
+                            " ,'CL001-S3 - SUPERMERCADO' WAREHOUSE     " +
+                            " ,INV.[WMS_SUSPENDIDO] WMS_SUSPENSE     " +
+                            " ,INV.[WMS_TRANSITO] WMS_INTRANSIT     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[WMS_DISPONIBLE], INV.[WMS_DISPONIBLE] - INV.[WMS_TRANSITO]) WMS_ONHAND     " +
+                            " ,INV.[ERP_DISPONIBLE] ERP_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE], INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO]) DIF_ONHAND     " +
+                            " ,IIF(INV.[WMS_DISPONIBLE]=INV.[ERP_DISPONIBLE], ABS(INV.[DIFERENCIA_DISPONIBLE]), ABS(INV.[DIFERENCIA_DISPONIBLE] - INV.[WMS_TRANSITO])) DIF_OH_ABS     " +
+                            " FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK)    INV  " +
+                            "   " +
+                            " WHERE CONVERT(DATE, INV.FECHA) >= CONVERT(DATE,GETDATE())     " +
+                            " AND (INV.WMS_DISPONIBLE + INV.WMS_SUSPENDIDO + INV.WMS_TRANSITO + INV.ERP_DISPONIBLE) != 0     " +
+                            " AND INV.ERP_ALMACEN IN ('CL001-S3')     " +
+                            " ) AS YY     " +
+                            " WHERE (SELECT IT.ITEM_CATEGORY1 FROM [192.168.84.34].[ILS].[dbo].[ITEM] IT WHERE YY.ITEM COLLATE Latin1_General_CI_AS = IT.ITEM COLLATE Latin1_General_CI_AS ) != 'BOLSAS' " +
+                            " GROUP BY YY.WAREHOUSE     " +
+                            " ORDER BY ERP_ONHAND DESC " )
             registros=cursor.fetchall()
             for registro in registros:
                 inventarioWmsErp=InventarioWmsErp(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5], registro[6], registro[7], registro[8])
@@ -325,7 +338,8 @@ class ScaleIntChileDao():
                            "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] (NOLOCK) "+
                            "WHERE CONVERT(DATE, FECHA) = CONVERT(DATE,GETDATE()) "+
                            "AND ERP_ALMACEN IN ('CL001-PT') "+
-                           "AND IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) > 0 "+
+                        #    "AND IIF([WMS_DISPONIBLE]=[ERP_DISPONIBLE], ABS([DIFERENCIA_DISPONIBLE]), ABS([DIFERENCIA_DISPONIBLE] - [WMS_TRANSITO])) > 0 "+
+                            "AND IIF(abs(DIFERENCIA_DISPONIBLE)>0,(abs(DIFERENCIA_DISPONIBLE) - WMS_TRANSITO),abs(DIFERENCIA_DISPONIBLE)) != 0  " +
                            "ORDER BY DIF_OH_ABS DESC")
             registros=cursor.fetchall()
             for registro in registros:

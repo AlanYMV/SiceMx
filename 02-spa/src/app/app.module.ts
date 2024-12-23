@@ -43,6 +43,12 @@ import { PesoContenedorComponent } from './components/peso-contenedor/peso-conte
 import { ConfirmPending } from './components/confirmacion-pendientes/confirmacion-pendientes.component';
 import { ColsultKardex } from './components/kardex/consult-kardex.component';
 import { ConsultHuella } from './components/huella-digital/huella-digital.component';
+import {UploadComponent} from './upload/upload.component';
+import { ContainerTypeUp } from './components/container-type-up/container-type-up.component';
+import { DimensionItem } from './components/dimension-item/dimension-item.component';
+import { WUReserveAssorted } from './components/wu-reserve.assorted/wu-reserve-assorted.component';
+import { ItemLocation } from './components/item-location/item-location.component';
+
 
 
 @NgModule({
@@ -79,7 +85,12 @@ import { ConsultHuella } from './components/huella-digital/huella-digital.compon
     PesoContenedorComponent,
     ConfirmPending,
     ColsultKardex,
-    ConsultHuella
+    ConsultHuella,
+    ContainerTypeUp,
+    UploadComponent,
+    DimensionItem,
+    WUReserveAssorted,
+    ItemLocation
   ],
   imports: [
     BrowserModule,

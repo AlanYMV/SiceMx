@@ -1,0 +1,38 @@
+<h1>Unidades de Trabajo Surtido desde Reserva</h1>
+<hr>
+<div>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Buscar Unidad de trabajo" (keyup.enter)="buscarUnidad(unidad.value)" #unidad>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary" (click)="buscarUnidad(unidad.value)">Buscar</button>
+        </div>
+    </div>
+</div>
+<p></p>
+<div *ngIf="reserveNum">
+    <a href="http://192.168.84.108:8080/servicios/unidad_trabajo_surtido_reserva_descarga/{{reserveNum}}" class="btn btn-primary">Descargar</a>
+</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Contenedor id</th>
+            <th scope="col">Tipo de contenedor</th>
+            <th scope="col">Unidad de trabajo</th>
+            <th scope="col">Ubicacion Origen</th>
+            <th scope="col">Articulo</th>
+            <th scope="col">Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let reserve of reserveAssorteds">
+            <td>{{reserve.container_id}}</td>
+            <td>{{reserve.container_type}}</td>
+            <td>{{reserve.work_unit}}</td>
+            <td>{{reserve.from_loc}}</td>
+            <td>{{reserve.item}}</td>
+            <td>{{reserve.quantity}}</td>
+        </tr>
+    </tbody>
+</table>

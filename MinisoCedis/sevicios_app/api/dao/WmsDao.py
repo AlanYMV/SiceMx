@@ -24,6 +24,8 @@ from sevicios_app.vo.contenedorQc import ContenedorQc
 from sevicios_app.vo.itemcontenedorqc import ItemContenedorQc
 from sevicios_app.vo.kardex import Kardex
 from sevicios_app.vo.kardexDownload import KardexDownload
+from sevicios_app.vo.assortedWU import AssortedWU 
+from sevicios_app.vo.itemLocation import ItemLocation
 
 logger = logging.getLogger('')
 
@@ -788,7 +790,7 @@ class WMSDao():
             if conexion!= None:
                 self.closeConexion(conexion)
 
-    def getConsultKardex(self,item = "",container_id = "",location = "",user_stamp = "",work_type = "", dateStart = "", dateEnd = ""): #ConsultKardex
+    def getConsultKardex(self,item,container_id,location,user_stamp,work_type, dateStart, dateEnd): #ConsultKardex
         if (item or container_id or location or user_stamp or work_type or dateStart or dateEnd):
             try:
                 conexion=self.getConexion()
@@ -883,7 +885,7 @@ class WMSDao():
                 if conexion!= None:
                     self.closeConexion(conexion)
                     
-    def getDownloadKardex(self,item = "",container_id = "",location = "",user_stamp = "",work_type = "", dateStart = "", dateEnd = ""): #ConsultKardex
+    def getDownloadKardex(self,item,container_id,location,user_stamp,work_type, dateStart, dateEnd): #ConsultKardex
         if (item or container_id or location or user_stamp or work_type or dateStart or dateEnd):
             try:
                 conexion=self.getConexion()
@@ -963,67 +965,67 @@ class WMSDao():
                 if dateEnd:
                     params.append(dateEnd) 
                 
-                # base_query += (" UNION ALL " + # 108
-                #                 " SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " + 
-                #                 " CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
-                #                 " CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
-                #                 " CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
-                #                 " FROM [192.168.84.108].[ILS].[dbo].[TRANSACTION_HISTORY] th (NOLOCK) WHERE ")
+                base_query += (" UNION ALL " + # 108
+                                " SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " + 
+                                " CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                                " CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
+                                " CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
+                                " FROM [192.168.84.108].[ILS].[dbo].[TRANSACTION_HISTORY] th (NOLOCK) WHERE ")
 
-                # if conditions:
-                #     base_query += " " + " AND ".join(conditions)
+                if conditions:
+                    base_query += " " + " AND ".join(conditions)
 
-                # if item:
-                #     params.append(item)
+                if item:
+                    params.append(item)
 
-                # if container_id:
-                #     params.append(container_id)
+                if container_id:
+                    params.append(container_id)
 
-                # if location:
-                #     params.append(location)
+                if location:
+                    params.append(location)
                 
-                # if user_stamp:
-                #     params.append(user_stamp)
+                if user_stamp:
+                    params.append(user_stamp)
 
-                # if work_type:
-                #     params.append(work_type)
+                if work_type:
+                    params.append(work_type)
 
-                # if dateStart:
-                #     params.append(dateStart)
+                if dateStart:
+                    params.append(dateStart)
 
-                # if dateEnd:
-                #     params.append(dateEnd)
+                if dateEnd:
+                    params.append(dateEnd)
 					
-                # base_query += (" UNION ALL " +
-                #                 "SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " +
-                #                 "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
-                #                 "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
-                #                 "CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
-                #                 "FROM [192.168.84.108].[ILS].[dbo].[AR_TRANSACTION_HISTORY] th (NOLOCK) WHERE ")
+                base_query += (" UNION ALL " +
+                                "SELECT th.ITEM, th.TRANSACTION_TYPE, th.LOCATION, th.CONTAINER_ID, th.REFERENCE_ID, TH.REFERENCE_TYPE, th.WORK_TYPE, convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DATE_STAMP,th.USER_STAMP, " +
+                                "CAST(th.QUANTITY AS decimal(10,0)) QUANTITY, th.BEFORE_STS, th.AFTER_STS, CAST(th.BEFORE_ON_HAND_QTY AS decimal(10,0))BEFORE_ON_HAND_QTY, CAST(th.AFTER_ON_HAND_QTY AS decimal(10,0)) AFTER_ON_HAND_QTY, " +
+                                "CAST(th.BEFORE_IN_TRANSIT_QTY AS decimal(10,0)) BEFORE_IN_TRANSIT_QTY, CAST(th.AFTER_IN_TRANSIT_QTY AS decimal(10,0)) AFTER_IN_TRANSIT_QTY, CAST(th.BEFORE_SUSPENSE_QTY AS decimal(10,0)) BEFORE_SUSPENSE_QTY, " +
+                                "CAST(th.AFTER_SUSPENSE_QTY AS decimal(10,0)) AFTER_SUSPENSE_QTY, CAST(th.BEFORE_ALLOC_QTY AS decimal(10,0)) BEFORE_ALLOC_QTY, CAST(th.AFTER_ALLOC_QTY AS decimal(10,0)) AFTER_ALLOC_QTY, TH.DIRECTION " +
+                                "FROM [192.168.84.108].[ILS].[dbo].[AR_TRANSACTION_HISTORY] th (NOLOCK) WHERE ")
 
-                # if conditions:
-                #     base_query += " " + " AND ".join(conditions)
+                if conditions:
+                    base_query += " " + " AND ".join(conditions)
 
-                # if item:
-                #     params.append(item)
+                if item:
+                    params.append(item)
 
-                # if container_id:
-                #     params.append(container_id)
+                if container_id:
+                    params.append(container_id)
 
-                # if location:
-                #     params.append(location)
+                if location:
+                    params.append(location)
                 
-                # if user_stamp:
-                #     params.append(user_stamp)
+                if user_stamp:
+                    params.append(user_stamp)
 
-                # if work_type:
-                #     params.append(work_type)
+                if work_type:
+                    params.append(work_type)
 
-                # if dateStart:
-                #     params.append(dateStart)
+                if dateStart:
+                    params.append(dateStart)
 
-                # if dateEnd:
-                #     params.append(dateEnd)
+                if dateEnd:
+                    params.append(dateEnd)
 					
 
                 base_query += " ORDER BY convert(nvarchar(MAX),DATEADD(HH, -5, th.DATE_TIME_STAMP),20) DESC"
@@ -1041,7 +1043,7 @@ class WMSDao():
                 if conexion!= None:
                     self.closeConexion(conexion)
 
-    def timeDownloadKardex(self,item = "",container_id = "",location = "",user_stamp = "",work_type = "",dateStar = "", dateEnd = ""):
+    def timeDownloadKardex(self,item,container_id,location,user_stamp,work_type,dateStar, dateEnd):
         try:
                 conexion=self.getConexion()
                 cursor=conexion.cursor()
@@ -1121,6 +1123,132 @@ class WMSDao():
         except Exception as exception:
                 logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
                 raise exception
+        finally:
+            if conexion!= None:
+                self.closeConexion(conexion)
+
+            
+    def getAssortedWorkUnit(self, launch_num):
+        try:
+            conexion=self.getConexion()
+            cursor=conexion.cursor()
+            assortedList=[]
+            cursor.execute( """
+                            select sc.CONTAINER_ID, sc.CONTAINER_TYPE, wi.WORK_UNIT, wi.FROM_LOC, wi.ITEM, CAST(wi.QUANTITY AS FLOAT)
+                            from SHIPMENT_HEADER sh
+                            inner join shipping_container sc on sc.internal_shipment_num=sh.internal_shipment_num
+                            inner join WORK_INSTRUCTION wi on wi.CONTAINER_ID=sc.CONTAINER_ID
+                            where sh.launch_num = ?
+                            and sc.CONTAINER_ID is not null and wi.INSTRUCTION_TYPE='Header'
+                            and WORK_TYPE='Surtido desde Reserva' order by wi.from_loc, sc.CONTAINER_ID
+                            """,launch_num)
+            registros=cursor.fetchall()
+            for registro in registros:
+                assorted=AssortedWU(registro[0], registro[1], registro[2], registro[3], registro[4], registro[5])
+                assortedList.append(assorted)
+            return assortedList
+        except Exception as exception:
+            logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+            raise exception
+        finally:
+            if conexion!= None:
+                self.closeConexion(conexion)
+
+    def getItemLocationInsert(self, item, location):
+        try:
+            conexion = self.getConexion()
+            cursor = conexion.cursor()
+            itemFound = False
+
+            cursor.execute("""
+                            SELECT top 1 li.ITEM 
+                            FROM LOCATION_INVENTORY li 
+                            LEFT JOIN ITEM_CROSS_REFERENCE bc on li.ITEM = bc.ITEM
+                            WHERE bc.X_REF_ITEM = ?
+                            """, (item,))
+            
+            registros = cursor.fetchall()
+
+            if len(registros) > 0:
+                print("Articulo encontrado")
+
+                if location == "data":
+                    location = ""
+                    print("Articulo sin ubicacion")
+                    for registro in registros:
+                        itemFound = True
+                        print(registro[0])
+                        cursor.execute("""
+                                        INSERT INTO IRA (ITEM, LOCATION, FOUND, DATE) 
+                                        VALUES (?, ?, 'INCORRECTO', GETDATE())
+                                        """, (registro[0], location))
+                    conexion.commit()
+
+                elif location:
+                    cursor.execute("""
+                                    SELECT li.ITEM, li.Location 
+                                    FROM LOCATION_INVENTORY li 
+                                    LEFT JOIN ITEM_CROSS_REFERENCE bc on li.ITEM = bc.ITEM
+                                    WHERE bc.X_REF_ITEM = ? AND li.Location = ?
+                                    """, (item, location))
+
+                    registros = cursor.fetchall()      
+                    if len(registros) > 0:
+                        itemFound = True
+                        print("Articulo y ubicacion encontrado correctamente.")
+                        for registro in registros:
+                            cursor.execute("""
+                                        INSERT INTO IRA (ITEM, LOCATION, FOUND, DATE) 
+                                        VALUES (?, ?, 'CORRECTO', GETDATE())
+                                        """, (registro[0], registro[1]))
+                        conexion.commit()
+                    else:
+                        itemFound = False
+                        print("Articulo y ubicacion no encontrado.")
+                        cursor.execute("""
+                                        INSERT INTO IRA (ITEM, LOCATION, FOUND, DATE) 
+                                        VALUES (?, ?, 'INCORRECTO', GETDATE())
+                                        """, (item, location))
+                        conexion.commit()
+            else:
+                print("Articulo no encontrado")                
+                cursor.execute("""
+                                INSERT INTO IRA (ITEM, LOCATION, FOUND, DATE) 
+                                VALUES (?, ?, 'INCORRECTO', GETDATE())
+                                """, (item, location))
+                conexion.commit()
+
+            return itemFound
+        except Exception as exception:
+            logger.error(f"Se presento una incidencia al obtener los registros: {exception}")
+            raise exception
+        finally:
+            if conexion is not None:
+                self.closeConexion(conexion)
+
+
+    def getItemLocation(self,date = ""):
+        try:
+            conexion=self.getConexion()
+            cursor=conexion.cursor()
+            ItemList=[]
+            url = ("Select LOCATION_ID, ITEM, LOCATION, FOUND, CONVERT(varchar,DATE,20) From IRA")               
+
+            if date:
+                url += (" WHERE CONVERT(varchar,Date,103) = ? ",date)
+
+            url += "ORDER BY LOCATION_ID"
+
+            cursor.execute(url)
+
+            registros=cursor.fetchall()
+            for registro in registros:
+                item=ItemLocation(registro[0], registro[1], registro[2], registro[3], registro[4])
+                ItemList.append(item)
+            return ItemList
+        except Exception as exception:
+            logger.error(f"Se presento una incidencia al obtener los reistros: {exception}")
+            raise exception
         finally:
             if conexion!= None:
                 self.closeConexion(conexion)

@@ -86,7 +86,7 @@
                         </tr>
                         <tr>
                             <td></td>
-                            <td>FOLIOS PENDINETES DE CERRAR EN ERP</td>
+                            <td>FOLIOS PENDIENTES DE CERRAR EN ERP</td>
                             <td style="background-color: rgb(252, 185, 2);">{{recibosCloseErp}}</td>
                             <td></td>
                             <td style="background-color: rgb(252, 185, 2);">{{pedidosCloseErp}}</td>
@@ -275,204 +275,205 @@
                 </table>
             </div>
         </div>
-        <div class="tab-pane fade" id="recibo" role="tabpanel" aria-labelledby="recibo-tab">
-            <h6 align="center">RECIBOS</h6>
-            <p></p>
-            <div>
-                <div class="row">
-                    <div class="col">
-                        <input class="form-control" type="text" size="20" placeholder="Recibos" (keyup.enter)="buscarRecibos(recibos.value)" #recibos>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-primary" (click)="buscarRecibos(recibos.value)">Buscar</button>
-                    </div>
+    </div>
+    <div class="tab-pane fade" id="recibo" role="tabpanel" aria-labelledby="recibo-tab">
+        <h6 align="center">RECIBOS</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Recibos" (keyup.enter)="buscarRecibos(recibos.value)" #recibos>
                 </div>
-            </div>
-            <p></p>
-            <hr>
-            <div>
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th scope="col">RECIBO</th>
-                            <th scope="col">C REQ QTY</th>
-                            <th scope="col">C REC QTY</th>
-                            <th scope="col">O REQ QTY</th>
-                            <th scope="col">O REC QTY</th>
-                            <th scope="col">TOTAL REQ QTY</th>
-                            <th scope="col">TOTAL REC QTY</th>
-                            <th scope="col">WMS</th>
-                            <th scope="col">DIF</th>
-                            <th scope="col">CLOSE DATE</th>
-                            <th scope="col">STS WMS</th>
-                            <th scope="col">VAL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let reciboSap of recibosSap">
-                            <td>{{reciboSap.docSDT}}</td>
-                            <td>{{reciboSap.closeQtySdt}}</td>
-                            <td>{{reciboSap.closeQtyTr}}</td>
-                            <td>{{reciboSap.openQtySdt}}</td>
-                            <td>{{reciboSap.openQtyTr}}</td>
-                            <td>{{reciboSap.totalQtySdt}}</td>
-                            <td>{{reciboSap.totalQtyTr}}</td>
-                            <td>{{reciboSap.wms}}</td>
-                            <td>{{reciboSap.dif}}</td>
-                            <td>{{reciboSap.closeDate}}</td>
-                            <td>{{reciboSap.stsWms}}</td>
-                            <td>{{reciboSap.val}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="col">
+                    <button class="btn btn-primary" (click)="buscarRecibos(recibos.value)">Buscar</button>
+                </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="pedido" role="tabpanel" aria-labelledby="pedido-tab">
-            <h6 align="center">PEDIDOS</h6>
-            <p></p>
-            <div>
-                <div class="row">
-                    <div class="col">
-                        <input class="form-control" type="text" size="20" placeholder="Pedidos" (keyup.enter)="buscarPedidos(pedidos.value)" #pedidos>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-primary" (click)="buscarPedidos(pedidos.value)">Buscar</button>
-                    </div>
-                </div>
-            </div>
-            <p></p>
-            <hr>
-            <div>
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th scope="col">PEDIDO</th>
-                            <th scope="col">C REQ QTY</th>
-                            <th scope="col">C REC QTY</th>
-                            <th scope="col">O REQ QTY</th>
-                            <th scope="col">O REC QTY</th>
-                            <th scope="col">TOTAL REQ QTY</th>
-                            <th scope="col">TOTAL REC QTY</th>
-                            <th scope="col">WMS CLOSE</th>
-                            <th scope="col">DIF</th>
-                            <th scope="col">SHIP DATE</th>
-                            <th scope="col">STS WMS</th>
-                            <th scope="col">VAL</th>
-                            <th scope="col">OPEN SAP</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let reciboSap of pedidosSap">
-                            <td>{{reciboSap.docSDT}}</td>
-                            <td>{{reciboSap.closeQtySdt}}</td>
-                            <td>{{reciboSap.closeQtyTr}}</td>
-                            <td>{{reciboSap.openQtySdt}}</td>
-                            <td>{{reciboSap.openQtyTr}}</td>
-                            <td>{{reciboSap.totalQtySdt}}</td>
-                            <td>{{reciboSap.totalQtyTr}}</td>
-                            <td>{{reciboSap.wmsClose}}</td>
-                            <td>{{reciboSap.dif}}</td>
-                            <td>{{reciboSap.shipDate}}</td>
-                            <td>{{reciboSap.stsWms}}</td>
-                            <td>{{reciboSap.val}}</td>
-                            <td>{{reciboSap.openSap}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="ajuste-recibo" role="tabpanel" aria-labelledby="ajuste-recibo-tab">
-            <h6 align="center">AJUSTES RECIBOS</h6>
-            <p></p>
-            <div>
-                <div class="row">
-                    <div class="col">
-                        <input class="form-control" type="text" size="20" placeholder="Recibos" (keyup.enter)="buscarRecibosAjuste(recibosAjuste.value)" #recibosAjuste>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-primary" (click)="buscarRecibosAjuste(recibosAjuste.value)">Buscar</button>
-                    </div>
-                </div>
-            </div>
-            <p></p>
-            <hr>
-            <div>
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th scope="col">RECIBO</th>
-                            <th scope="col">TOTAL REQ QTY</th>
-                            <th scope="col">TOTAL REC QTY</th>
-                            <th scope="col">WMS</th>
-                            <th scope="col">DIF</th>
-                            <th scope="col">CLOSE DATE</th>
-                            <th scope="col">STS WMS</th>
-                            <th scope="col">VAL</th>
-                            <th scope="col">ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let reciboSap of recibosSapAjustes">
-                            <td>{{reciboSap.docSDT}}</td>
-                            <td>{{reciboSap.totalQtySdt}}</td>
-                            <td>{{reciboSap.totalQtyTr}}</td>
-                            <td>{{reciboSap.wms}}</td>
-                            <td>{{reciboSap.dif}}</td>
-                            <td>{{reciboSap.closeDate}}</td>
-                            <td>{{reciboSap.stsWms}}</td>
-                            <td>{{reciboSap.val}}</td>
-                            <td><button class="btn btn-primary" (click)="insertSapReceiptVal(reciboSap.docSDT)">ACTUALIZAR</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="ajuste-pedido" role="tabpanel" aria-labelledby="ajuste-pedido-tab">
-            <h6 align="center">AJUSTES PEDIDOS</h6>
-            <p></p>
-            <div>
-                <div class="row">
-                    <div class="col">
-                        <input class="form-control" type="text" size="20" placeholder="Pedidos" (keyup.enter)="buscarPedidosAjuste(pedidosAjuste.value)" #pedidosAjuste>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-primary" (click)="buscarPedidosAjuste(pedidosAjuste.value)">Buscar</button>
-                    </div>
-                </div>
-            </div>
-            <p></p>
-            <hr>
-            <div>
-                <table class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th scope="col">PEDIDO</th>
-                            <th scope="col">TOTAL REQ QTY</th>
-                            <th scope="col">TOTAL REC QTY</th>
-                            <th scope="col">WMS CLOSE</th>
-                            <th scope="col">DIF</th>
-                            <th scope="col">SHIP DATE</th>
-                            <th scope="col">STS WMS</th>
-                            <th scope="col">OPEN SAP</th>
-                            <th scope="col">VAL</th>
-                            <th scope="col">ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let reciboSap of pedidosSapAjustes">
-                            <td>{{reciboSap.docSDT}}</td>
-                            <td>{{reciboSap.totalQtySdt}}</td>
-                            <td>{{reciboSap.totalQtyTr}}</td>
-                            <td>{{reciboSap.wmsClose}}</td>
-                            <td>{{reciboSap.dif}}</td>
-                            <td>{{reciboSap.shipDate}}</td>
-                            <td>{{reciboSap.stsWms}}</td>
-                            <td>{{reciboSap.openSap}}</td>
-                            <td>{{reciboSap.val}}</td>
-                            <td><button class="btn btn-primary" (click)="insertSapShipmentVal(reciboSap.docSDT)">ACTUALIZAR</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">RECIBO</th>
+                        <th scope="col">C REQ QTY</th>
+                        <th scope="col">C REC QTY</th>
+                        <th scope="col">O REQ QTY</th>
+                        <th scope="col">O REC QTY</th>
+                        <th scope="col">TOTAL REQ QTY</th>
+                        <th scope="col">TOTAL REC QTY</th>
+                        <th scope="col">WMS</th>
+                        <th scope="col">DIF</th>
+                        <th scope="col">CLOSE DATE</th>
+                        <th scope="col">STS WMS</th>
+                        <th scope="col">VAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let reciboSap of recibosSap">
+                        <td>{{reciboSap.docSDT}}</td>
+                        <td>{{reciboSap.closeQtySdt}}</td>
+                        <td>{{reciboSap.closeQtyTr}}</td>
+                        <td>{{reciboSap.openQtySdt}}</td>
+                        <td>{{reciboSap.openQtyTr}}</td>
+                        <td>{{reciboSap.totalQtySdt}}</td>
+                        <td>{{reciboSap.totalQtyTr}}</td>
+                        <td>{{reciboSap.wms}}</td>
+                        <td>{{reciboSap.dif}}</td>
+                        <td>{{reciboSap.closeDate}}</td>
+                        <td>{{reciboSap.stsWms}}</td>
+                        <td>{{reciboSap.val}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+    <div class="tab-pane fade" id="pedido" role="tabpanel" aria-labelledby="pedido-tab">
+        <h6 align="center">PEDIDOS</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Pedidos" (keyup.enter)="buscarPedidos(pedidos.value)" #pedidos>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" (click)="buscarPedidos(pedidos.value)">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">C REQ QTY</th>
+                        <th scope="col">C REC QTY</th>
+                        <th scope="col">O REQ QTY</th>
+                        <th scope="col">O REC QTY</th>
+                        <th scope="col">TOTAL REQ QTY</th>
+                        <th scope="col">TOTAL REC QTY</th>
+                        <th scope="col">WMS CLOSE</th>
+                        <th scope="col">DIF</th>
+                        <th scope="col">SHIP DATE</th>
+                        <th scope="col">STS WMS</th>
+                        <th scope="col">VAL</th>
+                        <th scope="col">OPEN SAP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let reciboSap of pedidosSap">
+                        <td>{{reciboSap.docSDT}}</td>
+                        <td>{{reciboSap.closeQtySdt}}</td>
+                        <td>{{reciboSap.closeQtyTr}}</td>
+                        <td>{{reciboSap.openQtySdt}}</td>
+                        <td>{{reciboSap.openQtyTr}}</td>
+                        <td>{{reciboSap.totalQtySdt}}</td>
+                        <td>{{reciboSap.totalQtyTr}}</td>
+                        <td>{{reciboSap.wmsClose}}</td>
+                        <td>{{reciboSap.dif}}</td>
+                        <td>{{reciboSap.shipDate}}</td>
+                        <td>{{reciboSap.stsWms}}</td>
+                        <td>{{reciboSap.val}}</td>
+                        <td>{{reciboSap.openSap}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="ajuste-recibo" role="tabpanel" aria-labelledby="ajuste-recibo-tab">
+        <h6 align="center">AJUSTES RECIBOS</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Recibos" (keyup.enter)="buscarRecibosAjuste(recibosAjuste.value)" #recibosAjuste>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" (click)="buscarRecibosAjuste(recibosAjuste.value)">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">RECIBO</th>
+                        <th scope="col">TOTAL REQ QTY</th>
+                        <th scope="col">TOTAL REC QTY</th>
+                        <th scope="col">WMS</th>
+                        <th scope="col">DIF</th>
+                        <th scope="col">CLOSE DATE</th>
+                        <th scope="col">STS WMS</th>
+                        <th scope="col">VAL</th>
+                        <th scope="col">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let reciboSap of recibosSapAjustes">
+                        <td>{{reciboSap.docSDT}}</td>
+                        <td>{{reciboSap.totalQtySdt}}</td>
+                        <td>{{reciboSap.totalQtyTr}}</td>
+                        <td>{{reciboSap.wms}}</td>
+                        <td>{{reciboSap.dif}}</td>
+                        <td>{{reciboSap.closeDate}}</td>
+                        <td>{{reciboSap.stsWms}}</td>
+                        <td>{{reciboSap.val}}</td>
+                        <td><button class="btn btn-primary" (click)="insertSapReceiptVal(reciboSap.docSDT)">ACTUALIZAR</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="ajuste-pedido" role="tabpanel" aria-labelledby="ajuste-pedido-tab">
+        <h6 align="center">AJUSTES PEDIDOS</h6>
+        <p></p>
+        <div>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" type="text" size="20" placeholder="Pedidos" (keyup.enter)="buscarPedidosAjuste(pedidosAjuste.value)" #pedidosAjuste>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary" (click)="buscarPedidosAjuste(pedidosAjuste.value)">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">PEDIDO</th>
+                        <th scope="col">TOTAL REQ QTY</th>
+                        <th scope="col">TOTAL REC QTY</th>
+                        <th scope="col">WMS CLOSE</th>
+                        <th scope="col">DIF</th>
+                        <th scope="col">SHIP DATE</th>
+                        <th scope="col">STS WMS</th>
+                        <th scope="col">OPEN SAP</th>
+                        <th scope="col">VAL</th>
+                        <th scope="col">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let reciboSap of pedidosSapAjustes">
+                        <td>{{reciboSap.docSDT}}</td>
+                        <td>{{reciboSap.totalQtySdt}}</td>
+                        <td>{{reciboSap.totalQtyTr}}</td>
+                        <td>{{reciboSap.wmsClose}}</td>
+                        <td>{{reciboSap.dif}}</td>
+                        <td>{{reciboSap.shipDate}}</td>
+                        <td>{{reciboSap.stsWms}}</td>
+                        <td>{{reciboSap.openSap}}</td>
+                        <td>{{reciboSap.val}}</td>
+                        <td><button class="btn btn-primary" (click)="insertSapShipmentVal(reciboSap.docSDT)">ACTUALIZAR</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
