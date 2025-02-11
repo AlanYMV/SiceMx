@@ -1,0 +1,43 @@
+<h1>Inventario disponible</h1>
+<hr>
+<div class="row">
+    <div class="col">
+        Fecha:
+    </div>
+    <div class="col">
+        <input class="form-control" type="date" placeholder="Fecha fin" required pattern="\d{4}-\d{2}-\d{2}" #fecha>
+    </div>
+    <div class="col">
+        <a (click)="searchInventory(fecha.value)" class="btn btn-primary" >Buscar</a>
+        
+        <a (click)="download(fecha.value)" class="btn btn-primary ms-2" >Descargar</a>
+    </div>
+</div>
+<hr>    
+<p></p>   
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Item</th>
+            <th scope="col">On Hand</th>
+            <th scope="col">In Transit</th>
+            <th scope="col">Allocated</th>
+            <th scope="col">Suspense</th>
+            <th scope="col">Requested</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let inven of inventory">
+            <td>{{inven.item}}</td>
+            <td>{{inven.on_hand}}</td>
+            <td>{{inven.in_transit}}</td>
+            <td>{{inven.allocated}}</td>
+            <td>{{inven.suspense}}</td>
+            <td>{{inven.requested}}</td>
+            <td>{{inven.quantity}}</td>
+            <td>{{inven.date_time}}</td>
+        </tr>
+    </tbody>
+</table>

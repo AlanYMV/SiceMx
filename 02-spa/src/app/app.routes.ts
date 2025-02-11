@@ -35,6 +35,9 @@ import { ContainerTypeUp } from './components/container-type-up/container-type-u
 import { DimensionItem } from './components/dimension-item/dimension-item.component';
 import { WUReserveAssorted } from './components/wu-reserve.assorted/wu-reserve-assorted.component';
 import { ItemLocation } from './components/item-location/item-location.component';
+import { PricePromotion } from './components/prices-promotions/prices-promotions.component';
+import { ShorpackDay } from './components/shorpack/shorpack.component';
+import { InventoryAvailable } from './components/inventory-available/inventory_available.component';
 
 const APP_ROUTES : Routes = [
     { path:'home', component: HomeComponent},
@@ -73,6 +76,9 @@ const APP_ROUTES : Routes = [
     { path:'dimension-item', component: DimensionItem},
     { path:'wu-reserve-assorted', component: WUReserveAssorted},
     { path:'item-location', component: ItemLocation},
+    { path:'prices-promotions', component: PricePromotion},
+    { path:'shorpack', component: ShorpackDay},
+    { path:'inventory-available', component: InventoryAvailable},
     { path:'**', pathMatch: 'full', redirectTo: 'home'}
 ];
 

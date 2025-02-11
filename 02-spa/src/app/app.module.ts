@@ -48,7 +48,9 @@ import { ContainerTypeUp } from './components/container-type-up/container-type-u
 import { DimensionItem } from './components/dimension-item/dimension-item.component';
 import { WUReserveAssorted } from './components/wu-reserve.assorted/wu-reserve-assorted.component';
 import { ItemLocation } from './components/item-location/item-location.component';
-
+import { PricePromotion } from './components/prices-promotions/prices-promotions.component';
+import { ShorpackDay } from './components/shorpack/shorpack.component';
+import { InventoryAvailable } from './components/inventory-available/inventory_available.component';
 
 
 @NgModule({
@@ -90,7 +92,10 @@ import { ItemLocation } from './components/item-location/item-location.component
     UploadComponent,
     DimensionItem,
     WUReserveAssorted,
-    ItemLocation
+    ItemLocation,
+    PricePromotion,
+    ShorpackDay,
+    InventoryAvailable
   ],
   imports: [
     BrowserModule,

@@ -297,8 +297,8 @@ class ScaleIntChileDao():
                            ", (SELECT COUNT (XX.[ITEM]) FROM [SCALEINTCHILE].[dbo].[INVENTARIO] XX (NOLOCK) WHERE CONVERT(DATE, XX.FECHA) = CONVERT(DATE,GETDATE()-1) "+
                            "AND XX.[ERP_ALMACEN] = YY.[ERP_ALMACEN] AND (XX.ERP_DISPONIBLE) != 0) AS '#ITEMS' "+
                            "FROM [SCALEINTCHILE].[dbo].[INVENTARIO] YY (NOLOCK) "+
-                           "WHERE CONVERT(DATE, YY.FECHA) = CONVERT(DATE,GETDATE()) "+
-                           "AND (YY.WMS_DISPONIBLE + YY.WMS_SUSPENDIDO + YY.WMS_TRANSITO + YY.ERP_DISPONIBLE) != 0 "+
+                           "WHERE "+ #CONVERT(DATE, YY.FECHA) = CONVERT(DATE,GETDATE()) "+
+                           "(YY.WMS_DISPONIBLE + YY.WMS_SUSPENDIDO + YY.WMS_TRANSITO + YY.ERP_DISPONIBLE) != 0 "+
                            "AND	ISNULL(YY.[ERP_ALMACEN],'')<> '' "+
                            "AND YY.[ERP_ALMACEN] IN ('CL001-QA','CL001-FA','CL001-AA') "+
                            "GROUP BY YY.[ERP_ALMACEN] "+

@@ -5,11 +5,11 @@ import time
 
 logger = logging.getLogger('')
 
-class ContainerService:
+class ContainerServiceCol:
     
     def getConexion(self):
         try:
-            direccion_servidor = '192.168.84.103'
+            direccion_servidor = '192.168.110.4'
             nombre_bd = 'ILS'
             nombre_usuario = 'manh'
             password = 'Pa$$w0rdLDM'
@@ -87,8 +87,6 @@ class ContainerService:
         finally:
             self.closeConexion(conexion)
 
-
-
     def insert_containers(self, values_to_insert):
         try:
             conexion = self.getConexion()
@@ -134,6 +132,7 @@ class ContainerService:
         finally:
             self.closeConexion(conexion)
 
+
     def actualizar_unidad_de_medida(self, data):
         conexion = self.getConexion()
         cursor = conexion.cursor()
@@ -142,12 +141,13 @@ class ContainerService:
         SET LENGTH = ?, WIDTH = ?, HEIGHT = ?, WEIGHT = ?
         WHERE ITEM = ? AND QUANTITY_UM = ?
         """
-        batch_size = 2000 
+        batch_size = 2000  # Tamaño del lote
 
         try:
             values_to_update = [
                 (row['LONGITUD'], row['ANCHURA'], row['ALTURA'], row['PESO'], row['SKU'], row['UM'])
                 for row in data if (row['SKU'], row['UM']) in self.check_existing_items([row['SKU']], [row['UM']])
+                
             ]
             if not values_to_update:
                 return "No se encontraron elementos para actualizar."

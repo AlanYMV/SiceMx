@@ -33,7 +33,7 @@ export class ItemLocation implements OnInit {
         alert('Por favor, ingrese una fecha.');
         return;
     }
-    const url: string = `http://192.168.84.108:8080/servicios/descargar_articulos_ubicacion/${fechaValue}`;
+    const url: string = "http://192.168.84.108:8080/servicios/descargar_articulos_ubicacion/" + fechaValue;
     console.info(url);
     window.location.href = url;
   }

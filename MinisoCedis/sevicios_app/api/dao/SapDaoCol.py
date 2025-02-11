@@ -90,7 +90,6 @@ class SapDaoCol():
                             'F."ItmsGrpNam" as "Categoria", '+ 
                             'T0."U_SUBFAMILIA" as "Subcategoria", '+ 
                             'T0."U_SUBSUBFAMILIA" as "Clase", '+
-                            'T0."" ' +
                             'T0."ItemName", '+ 
                             'T6."UgpCode"  as "Storage_Template", '+
                             'T0."U_SYS_GUML" as "ST_USR", '+

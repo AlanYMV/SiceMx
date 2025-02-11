@@ -12,7 +12,7 @@ class ContainerServiceCl:
             direccion_servidor = '192.168.84.34'
             nombre_bd = 'ILS'
             nombre_usuario = 'manh'
-            password = 'Pa$$w0rdLDM'
+            password = 'Pa$$w0rdLDMCL'
             conexion = pyodbc.connect(
                 f'DRIVER={{SQL Server}};SERVER={direccion_servidor};DATABASE={nombre_bd};UID={nombre_usuario};PWD={password}'
             )
@@ -42,6 +42,7 @@ class ContainerServiceCl:
             batch_size = 2000  
 
             existing_containers = set()
+            container_types = [str(ct) for ct in container_types]
             for i in range(0, len(container_types), batch_size):
                 sub_batch = container_types[i:i + batch_size]
                 placeholders = ', '.join(['?'] * len(sub_batch))
@@ -60,23 +61,31 @@ class ContainerServiceCl:
         conexion = self.getConexion()
         cursor = conexion.cursor()
         
-        # Crear una lista de tuplas (sku, um)
         items = list(zip(sku_list, um_list))
         
-        sql_check = """
+        if not items:
+            return set()
+        
+        conditions = ' OR '.join(['(ITEM = ? AND QUANTITY_UM = ?)'] * len(items))
+        sql_check = f"""
         SELECT ITEM, QUANTITY_UM 
         FROM ITEM_UNIT_OF_MEASURE 
-        WHERE (ITEM, QUANTITY_UM) IN ({})
-        """.format(','.join(['(?, ?)'] * len(items)))
+        WHERE {conditions}
+        """
         
-        cursor.execute(sql_check, [param for item in items for param in item])
-        
-        existing_items = set()
-        for row in cursor.fetchall():
-            existing_items.add((row[0], row[1]))
-        
-        self.closeConexion(conexion)
-        return existing_items
+        try:
+            cursor.execute(sql_check, [param for item in items for param in item])
+            existing_items = set()
+            registros = cursor.fetchall()
+            for row in registros:
+                existing_items.add((row[0], row[1]))
+            
+            return existing_items
+        except Exception as e:
+            logger.error(f"Error al comprobar elementos existentes: {e}")
+            raise
+        finally:
+            self.closeConexion(conexion)
 
     def insert_containers(self, values_to_insert):
         try:
@@ -108,6 +117,8 @@ class ContainerServiceCl:
     def delete_containers(self, container_types):
         conexion = self.getConexion()
         cursor = conexion.cursor()
+        container_types = [str(ct) for ct in container_types]
+
         try:
             sql_delete = f"DELETE FROM CONTAINER_TYPE WHERE CONTAINER_TYPE in {tuple(container_types)}"
             cursor.execute(sql_delete)
@@ -121,6 +132,7 @@ class ContainerServiceCl:
         finally:
             self.closeConexion(conexion)
 
+
     def actualizar_unidad_de_medida(self, data):
         conexion = self.getConexion()
         cursor = conexion.cursor()
@@ -129,15 +141,21 @@ class ContainerServiceCl:
         SET LENGTH = ?, WIDTH = ?, HEIGHT = ?, WEIGHT = ?
         WHERE ITEM = ? AND QUANTITY_UM = ?
         """
+        batch_size = 2000  # Tamaño del lote
+
         try:
             values_to_update = [
                 (row['LONGITUD'], row['ANCHURA'], row['ALTURA'], row['PESO'], row['SKU'], row['UM'])
                 for row in data if (row['SKU'], row['UM']) in self.check_existing_items([row['SKU']], [row['UM']])
+                
             ]
             if not values_to_update:
                 return "No se encontraron elementos para actualizar."
-                
-            cursor.executemany(sql_update, values_to_update)
+
+            for i in range(0, len(values_to_update), batch_size):
+                sub_batch = values_to_update[i:i + batch_size]
+                cursor.executemany(sql_update, sub_batch)
+
             conexion.commit()
             logger.info("Actualizaciones realizadas con éxito")
             return True

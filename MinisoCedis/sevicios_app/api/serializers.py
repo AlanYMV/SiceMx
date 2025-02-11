@@ -658,3 +658,28 @@ class ItemLocationSerializer(serializers.Serializer):
         location = serializers.CharField()
         found = serializers.CharField()
         date = serializers.CharField()
+        
+class DescriptionTransactions(serializers.Serializer):
+        identifier = serializers.CharField()
+        description = serializers.CharField()
+
+class Shorpacks(serializers.Serializer):
+        pickWaveCode = serializers.CharField()
+        clientCode = serializers.CharField()
+        productCode = serializers.CharField()
+        documentCode = serializers.CharField()
+        request_qty = serializers.CharField()
+        total_qty = serializers.CharField()
+        rechazadas = serializers.CharField()
+        pzasFaltantes = serializers.CharField()
+        fecha = serializers.CharField()
+
+class InventoryAvailable(serializers.Serializer):
+        item=serializers.CharField()
+        on_hand=serializers.CharField()
+        in_transit=serializers.CharField()
+        allocated=serializers.CharField()
+        suspense=serializers.CharField()
+        requested=serializers.CharField()
+        quantity=serializers.CharField()
+        date_time=serializers.CharField()

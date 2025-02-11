@@ -14,6 +14,12 @@
         </div>
         <div class="col">
             <input class="form-control" type="text" size="20" placeholder="Tipo de trabajo" #tipoDeTrabajo><br>
+            <select class="form-select" formControlName="transaccion" *ngIf="transactions && transactions.length > 0" #transactionSelect (change)="onTransactionChange($event)">
+                <option *ngFor="let transac of transactions" value="{{transac.identifier}}">
+                    <!-- {{transac.identifier}}  {{transac.description}} -->
+                    {{transac.description}}
+                </option>
+            </select>
         </div>
     </div>
     <br>
@@ -31,7 +37,7 @@
             <input class="form-control" type="date" placeholder="Fecha fin" required pattern="\d{4}-\d{2}-\d{2}" #fechaFin>
         </div>
         <div class="col">
-            <button class="btn btn-primary" (click)="buscarKardex(item.value, contenedor.value, ubicacion.value,usuario.value,tipoDeTrabajo.value,fechaInicio.value,fechaFin.value)">Buscar</button>
+            <button class="btn btn-primary" (click)="buscarKardex(item.value, contenedor.value, ubicacion.value, usuario.value, tipoDeTrabajo.value, fechaInicio.value, fechaFin.value)">Buscar</button>
             <button class="btn btn-primary ms-2" (click)="onDownloadClick(item.value, contenedor.value, ubicacion.value, usuario.value, tipoDeTrabajo.value, fechaInicio.value, fechaFin.value)">Descargar Kardex</button>
         </div>
     </div>

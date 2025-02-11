@@ -1,7 +1,8 @@
 class KardexDownload:
-    def __init__(self,item, transaction_type, location, container_id, reference_id, reference_type, work_type, date_stamp,user_stamp, quantity, before_sts, after_sts, before_on_hand_qty, after_on_hand_qty, before_in_transit_qty, after_in_transit_qty, before_suspense_qty, after_suspense_qty, before_alloc_qty, after_alloc_qty, direction):
+    def __init__(self,item, transaction_type, description, location, container_id, reference_id, reference_type, work_type, date_stamp,user_stamp, quantity, before_sts, after_sts, before_on_hand_qty, after_on_hand_qty, before_in_transit_qty, after_in_transit_qty, before_suspense_qty, after_suspense_qty, before_alloc_qty, after_alloc_qty, direction):
         self.item = item  
         self.transaction_type = transaction_type 
+        self.description = description
         self.location = location 
         self.container_id = container_id
         self.reference_id = reference_id 

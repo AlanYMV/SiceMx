@@ -1,0 +1,45 @@
+<h1>Shorpacks</h1>
+<hr>
+<div class="row">
+    <div class="col">
+        Fecha:
+    </div>
+    <div class="col">
+        <input class="form-control" type="date" placeholder="Fecha fin" required pattern="\d{4}-\d{2}-\d{2}" #fecha>
+    </div>
+    <div class="col">
+        <a (click)="searchShorpacks(fecha.value)" class="btn btn-primary" >Buscar shorpack</a>
+        
+        <a (click)="downloadShorpacks(fecha.value)" class="btn btn-primary ms-2" >Descargar shorpack</a>
+    </div>
+</div>
+<hr>    
+<p></p>   
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">WavePack</th>
+            <th scope="col">Tienda</th>
+            <th scope="col">Articulo</th>
+            <th scope="col">Recibo</th>
+            <th scope="col">Piezas solicitadas</th>
+            <th scope="col">Piezas recibidas</th>
+            <th scope="col">Piezas rechazadas</th>
+            <th scope="col">Piezas faltantes</th>
+            <th scope="col">Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let shorpack of shorpacks">
+            <td>{{shorpack.pickWaveCode}}</td>
+            <td>{{shorpack.clientCode}}</td>
+            <td>{{shorpack.productCode}}</td>
+            <td>{{shorpack.documentCode}}</td>
+            <td>{{shorpack.request_qty}}</td>
+            <td>{{shorpack.total_qty}}</td>
+            <td>{{shorpack.rechazadas}}</td>
+            <td>{{shorpack.pzasFaltantes}}</td>
+            <td>{{shorpack.fecha}}</td>
+        </tr>
+    </tbody>
+</table>
